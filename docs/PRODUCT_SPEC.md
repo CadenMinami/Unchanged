@@ -109,19 +109,20 @@ Labels must not rely on color alone.
 
 ## 9. Player Journey
 
-1. Teacher optionally selects objectives and course packet.
-2. Student starts in Guided Investigation or Unit Challenge mode.
-3. Context primer gives the minimum background needed.
-4. Cold open shows the fractured carriage route and contradictory records.
-5. Player directly chooses the spatial reconstruction or complete non-spatial archive route; both preserve the same evidence and repair requirements.
-6. Player questions characters, inspects evidence, compares sources, and builds a caseboard through the selected presentation route.
-7. The player may switch from the spatial world to the non-spatial workspace without losing deterministic case progress.
-8. Player submits a free-form hypothesis with pinned evidence.
-9. GPT-5.6 evaluates reasoning while deterministic gates protect historical requirements.
-10. Player revises if needed.
-11. Repair sequence restores route information and warning chain.
-12. Reconstruction explains what was repaired and why it mattered.
-13. Student debrief and teacher report summarize reasoning.
+1. Teacher optionally selects two or three authored objectives, chooses accessibility/guidance preferences, and prepares a reviewed sample, pasted-text, TXT, or Markdown alignment profile.
+2. The teacher reviews exact packet references, conflicts, ignored instruction-like text, and limitations, then explicitly approves or clears the profile. Unapproved drafts do not affect the student experience.
+3. Student starts in Guided Investigation or Unit Challenge mode.
+4. Context primer gives the minimum background needed.
+5. Cold open shows the fractured carriage route and contradictory records.
+6. Player directly chooses the spatial reconstruction or complete non-spatial archive route; both preserve the same evidence and repair requirements.
+7. Player questions characters, inspects evidence, compares sources, and builds a caseboard through the selected presentation route.
+8. The player may switch from the spatial world to the non-spatial workspace without losing deterministic case progress.
+9. Player submits a free-form hypothesis with pinned evidence.
+10. GPT-5.6 evaluates reasoning while deterministic gates protect historical requirements.
+11. Player revises if needed.
+12. Repair sequence restores route information and warning chain.
+13. Reconstruction explains what was repaired and why it mattered.
+14. Student debrief and deterministic teacher report summarize recorded reasoning.
 
 ## 10. Core Gameplay Loop
 
@@ -211,6 +212,22 @@ Two tracks rebuild:
 
 Later outcomes appear as faded downstream nodes with multicausal warnings.
 
+### Teacher Setup
+
+`/teacher` provides:
+
+- selection of two or three repository-authored learning objectives
+- standard/reduced reading, standard/reduced motion, and guided/challenge preferences that work with or without a packet
+- reviewed sample, pasted-text, and TXT/Markdown input paths
+- an explicit pending-review state showing authorized concept links, short exact packet excerpts, reference labels, possible historical conflicts, ignored instruction-like text, and limitations
+- a **Confirm alignment** action before the profile can be persisted or used for class-language support
+
+The ordinary student case remains available without teacher setup. Within the setup workflow, the student-launch action appears only after approval.
+
+### Teacher Report
+
+`/teacher/report` is a printable formative report. It shows completion status, counts from validated case state, bounded support-use events, the recorded student argument, support settings, and teacher-approved objective/packet connections. It does not generate a narrative with GPT-5.6, recalculate an AI rubric, infer unobserved revision history, or serve as a tamper-resistant grade record.
+
 ## 12. Character And Source Stations
 
 Current stations:
@@ -265,7 +282,7 @@ GPT-5.6 evaluates:
 - treatment of uncertainty
 - quality of revision feedback
 
-GPT-5.6's evaluation is formative. It may recommend revision and contribute to the teacher report, but it cannot unlock, block, revoke, or delay repair. The complete case remains playable when evaluation is unavailable.
+GPT-5.6's evaluation is formative. It may recommend revision in the student feedback surface, but the current deterministic teacher report does not import or recalculate the model rubric. Model feedback cannot unlock, block, revoke, or delay repair, and the complete case remains playable when evaluation is unavailable.
 
 ## 15. Student Assessment Rubric
 
@@ -283,39 +300,61 @@ The rubric score is displayed as AI-assisted formative feedback. A teacher must 
 
 ## 16. Teacher Report
 
+The implemented report is deterministic. Its inputs are the final validated `CaseState`, the separately persisted approved alignment and support preferences, and bounded observable event codes such as `hint_viewed`, `evidence_inspected`, and `evidence_pinned`.
+
 Sections:
 
 - session overview
-- historical reasoning profile
-- rubric results
+- recorded reasoning state
 - course alignment
 - student work
+- support settings
+- teacher-review and AI-authority boundaries
 
 The report must not infer intelligence, personality, disability, political belief, motivation, emotional state, or future achievement.
 
-It should describe observable reasoning:
+It describes observable final state and recorded events, for example:
 
-> The student connected Drouet's route information to the warning chain but did not initially include the documented collective local response in the reconstruction.
+> 3 source comparisons recorded; 5 reviewed records pinned to the final brief.
+
+It does not claim unobserved chronology such as what a student "initially" believed. It is printable from the browser and explicitly requires teacher review.
 
 ## 17. Accessibility Scope
 
-MVP accessibility:
+Implemented Phase 4 behavior:
 
-- reduced-reading mode
-- glossary support
-- chunked documents
-- browser text-to-speech where reliable
-- keyboard navigation
-- screen-reader labels
-- color-independent state
-- reduced-motion mode
-- no timed decisions
-- persistent transcripts
-- responsive text sizing
+- reduced-reading preference persists independently of case state and selects authored shorter primer, character-response, feedback, and hint variants
+- reduced-reading evidence surfaces retain the authoritative excerpt while moving longer source limitations behind an accessible disclosure
+- reduced-motion preference persists independently of case state, honors the operating-system preference on first compatible load, suppresses CSS animation/transition timing, removes ambient 3D residents, and uses a direct follow camera
+- reduced-motion repair shows the complete static reconstruction sequence while preserving every ordered reducer-owned repair action; it does not provide a progression shortcut
+- keyboard-operable teacher controls, semantic review/report sections, live progress status, and explicit labels for investigation actions
+- glossary support, color-independent state, no timed decision gate, visible dialogue captions, optional audio, and responsive text sizing remain available
 
-Do not claim formal compliance until tested.
+Reading and motion preferences do not change evidence, scoring, solution requirements, or repair eligibility. Focused Phase 4 Playwright coverage passes the teacher approval/aligned-investigation path, 320 x 700 world-HUD fit, and distinct accessible names for all six historical-record controls. Manual browser QA also passed `/teacher` at desktop and 390 x 844, `/teacher/report`, and the 320 x 700 world top controls without overflow or overlap. The fresh integrated no-key gate passes warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and all 19 Playwright tests. Do not claim formal accessibility compliance or final project readiness: screen-reader-oriented/cross-route equivalence, live-provider, physical Chromebook, deployment, and submission checks remain separate gates.
 
 ## 18. Teacher Packet Alignment
+
+Status: implemented for the secure text-first phase.
+
+Supported sources:
+
+- built-in reviewed sample packet
+- pasted text, bounded to 40,000 characters
+- UTF-8 `.txt` / `text/plain` files, bounded to 64 KB
+- UTF-8 `.md` / `text/markdown` files, bounded to 64 KB
+
+PDF and DOCX are not supported in this phase. The application has no hardened binary extraction or OCR boundary for page limits, embedded objects, decompression, malformed containers, external references, and temporary-artifact cleanup. Restricting ingestion to directly inspectable bounded UTF-8 text makes the accepted bytes, segmentation, and retained excerpts auditable.
+
+The alignment contract is closed and versioned. A model may return only:
+
+- repository-authored objective, concept, historical-boundary, injection-kind, and limitation IDs
+- a server-created packet segment ID
+- an exact case-sensitive packet term from that segment
+- bounded confidence and reading-support enums
+
+Exact server-authorized segments are required so the model cannot invent a packet quotation, cite text outside the bounded request, or smuggle a new historical claim into the approved profile. The server resolves every proposed segment ID against its own ephemeral segment map, verifies that the term is an exact substring, derives the short excerpt/reference itself, and drops unresolved mappings. The profile is always `alignment_only`, `mutatesCaseState: false`, and `pending_teacher_review` until the teacher confirms it.
+
+Raw packet text is not retained. The separately persisted learning-session envelope stores the approved profile, preferences, and bounded event codes. The approved profile contains a SHA-256 digest, reviewed IDs, exact short excerpts/terms, references, limitations, and approval metadata; it does not contain the original pasted text, uploaded file, or a case-state snapshot.
 
 Teacher materials may influence:
 
@@ -339,6 +378,8 @@ Teacher materials may not change:
 
 Deterministic correctness is read only from the versioned case package's `solution` object. Source-linked `repairGates` are explanatory traceability metadata, not a second scoring or unlock system.
 
+With no API key or after invalid/provider output, deterministic exact-term matching returns a reviewable profile. The reviewed sample never requires a model. Instruction-like packet text is surfaced as ignored class data, and possible conflicts with authored historical boundaries require teacher attention rather than changing canon.
+
 ## 19. API Failure Fallback
 
 The full case must remain completable without model calls.
@@ -347,7 +388,9 @@ Fallbacks:
 
 - pre-authored character responses
 - deterministic hypothesis feedback
-- cached sample course packet
+- reviewed sample course-alignment profile
+- deterministic exact-term alignment for pasted TXT/Markdown content
+- authored hint ladder with no packet term when no alignment is approved
 - deterministic teacher report
 - no blank or blocked states
 
@@ -367,3 +410,5 @@ Done means:
 - reduced-reading and reduced-motion modes work
 - historical claims sourced
 - fictional and reconstructed elements labeled
+
+The Phase 4 feature scope above is implemented with focused unit, integration, historical-authority, Playwright, manual browser-layout, and full integrated no-key suite evidence. The overall product is not finally done: screen-reader-oriented/cross-route accessibility checks, live-provider smoke testing, physical Chromebook verification, deployment, and submission checks remain separate gates.

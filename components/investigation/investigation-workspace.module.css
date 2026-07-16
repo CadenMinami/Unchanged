@@ -497,6 +497,38 @@
   margin: 0;
 }
 
+.classConnection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  align-items: center;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed color-mix(in srgb, var(--archive-blue) 38%, transparent);
+  color: var(--archive-blue);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+}
+
+.classConnection strong {
+  text-transform: uppercase;
+}
+
+.sourceLimit {
+  margin-top: 0.65rem;
+  color: var(--graphite);
+}
+
+.sourceLimit summary {
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.sourceLimit p {
+  margin-top: 0.55rem;
+}
+
 .evidenceActions {
   display: flex;
   align-items: center;

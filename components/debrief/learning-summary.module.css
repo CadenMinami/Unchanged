@@ -50,6 +50,7 @@
 .teacherBoundary .eyebrow { color: #9ec1d6; }
 .teacherBoundary p:last-child { max-width: 680px; color: #cbd0d3; line-height: 1.55; }
 .teacherBoundary a { min-height: 48px; padding: 0 16px; display: inline-flex; align-items: center; gap: 18px; color: var(--ink); background: var(--white); text-decoration: none; }
+.teacherBoundary > div:last-child { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
 .teacherBoundary a svg { width: 17px; }
 .gate { min-height: 100svh; padding: clamp(40px, 10vw, 130px); display: grid; align-content: center; justify-items: start; }
 .gate h1 { margin: 8px 0 16px; font-family: var(--font-serif), serif; font-size: clamp(3rem, 7vw, 6rem); font-weight: 500; }

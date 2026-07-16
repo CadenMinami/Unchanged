@@ -4,6 +4,7 @@ import { AlertTriangle, BrainCircuit, LoaderCircle, Quote, Sparkles } from "luci
 import { useEffect, useRef, useState } from "react";
 
 import { useCaseSession } from "@/components/case-session/case-session-provider";
+import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { AIRequestCoordinator } from "@/lib/openai/ai-request-coordinator";
 import { buildAIRequestMetadata } from "@/lib/openai/request-metadata";
@@ -34,6 +35,7 @@ function isAbortError(error: unknown): boolean {
 
 export function CaseBriefFeedback() {
   const { state } = useCaseSession();
+  const courseAlignment = useOptionalCourseAlignment();
   const coordinatorRef = useRef(new AIRequestCoordinator());
   const [result, setResult] = useState<{
     stateRevision: number;
@@ -56,6 +58,7 @@ export function CaseBriefFeedback() {
     const request = caseBriefFeedbackRequestSchema.parse({
       ...metadata,
       caseState: state,
+      readingMode: courseAlignment?.preferences.readingMode ?? "standard",
     });
     const { signal } = coordinator.begin(metadata);
 
@@ -94,7 +97,7 @@ export function CaseBriefFeedback() {
     })();
 
     return () => coordinator.invalidate();
-  }, [state]);
+  }, [courseAlignment?.preferences.readingMode, state]);
 
   if (!state.caseBrief.submitted) return null;
 

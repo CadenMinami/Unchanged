@@ -1,0 +1,34 @@
+[
+  {
+    "id": "HINT-ROUTE-01",
+    "tier": 1,
+    "conceptId": "CONCEPT-SOURCE-RELIABILITY",
+    "standardText": "Which reviewed source explains not only that Drouet pursued the carriage, but how he chose the road?",
+    "reducedText": "Find the source that explains how Drouet chose his road.",
+    "alignmentPrefix": "Your class packet connects this move to \"{packetTerm}.\""
+  },
+  {
+    "id": "HINT-ROUTE-02",
+    "tier": 2,
+    "conceptId": "CONCEPT-SOURCE-RELIABILITY",
+    "standardText": "Compare Drouet's reviewed account with the three competing anomalies. Which anomaly preserves his suspicion but removes the route correction?",
+    "reducedText": "Compare Drouet's account with the three anomalies. Look for the missing route correction.",
+    "alignmentPrefix": "Use your class packet's phrase \"{packetTerm}\" as the comparison lens."
+  },
+  {
+    "id": "HINT-ROUTE-03",
+    "tier": 3,
+    "conceptId": "CONCEPT-ROUTE-INFORMATION",
+    "standardText": "Inspect the Route Echo, all three fractured observations, Drouet's account, the route board, and the civic dossier. The finding requires the whole sequence.",
+    "reducedText": "Inspect the Route Echo, FO1-FO3, and E3-E5.",
+    "alignmentPrefix": "Your packet calls the relevant idea \"{packetTerm}.\""
+  },
+  {
+    "id": "HINT-ROUTE-04",
+    "tier": 4,
+    "conceptId": "CONCEPT-ROUTE-INFORMATION",
+    "standardText": "The branch preserves recognition but loses the corrected route handoff. Record the comparison showing why E6B fits FO1-FO3 and E3-E5.",
+    "reducedText": "E6B fits: suspicion remains, but the route correction disappears. Record that finding.",
+    "alignmentPrefix": "Connect this final check to \"{packetTerm}\" from your class packet."
+  }
+]

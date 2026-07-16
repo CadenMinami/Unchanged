@@ -87,7 +87,18 @@ test("a novice can complete the deterministic case from context to debrief", asy
   await expect(page.getByRole("heading", { name: "Restore the link. Preserve the uncertainty." })).toBeVisible();
   await page.getByLabel("Reduced motion").check();
   await expect(page.getByText("In Drouet's report, the route information enabled him and Guillaume to take a shorter road toward Varennes.")).toBeVisible();
-  await page.getByRole("button", { name: "Mark reconstruction sequence reviewed" }).click();
+  for (const action of [
+    "Restore Varennes route information",
+    "Send the pursuit toward Varennes",
+    "Warn people in Varennes",
+    "Mobilize the local response",
+  ]) {
+    await page.getByRole("button", { name: action }).click();
+  }
+  await page.getByRole("button", { name: "Restore passage control" }).click();
+  await page.getByRole("button", { name: "Restore passport inspection" }).click();
+  await page.getByRole("button", { name: "Restore passage control and inspection" }).click();
+  await page.getByRole("button", { name: "Place the travelers under guard" }).click();
   await page.getByRole("button", { name: "Complete reconstruction" }).click();
   await page.getByRole("link", { name: "Open learning summary" }).click();
 

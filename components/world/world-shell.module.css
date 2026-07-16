@@ -61,3 +61,4 @@
 .unavailable a { color: var(--archive-blue); text-underline-offset: 4px; }
 .unavailable button:focus-visible, .unavailable a:focus-visible { outline: 2px solid var(--archive-blue); outline-offset: 4px; }
 @media (max-width: 720px) { .masthead { grid-template-columns: 1fr auto; } .masthead span { display: none; } .status { right: 18px; bottom: 24px; padding: 14px 16px 54px; } .status strong { font-size: 1.4rem; } .status span { display: none; } .location { display: none; } .journalControl { top: 132px; } .routeCompass { top: 132px; right: 18px; left: auto; width: min(220px, calc(100vw - 112px)); transform: none; } .interactionPrompt { top: 266px; right: 18px; bottom: auto; left: 18px; justify-content: center; } .unavailable h1 { font-size: 3.2rem; } }
+@media (max-width: 360px) { .journalControl { top: 132px; } .routeCompass { top: 182px; right: 18px; left: 18px; width: auto; } .interactionPrompt { top: 304px; } }

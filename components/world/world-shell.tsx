@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useCaseSession } from "@/components/case-session/case-session-provider";
+import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { isInvestigationComplete } from "@/lib/case-engine/selectors";
 import {
@@ -180,6 +181,7 @@ function WorldUnavailable({ compact = false, onRetry, reason }: WorldUnavailable
 
 export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps) {
   const { issue, state } = useCaseSession();
+  const courseAlignment = useOptionalCourseAlignment();
   const [capabilityAttempt, setCapabilityAttempt] = useState(0);
   const [webglAvailable, setWebglAvailable] = useState(capabilityCheck);
   const [runtimeKey, setRuntimeKey] = useState(0);
@@ -577,6 +579,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
             initialPosition={runtimePlayerPosition}
             key={runtimeKey}
             locomotionEnabled={canUseLocomotion(worldMode)}
+            reducedMotion={courseAlignment?.preferences.motionMode === "reduced"}
             onContextLost={() =>
               setRuntimeIssue("The graphics context was interrupted.")
             }

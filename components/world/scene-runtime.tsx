@@ -141,6 +141,7 @@ interface SceneRuntimeProps {
   onContextLost: () => void;
   onPerformanceSample: (timestampMs: number, fps: number) => void;
   testMode?: boolean;
+  reducedMotion?: boolean;
 }
 
 export function SceneRuntime({
@@ -152,6 +153,7 @@ export function SceneRuntime({
   onContextLost,
   onPerformanceSample,
   testMode = false,
+  reducedMotion = false,
 }: SceneRuntimeProps) {
   const controllerRef = useRef<EcctrlHandle>(null);
 
@@ -168,7 +170,7 @@ export function SceneRuntime({
       <Suspense fallback={null}>
         <AmbientResidents
           ambientLines={ambientLines}
-          count={graphicsProfile.ambientCount}
+          count={reducedMotion ? 0 : graphicsProfile.ambientCount}
           manifest={sceneManifest}
         />
         <Physics colliders={false} gravity={[0, -9.81, 0]} timeStep={1 / 60}>
@@ -201,6 +203,7 @@ export function SceneRuntime({
             enabled={locomotionEnabled}
             initialPosition={initialPosition}
             onPositionChange={onPlayerPositionChange}
+            reducedMotion={reducedMotion}
           />
         </Physics>
       </Suspense>

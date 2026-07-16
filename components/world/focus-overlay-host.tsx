@@ -4,11 +4,14 @@ import { ExternalLink, X } from "lucide-react";
 import type { RefObject } from "react";
 import { useEffect, useRef } from "react";
 
+import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
+import { loadVarennesAlignmentCatalog } from "@/lib/course-alignment/load-catalog";
 
 import styles from "./focus-overlay-host.module.css";
 
 const casePackage = loadVarennesCase();
+const alignmentCatalog = loadVarennesAlignmentCatalog();
 
 interface FocusOverlayHostProps {
   evidenceId: string;
@@ -28,6 +31,7 @@ export function FocusOverlayHost({
 }: FocusOverlayHostProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
+  const courseAlignment = useOptionalCourseAlignment();
   const evidence = casePackage.evidence.find((item) => item.id === evidenceId);
 
   useEffect(() => {
@@ -39,6 +43,15 @@ export function FocusOverlayHost({
     const source = casePackage.sources.find((item) => item.id === sourceId);
     return source ? [source] : [];
   });
+  const reducedReading = courseAlignment?.preferences.readingMode === "reduced";
+  const classConnections = courseAlignment?.approvedAlignment
+    ? courseAlignment.approvedAlignment.profile.conceptMappings.filter((mapping) => {
+        const concept = alignmentCatalog.concepts.find(
+          (candidate) => candidate.id === mapping.conceptId,
+        );
+        return concept?.caseFactIds.some((factId) => evidence.factIds.includes(factId));
+      })
+    : [];
 
   function close() {
     onClose();
@@ -87,7 +100,24 @@ export function FocusOverlayHost({
             <p className={styles.eyebrow}>Archive record</p>
             <h2 id="world-evidence-heading">{evidence.title}</h2>
             <blockquote>{evidence.studentExcerpt}</blockquote>
-            <p>{evidence.description}</p>
+            {reducedReading ? (
+              <details className={styles.sourceLimit}>
+                <summary>Source limit</summary>
+                <p>{evidence.description}</p>
+              </details>
+            ) : (
+              <p>{evidence.description}</p>
+            )}
+            {classConnections.length > 0 ? (
+              <aside className={styles.classConnection} aria-label="Class material connection">
+                <strong>Class material</strong>
+                {classConnections.slice(0, 2).map((mapping) => (
+                  <span key={`${evidence.id}-${mapping.conceptId}`}>
+                    {mapping.packetTerm} / {mapping.referenceLabel}
+                  </span>
+                ))}
+              </aside>
+            ) : null}
           </div>
           <aside className={styles.sources} aria-label="Source metadata">
             <p className={styles.eyebrow}>Source basis</p>

@@ -1,0 +1,198 @@
+{
+  "catalogVersion": "1.1.0",
+  "caseId": "varennes",
+  "objectives": [
+    {
+      "id": "OBJ-SOURCE-CORROBORATION",
+      "title": "Evaluate and corroborate sources",
+      "description": "Distinguish what a source says from what it proves, then compare independent evidence.",
+      "observableBehaviors": [
+        "Identifies a source's position or limitation.",
+        "Explains how at least two sources agree, conflict, or address different claims."
+      ]
+    },
+    {
+      "id": "OBJ-CAUSAL-REASONING",
+      "title": "Build a multistep causal explanation",
+      "description": "Connect background conditions, an immediate information failure, collective action, and a limited consequence.",
+      "observableBehaviors": [
+        "Places evidence in a causal sequence.",
+        "Explains why the altered link mattered only with other conditions present."
+      ]
+    },
+    {
+      "id": "OBJ-UNCERTAINTY-MULTICAUSALITY",
+      "title": "Express uncertainty and multicausality",
+      "description": "Avoid inevitability and separate supported conclusions from unresolved motives or counterfactual outcomes.",
+      "observableBehaviors": [
+        "States a limit on what the evidence proves.",
+        "Rejects a single-cause explanation of later revolutionary outcomes."
+      ]
+    }
+  ],
+  "concepts": [
+    {
+      "id": "CONCEPT-CONSTITUTIONAL-MONARCHY",
+      "label": "Constitutional monarchy",
+      "canonicalDefinition": "Louis XVI remained king while political institutions were attempting to define and limit royal authority.",
+      "caseFactIds": ["F-S11-002", "F-S11-003", "F-S11-004", "F-S5-005"],
+      "matchTerms": ["constitutional monarchy", "limited monarchy", "royal power", "king's power", "king remained"]
+    },
+    {
+      "id": "CONCEPT-VOLUNTARY-DEPARTURE",
+      "label": "Planned royal departure",
+      "canonicalDefinition": "Reviewed sources support Louis's purposeful participation in the departure without settling every private motive.",
+      "caseFactIds": ["F-S1-002", "F-S8-001", "F-S8-002", "F-S9-001"],
+      "matchTerms": ["royal departure", "royal family left", "planned escape", "flight to varennes", "left paris"]
+    },
+    {
+      "id": "CONCEPT-SOURCE-RELIABILITY",
+      "label": "Source reliability and perspective",
+      "canonicalDefinition": "A source may provide useful evidence while remaining limited by perspective, timing, interest, or disagreement with another account.",
+      "caseFactIds": ["F-S3-003", "F-S5-001", "F-S5-003"],
+      "matchTerms": ["corroborate", "source reliability", "source perspective", "compare sources", "bias", "what a source proves"]
+    },
+    {
+      "id": "CONCEPT-ROUTE-INFORMATION",
+      "label": "Route information",
+      "canonicalDefinition": "Drouet reported changing direction toward Varennes after receiving corrected route information.",
+      "caseFactIds": ["F-S2-002", "F-S2-003", "F-S4-004"],
+      "matchTerms": ["route information", "route correction", "road to varennes", "pursuit", "warning"]
+    },
+    {
+      "id": "CONCEPT-COLLECTIVE-LOCAL-ACTION",
+      "label": "Collective local action",
+      "canonicalDefinition": "Warning, municipal action, residents, National Guardsmen, physical obstruction, and inspection worked together at Varennes.",
+      "caseFactIds": ["F-S2-004", "F-S2-005", "F-S2-006", "F-S3-002", "F-S3-005"],
+      "matchTerms": ["local action", "collective action", "municipal officials", "national guard", "residents", "bridge obstruction"]
+    },
+    {
+      "id": "CONCEPT-POLITICAL-TRUST",
+      "label": "Political trust and legitimacy",
+      "canonicalDefinition": "The flight intensified disputes about trust in the king while monarchy continued under the later Constitution of 1791.",
+      "caseFactIds": ["F-S5-001", "F-S5-003", "F-S5-004A", "F-S5-005"],
+      "matchTerms": ["political trust", "trust in the king", "royal credibility", "legitimacy", "fragile trust"]
+    },
+    {
+      "id": "CONCEPT-MULTICAUSALITY",
+      "label": "Multicausality and contingency",
+      "canonicalDefinition": "The interception depended on several connected conditions, and the later political future was not made inevitable by one event.",
+      "caseFactIds": ["F-S2-002", "F-S2-004", "F-S3-002", "F-S4-003", "F-S5-005"],
+      "matchTerms": ["multicausality", "multiple causes", "several causes", "trigger", "conditions", "not inevitable", "worked together"]
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "BOUNDARY-NOT-SOLE-CAUSE",
+      "label": "Avoid a sole-cause claim",
+      "reviewedExplanation": "Varennes intensified an existing political crisis; the reviewed record does not establish that this event alone caused the monarchy's later fall or other revolutionary outcomes."
+    },
+    {
+      "id": "BOUNDARY-MOTIVE-UNRESOLVED",
+      "label": "Keep private motive bounded",
+      "reviewedExplanation": "The sources support purposeful participation in the departure but do not settle every part of Louis's private motive."
+    },
+    {
+      "id": "BOUNDARY-CLASS-MATERIAL-NOT-EVIDENCE",
+      "label": "Keep class material separate",
+      "reviewedExplanation": "A course packet can align vocabulary and emphasis, but it is not case evidence and cannot make a historical claim correct."
+    }
+  ],
+  "limitations": [
+    { "id": "LIMITATION-SAMPLE-MATERIAL", "message": "This built-in packet demonstrates classroom alignment and is not case evidence." },
+    { "id": "LIMITATION-LOW-COVERAGE", "message": "The packet covers only a small portion of the case's reviewed concepts." },
+    { "id": "LIMITATION-NO-MODEL", "message": "The alignment used deterministic term matching because dynamic extraction was unavailable." },
+    { "id": "LIMITATION-INSTRUCTION-LIKE-TEXT", "message": "Instruction-like text was treated as untrusted class material and ignored as a command." },
+    { "id": "LIMITATION-CONFLICT-REVIEW", "message": "At least one packet passage needs teacher review against an authored historical boundary." },
+    { "id": "LIMITATION-FILE-UNEXTRACTED", "message": "This file type could not be securely extracted in the current environment." },
+    { "id": "LIMITATION-EXCERPTS-ONLY", "message": "Only short approved references are retained; the raw teacher material is not stored." }
+  ],
+  "samplePacket": {
+    "title": "France in 1791: Class Review Packet",
+    "description": "A short built-in demonstration packet. It is class material, not case evidence.",
+    "sections": [
+      {
+        "segmentId": "SEG-0001",
+        "referenceLabel": "Page 1",
+        "heading": "A monarchy under pressure",
+        "text": "In 1791 France was attempting to define a constitutional monarchy. Louis XVI remained king, but political authority was being redistributed and his future powers were still contested. Trust between the royal family and revolutionary institutions was already fragile."
+      },
+      {
+        "segmentId": "SEG-0002",
+        "referenceLabel": "Page 2",
+        "heading": "How to explain an event",
+        "text": "A trigger starts or accelerates a sequence, but it rarely works alone. Strong historical explanations connect background conditions, immediate decisions, available institutions, and the actions of multiple people. They use evidence to explain a mechanism rather than listing events."
+      },
+      {
+        "segmentId": "SEG-0003",
+        "referenceLabel": "Page 3",
+        "heading": "Reading sources carefully",
+        "text": "A source is evidence, not an automatic verdict. Ask who produced it, what that person could know, when it was created, and what other evidence confirms or qualifies the account. A source can be useful even when it is partial or self-interested."
+      }
+    ]
+  },
+  "sampleProfile": {
+    "profileVersion": "1.1.0",
+    "catalogVersion": "1.1.0",
+    "promptVersion": "1.0.0",
+    "caseId": "varennes",
+    "packet": {
+      "title": "France in 1791: Class Review Packet",
+      "sourceKind": "sample_packet",
+      "processor": "reviewed_sample",
+      "packetDigest": "cc8b947723c1ffa6bc81fdb9cd114c9db433bb3f6c994e80e2b8221ac59b694a",
+      "rawRetained": false
+    },
+    "selectedObjectiveIds": [
+      "OBJ-SOURCE-CORROBORATION",
+      "OBJ-CAUSAL-REASONING",
+      "OBJ-UNCERTAINTY-MULTICAUSALITY"
+    ],
+    "conceptMappings": [
+      {
+        "conceptId": "CONCEPT-CONSTITUTIONAL-MONARCHY",
+        "segmentId": "SEG-0001",
+        "packetTerm": "constitutional monarchy",
+        "referenceLabel": "Page 1",
+        "excerpt": "In 1791 France was attempting to define a constitutional monarchy.",
+        "confidence": "exact"
+      },
+      {
+        "conceptId": "CONCEPT-POLITICAL-TRUST",
+        "segmentId": "SEG-0001",
+        "packetTerm": "Trust",
+        "referenceLabel": "Page 1",
+        "excerpt": "Trust between the royal family and revolutionary institutions was already fragile.",
+        "confidence": "strong"
+      },
+      {
+        "conceptId": "CONCEPT-MULTICAUSALITY",
+        "segmentId": "SEG-0002",
+        "packetTerm": "trigger",
+        "referenceLabel": "Page 2",
+        "excerpt": "A trigger starts or accelerates a sequence, but it rarely works alone.",
+        "confidence": "exact"
+      },
+      {
+        "conceptId": "CONCEPT-SOURCE-RELIABILITY",
+        "segmentId": "SEG-0003",
+        "packetTerm": "source",
+        "referenceLabel": "Page 3",
+        "excerpt": "A source is evidence, not an automatic verdict.",
+        "confidence": "exact"
+      }
+    ],
+    "glossaryEntries": [
+      { "conceptId": "CONCEPT-CONSTITUTIONAL-MONARCHY", "segmentId": "SEG-0001", "packetTerm": "constitutional monarchy", "referenceLabel": "Page 1" },
+      { "conceptId": "CONCEPT-MULTICAUSALITY", "segmentId": "SEG-0002", "packetTerm": "trigger", "referenceLabel": "Page 2" },
+      { "conceptId": "CONCEPT-SOURCE-RELIABILITY", "segmentId": "SEG-0003", "packetTerm": "source", "referenceLabel": "Page 3" }
+    ],
+    "potentialConflicts": [],
+    "injectionFlags": [],
+    "readingSupport": "standard",
+    "limitationIds": ["LIMITATION-SAMPLE-MATERIAL", "LIMITATION-EXCERPTS-ONLY"],
+    "authority": "alignment_only",
+    "mutatesCaseState": false,
+    "reviewStatus": "pending_teacher_review"
+  }
+}

@@ -30,9 +30,17 @@ Browser UI
   -> strict ID-only plan -> server authorization and coherence checks
   -> server-rendered authored response -> optional exact-caption speech authorization
   -> strict public response -> advisory UI only
+
+Teacher setup
+  -> reviewed sample, pasted text, or bounded TXT/Markdown text
+  -> version/case/catalog checks -> bounded JSON -> ephemeral server segments
+  -> deterministic matcher or strict GPT-5.6 ID/segment plan
+  -> exact-segment authorization -> pending review profile
+  -> explicit teacher approval -> separate learning-session persistence
+  -> authored vocabulary/hints/support variants + deterministic teacher report
 ```
 
-The deterministic command path, spatial path, and model path are intentionally separate. The spatial runtime may resolve proximity to a reviewed canonical ID, but only the interaction adapter and existing reducer can authorize effects. Model responses never enter the reducer. They are correlated to contract, case schema, case content, policy, state, prompt, request, and revision versions, then displayed only while that request snapshot remains current.
+The deterministic command path, spatial path, model path, and teacher-alignment path are intentionally separate. The spatial runtime may resolve proximity to a reviewed canonical ID, but only the interaction adapter and existing reducer can authorize effects. Model responses never enter the reducer. Character and Case Brief responses are correlated to contract, case schema, case content, policy, state, prompt, request, and revision versions, then displayed only while that request snapshot remains current. Course alignment is instead bound to course-alignment, prompt, catalog, case-content, and request versions; its output can become active only after exact-segment server authorization and explicit teacher approval.
 
 ## Active Compatibility Matrix
 
@@ -48,8 +56,13 @@ The deterministic command path, spatial path, and model path are intentionally s
 | Model policy | `1.0.1` |
 | AI contract | `1.1.0` |
 | Media contract | `1.0.0` |
+| Course alignment/catalog | `1.1.0` |
+| Course alignment prompt | `1.0.0` |
+| Learning session | `1.0.0` |
 
-AI `1.1.0` is the sole active browser/server contract. Character success and fallback responses require nullable speech authorization; Case Brief responses do not. Media `1.0.0` independently versions the future transcription and speech transforms. Provider transcription/speech routes and services are not implemented yet.
+AI `1.1.0` is the sole active browser/server contract. Character success and fallback responses require nullable speech authorization; Case Brief responses do not. Media `1.0.0` independently versions the implemented transcription and speech transforms. The routes remain presentation-only and cannot issue reducer commands.
+
+Course alignment `1.1.0` is a separate `alignment_only` contract. It cannot carry evidence, repair, scoring, or case-state authority. Learning session `1.0.0` persists approved alignment, support preferences, and bounded observable event codes independently of deterministic case-state persistence `1.2.0`.
 
 ### Current world reasoning handoff
 
@@ -59,13 +72,14 @@ AI `1.1.0` is the sole active browser/server contract. Character success and fal
 - Incomplete investigations route to the existing non-spatial case file. Repair and debrief resume their canonical routes.
 - Locomotion remains disabled while the caseboard is focused.
 
-### Current optional browser voice
+### Current staged voice runtime
 
-- Speech starts only from the visible **Hear response** button after a validated character reply is rendered.
+- Microphone capture starts only from an explicit push-to-talk gesture, stops at 20 seconds or 2 MB, and places the returned transcript into the editable question field.
+- Provider speech starts only from the visible play control after a validated character reply is rendered and the server has minted an exact-caption authorization.
 - The displayed caption remains authoritative and available when speech is unsupported or fails.
-- Closing, replacing, or changing a dialogue cancels active browser speech.
-- Browser speech is presentation-only and has no reducer, evidence, scoring, or model authority.
-- This local fallback does not replace the planned signed OpenAI speech pipeline, microphone consent flow, or audio-ticket cleanup rules.
+- Closing, replacing, changing, muting, or skipping a dialogue cancels active provider or browser speech.
+- A student edit supersedes any in-flight transcription so late media cannot replace newer typed text.
+- Provider and browser speech are presentation-only and have no reducer, evidence, scoring, or model authority.
 
 ### Media Security Contracts
 
@@ -75,8 +89,10 @@ AI `1.1.0` is the sole active browser/server contract. Character success and fal
 - The character service returns a validated internal result with no ticket or secret dependency. The character route alone attaches nullable authorization after it has the exact authorized caption, then validates the public response.
 - Drouet and Louis use app-owned logical voice IDs. Their station mapping is private server policy and is not coupled to provider voice names.
 - Speech authorization uses an exact UTF-8 caption SHA-256 and HMAC-SHA256 over byte-length-prefixed fields. Speech request parsing and verification perform no trim or Unicode normalization.
-- The optional browser `SpeechSynthesis` fallback remains untouched and does not consume provider audio.
-- Task 12 still owns provider routes, bounded streaming/multipart handling, recorder/playback UI, rate limits, provider services, log redaction, and temporary byte cleanup.
+- The optional browser `SpeechSynthesis` fallback is used when provider speech is unavailable and does not consume provider audio.
+- `/api/ai/transcribe` rate-limits before consuming the bounded multipart body, validates independently inspected MIME/duration/channel metadata, and uses `gpt-4o-transcribe`.
+- `/api/ai/speech` rate-limits before consuming JSON, verifies the exact caption ticket, uses `gpt-4o-mini-tts` by default, and caps generated WAV output at 12 MB.
+- App-owned mutable audio buffers are cleared on success and failure. Immutable platform `File` objects are not retained and follow the platform lifecycle.
 
 ## MVP State Authority
 
@@ -95,6 +111,8 @@ Each historical evidence record lists:
 Fiction, dramatization, class packets, and unresolved material are rejected by the package validator before reducer state exists.
 
 This local session is not tamper-resistant. The deterministic debrief and teacher-facing local summary must be labeled as formative artifacts, not secure grade records. Authentication, roster-linked assignments, cross-device state, and authoritative grading would require a server-side event store and are explicit post-MVP work.
+
+Teacher alignment and accessibility/reporting data use a second local envelope at `history-unbroken:varennes:learning-session`, separate from `history-unbroken:varennes:state`. The versioned learning session contains case/catalog compatibility metadata, support preferences, an optional teacher-approved alignment profile, and at most 256 typed observable event records. It contains no raw packet, student identity, model transcript, repair authority, or copied `CaseState`. A case-content mismatch invalidates the learning session without changing case-engine rules.
 
 The server remains authoritative for OpenAI calls, course-file processing, secret handling, and model-output validation. Model output never dispatches case commands directly.
 
@@ -237,13 +255,37 @@ Responsibilities:
 
 Responsibilities:
 
-- packet upload
-- size/type validation
-- ingestion call
-- alignment profile
-- teacher review
-- objective selection
-- packet-aware hints and reports
+- selection of two or three IDs from the three authored objectives
+- reviewed sample, pasted text, and UTF-8 TXT/Markdown inputs only
+- client bounds of 40,000 pasted characters or 64 KB per text file
+- server rate limiting before a 96,000-byte bounded JSON read
+- case, catalog, contract, prompt, request, source-type, and size validation
+- ephemeral segmentation into at most 64 segments of at most 800 characters
+- deterministic exact-term matching when no model is available or model output is invalid
+- strict GPT-5.6 output over reviewed IDs, existing segment IDs, exact terms, and bounded enums only
+- server authorization of every segment reference, term, excerpt, conflict, injection flag, and limitation
+- pending-review display and explicit teacher approval before persistence or student-facing use
+- packet-aware authored hints, evidence class-material references, objectives, and reporting
+- raw-packet non-retention
+
+PDF and DOCX are intentionally rejected by the public request schema. The secure first phase has no hardened binary-document extraction/OCR subsystem with page, embedded-object, decompression, external-reference, malformed-container, and temporary-artifact limits. Accepting only directly inspectable bounded UTF-8 text keeps the request and retained excerpts auditable.
+
+Exact server-authorized segments are a security and provenance requirement. The model can identify a reviewed concept and a server-created segment ID, but it cannot supply an authoritative excerpt. The server resolves that ID against its ephemeral segment map, requires the proposed packet term to be an exact case-sensitive substring, derives the short excerpt/reference, and drops any unresolved mapping. Because raw packet text is not retained, these authorized excerpts and the packet digest are the durable trace back to what the teacher reviewed.
+
+### Learning Supports And Reporting
+
+Responsibilities:
+
+- four-tier route-finding hint selection from deterministic `CaseState`
+- authored standard and reduced text for every hint
+- optional approved packet-term prefix; no generated hint prose
+- persistent standard/reduced reading, standard/reduced motion, and guided/challenge preferences
+- first-load reduced-motion default from `prefers-reduced-motion` when no compatible learning session exists
+- reduced-reading variants for the primer, character dialogue, Case Brief feedback, hints, and evidence descriptions
+- global animation/transition suppression, zero ambient residents, direct follow camera, and static repair context in reduced-motion mode
+- unchanged ordered repair commands, evidence access, scoring, and solution requirements in every support mode
+- deterministic teacher-report assembly from final validated case state, approved alignment, preferences, and typed observable events
+- printable formative UI with explicit teacher-review and non-inference boundaries
 
 ### Safety
 
@@ -271,6 +313,7 @@ data/cases/varennes/
   evidence.json
   branch-observations.json
   causal-graph.json
+  course-alignment.json
   hints.json
   rubric.json
   sources.json
@@ -321,21 +364,26 @@ Implemented GPT-5.6 responsibilities:
 - classify exact spans from the student's Case Brief against pinned evidence
 - select authored summary, rubric-reason, issue, and revision-template IDs
 - recommend non-authoritative rubric scores subject to lineage and coherence validation
+- select reviewed alignment objective/concept/boundary/injection/limitation IDs and existing packet segment IDs
+- copy an exact packet term from the named segment for later server authorization
 
-The model does not generate visible historical sentences. The server renders selected policy units after authorization. Teacher-packet vocabulary mapping, hint adaptation, and teacher-report narration remain planned Phase 4 work.
+The model does not generate visible historical sentences, hint prose, report narration, or packet excerpts. The server renders selected policy units after authorization, derives short class-material excerpts from exact server segments, and builds the teacher report deterministically. Hint adaptation is authored selection plus an optional approved packet term, not a model call.
 
 ## Teacher Packet Pipeline
 
-Status: planned; not yet implemented.
+Status: implemented for the secure text-first phase.
 
-1. Teacher uploads PDF/TXT/Markdown/DOCX or chooses sample packet.
-2. Server validates file type and size.
-3. File is treated as untrusted source data.
-4. Model extracts alignment profile only.
-5. Application validates mappings against allowed case concepts.
-6. Teacher reviews and confirms profile.
-7. Gameplay uses only the approved profile.
-8. Raw file is not retained unless explicitly required.
+1. Teacher chooses the reviewed sample, pastes up to 40,000 characters, or selects a UTF-8 TXT/Markdown file up to 64 KB.
+2. The browser reads text files as UTF-8 and sends versioned JSON; no uploaded binary document or server temporary file path is created.
+3. The route rate-limits before consuming the body, rejects incompatible case/catalog/contract versions, streams through a 96,000-byte cap, and clears app-owned mutable request buffers.
+4. The server normalizes and splits the transient text into numbered bounded segments.
+5. The reviewed sample bypasses the model. Arbitrary text uses GPT-5.6 when configured and deterministic exact-term matching otherwise; provider or validation failure also falls back deterministically.
+6. Model output is a strict plan of reviewed IDs, segment IDs, exact packet terms, and enums. Packet text is untrusted data, including instruction-like content.
+7. The server authorizes the plan against its exact segment map and closed catalog, derives short excerpts/reference labels, marks conflicts and ignored instructions, and emits a `pending_teacher_review` profile.
+8. The teacher reviews and explicitly approves or clears the profile. Only `teacher_approved` profiles are persisted and used.
+9. The learning-session envelope stores approved references and a packet digest, not the raw pasted text or file.
+
+PDF and DOCX remain unsupported until a separate hardened extraction/OCR design defines file-signature validation, page/object/decompression limits, external-resource handling, malformed-document behavior, temporary-artifact cleanup, and test coverage.
 
 Packet profile can include:
 
@@ -360,6 +408,13 @@ Packet profile cannot:
 Controls:
 
 - uploaded materials are untrusted
+- course-alignment request bodies are byte-bounded and rate-limited before parsing
+- public course-file types are restricted to UTF-8 TXT and Markdown; PDF/DOCX fail schema validation
+- alignment model output can name only reviewed catalog IDs and existing server-created segment IDs
+- packet terms must be exact case-sensitive substrings; the server, not the model, derives retained excerpts
+- instruction-like and authority-escalation text is recorded as ignored class data
+- only teacher-approved profiles can affect support and reporting
+- raw packet text and files are not persisted
 - student messages are untrusted
 - raw conversation is not trusted as state
 - model receives whitelisted facts
@@ -383,9 +438,10 @@ MVP privacy defaults:
 - no names or emails
 - no demographics
 - no student note upload
-- local persistence only unless explicitly changed
+- separate local case-state and learning-session persistence only unless explicitly changed
 - no cross-session memory
 - teacher report export controlled by teacher
+- no raw teacher packet persistence; only a digest and short approved references survive processing
 
 ## API Failure Fallback
 
@@ -395,6 +451,8 @@ Implemented fallbacks:
 
 - source-bounded authored character turns selected only when their evidence prerequisites fit the current request
 - deterministic hint library
+- reviewed sample alignment with no model call
+- deterministic exact-term alignment for supported teacher text when the key is absent or model output fails
 - no-score Case Brief feedback that preserves the student's text and deterministic status
 - deterministic repair eligibility independent of model availability
 - deterministic report
@@ -421,6 +479,8 @@ Unit tests:
 - provenance labels
 - hint selection
 - packet boundaries
+- learning-session compatibility and raw-packet exclusion
+- deterministic teacher-report construction
 
 Historical integrity tests:
 
@@ -456,3 +516,5 @@ End-to-end tests:
 - API failure fallback
 - refresh/resume
 - keyboard-only path
+
+Current Phase 4 evidence includes focused unit, integration, and historical-integrity coverage for schema closure, exact segment/term authorization, sample and no-key processing, instruction-like text, unsupported types and body limits, teacher approval, separate persistence, authored hint selection, and deterministic reporting. `tests/e2e/phase4-classroom.spec.ts` passes three focused browser tests: sample review/approval persists only the learning-session profile and leaves canonical case state unchanged while exposing four E3/E4/E5/E7 class-material connections; the 320 x 700 world HUD keeps Journal, route HUD, and top links inside the viewport without overlap; and all six historical-record controls retain distinct accessible names. Manual browser QA also found no overflow on `/teacher` at desktop or 390 x 844, a clean `/teacher/report`, and no application console errors; only existing Three/dependency deprecation warnings appeared. Existing full-case coverage exercises reduced-motion repair without a shortcut. The fresh integrated no-key gate passes warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and all 19 Playwright tests. Screen-reader-oriented, cross-route accessibility-equivalence, live-provider, and physical-Chromebook checks remain outstanding.

@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowRight, Check, CircleDashed, ExternalLink, FastForward, FileSearch, Route, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, CircleDashed, ExternalLink, FileSearch, Route, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 import { useCaseSession } from "@/components/case-session/case-session-provider";
+import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { loadVarennesReconstruction } from "@/lib/case-engine/load-reconstruction";
 
@@ -27,7 +28,11 @@ const repairActionCopy = {
 
 export function TimelineRepair() {
   const { state, ready, issue } = useCaseSession();
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [localReducedMotion, setLocalReducedMotion] = useState(false);
+  const courseAlignment = useOptionalCourseAlignment();
+  const reducedMotion = courseAlignment
+    ? courseAlignment.preferences.motionMode === "reduced"
+    : localReducedMotion;
 
   if (!ready) {
     return <main className={styles.gate} aria-busy="true"><p>Restoring the repair chamber.</p></main>;
@@ -92,7 +97,13 @@ export function TimelineRepair() {
       <header className={styles.masthead}>
         <Link href="/">History Unbroken</Link>
         <span>CASE 01 / TIMELINE REPAIR</span>
-        <label><input checked={reducedMotion} onChange={(event) => setReducedMotion(event.target.checked)} type="checkbox" />Reduced motion</label>
+        <label><input checked={reducedMotion} onChange={(event) => {
+          if (courseAlignment) {
+            courseAlignment.updatePreferences({ motionMode: event.target.checked ? "reduced" : "standard" });
+          } else {
+            setLocalReducedMotion(event.target.checked);
+          }
+        }} type="checkbox" />Reduced motion</label>
       </header>
 
       <section className={styles.intro}>
@@ -134,11 +145,11 @@ export function TimelineRepair() {
         </div>
 
         {reducedMotion && !sequenceComplete ? (
-          <section className={styles.reducedReview} aria-labelledby="repair-stage-heading">
+          <section className={styles.reducedReview} aria-label="Static reconstruction sequence">
             <div>
               <span className={styles.reconstructionLabel}>Reduced-motion reconstruction</span>
-              <h2 id="repair-stage-heading">Review the complete supported sequence.</h2>
-              <p>All six steps and their citations are shown together without animated progression.</p>
+              <h2>Review the complete supported sequence.</h2>
+              <p>The actions remain separate and must still be completed in order.</p>
             </div>
             <ol>
               {reconstruction.repairSteps.map((step) => (
@@ -149,17 +160,16 @@ export function TimelineRepair() {
                 </li>
               ))}
             </ol>
-            <button onClick={() => issue({ type: "review_repair_sequence" })} type="button">
-              <FastForward aria-hidden="true" />Mark reconstruction sequence reviewed
-            </button>
           </section>
-        ) : !sequenceComplete && currentStep ? (
+        ) : null}
+
+        {!sequenceComplete && currentStep ? (
           <section className={styles.activeStep} aria-labelledby="repair-stage-heading">
             <div>
               <span className={styles.reconstructionLabel}>Historical reconstruction</span>
               <h2 id="repair-stage-heading">{currentStep.title}</h2>
-              <p>{currentStep.statement}</p>
-              <div className={styles.sourceLinks}>{sourceLinks(currentStep.sourceIds)}</div>
+              {!reducedMotion ? <p>{currentStep.statement}</p> : null}
+              {!reducedMotion ? <div className={styles.sourceLinks}>{sourceLinks(currentStep.sourceIds)}</div> : null}
             </div>
             {requiredActions.length > 0 ? (
               <div className={styles.actionPanel}>

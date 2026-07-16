@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+html[data-motion-mode="reduced"] *,
+html[data-motion-mode="reduced"] *::before,
+html[data-motion-mode="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.001ms !important;
+}
+
 :root {
   --paper: #f4f2ec;
   --white: #fffefb;

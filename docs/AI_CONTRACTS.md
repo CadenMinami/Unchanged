@@ -13,15 +13,15 @@ No model output, rubric score, feedback status, or extracted span can unlock, bl
 | Character turn | Implemented for Drouet and Louis | Formative only |
 | Case Brief feedback | Implemented | Formative only |
 | Browser speech rendering | Implemented as an explicit local fallback | Presentation only |
-| Contract F: player transcription | Security contract implemented; provider route deferred to Task 12 | Presentation only |
-| Contract G: authorized speech | Security contract and ticket minting implemented; provider route deferred to Task 12 | Presentation only |
-| Course packet ingestion | Planned | Alignment only |
-| Hint adaptation | Planned | Selection from authored hints only |
-| Teacher report narration | Planned | Narrative over validated telemetry only |
+| Contract F: player transcription | Implemented with bounded recorder, route, provider adapter, and editable transcript | Presentation only |
+| Contract G: authorized speech | Implemented with exact-caption route, provider adapter, and browser fallback | Presentation only |
+| Contract C: course packet alignment | Implemented for sample, pasted text, and TXT/Markdown | Alignment only |
+| Contract D: hint adaptation | Implemented as deterministic selection from authored hints | Presentation/support only |
+| Contract E: teacher report | Implemented deterministically; no narration model | Formative reporting only |
 
 The Varennes civic station and Assembly reaction station are static dossiers. They do not call GPT-5.6.
 
-Current binding: AI contract `1.1.0`, media contract `1.0.0`, model policy `1.0.1`, case schema `1.0.0`, case content `1.0.3`, and state `1.2.0`. AI `1.1.0` is the only accepted active version; `1.0.0` requests receive a classified HTTP 409 before provider invocation. Character success and fallback envelopes now require top-level `speechAuthorization`, which is `null` without a usable server secret and signed when one is available. Case Brief responses do not carry speech authorization.
+Current binding: AI contract `1.1.0`, media contract `1.0.0`, course alignment/catalog `1.1.0`, course-alignment prompt `1.0.0`, learning session `1.0.0`, model policy `1.0.1`, case schema `1.0.0`, case content `1.0.3`, and state `1.2.0`. AI `1.1.0` is the only accepted active character/Case Brief version; `1.0.0` requests receive a classified HTTP 409 before provider invocation. Character success and fallback envelopes require top-level `speechAuthorization`, which is `null` without a usable server secret and signed when one is available. Case Brief responses do not carry speech authorization. Course alignment is independently versioned and rejects stale case or catalog versions before processing packet content.
 
 ### Browser Speech Exception
 
@@ -36,29 +36,25 @@ The implemented browser speech fallback is outside model authority and must sati
 - speech state is not persisted and cannot issue case commands
 - unsupported browsers and playback errors preserve the complete text path
 
-This exception is not the Contract G provider-speech pipeline. The existing browser adapter remains unchanged and may ignore the new authorization field. Provider-generated audio still requires the Task 12 route, provider service, cleanup, rate limiting, and explicit consent controls; none of those runtime surfaces exists yet.
+The browser adapter remains a deterministic fallback for Contract G and may ignore the authorization field. Provider-generated audio uses the implemented Task 12 route, provider service, cleanup, rate limiting, and explicit playback controls.
 
 ## Global Rules
 
 Every implemented model request:
 
 - runs from a Next.js server route
-- carries contract, case schema, case content, model policy, state, prompt, request, and state-revision metadata
-- uses strict Zod-backed Structured Outputs
-- treats student text as untrusted
-- is moderated before generation when `OPENAI_API_KEY` is configured
-- uses bounded input schemas
-- sends only the policy and evidence context needed for the task
+- uses a strict Zod-backed Structured Output
+- treats user-supplied text as untrusted data
+- uses bounded input schemas and sends only the reviewed catalog/policy context needed for the task
 - sets `store: false`
-- propagates request cancellation to moderation and generation
-- returns an ID-only or span-and-ID plan
-- is authorized against repository-owned policy after generation
-- fails closed to an honest deterministic fallback
-- returns `authority: "formative_only"` and `mutatesCaseState: false`
+- returns IDs, enums, and exact copied spans/terms rather than visible historical prose
+- is authorized against repository-owned policy or catalog data after generation
+- fails closed to an honest authored or deterministic fallback
+- cannot issue a reducer command or change historical, scoring, or repair authority
 
-The OpenAI SDK is configured with provider retries disabled. Each service performs at most one explicit retry after a classified transient failure. The provider timeout is ten seconds.
+Character and Case Brief requests additionally carry the full AI correlation tuple, moderate student text before generation when `OPENAI_API_KEY` is configured, propagate request cancellation, and perform at most one explicit retry after a classified transient failure. Course alignment instead carries course-alignment, prompt, catalog, case-content, and request versions; any provider or output failure falls back to deterministic exact-term matching without a retry. The OpenAI SDK disables provider retries, and the provider timeout is ten seconds.
 
-## Request Correlation
+## Character And Case Brief Request Correlation
 
 Implemented requests and responses include:
 
@@ -203,8 +199,12 @@ Missing keys, moderation flags, provider errors, timeouts, rate limits, aborts, 
 - Inspected evidence IDs: at most 8
 - Presented evidence IDs: at most 2
 - Case Brief argument: 2,400 characters
+- Pasted course text: 40,000 characters
+- TXT/Markdown file: 64 KB at the teacher UI and 64,000 decoded characters at the strict request schema
+- Course-alignment JSON body: 96,000 bytes while streaming
+- Course packet segmentation: at most 64 server-created segments of at most 800 characters each
 
-The UI and server schemas enforce the same text limits.
+The UI and server enforce complementary character and byte bounds; the server independently validates the strict decoded request shape.
 
 ### Rate Limiting
 
@@ -214,7 +214,7 @@ This is hackathon-level process-local protection. A multi-instance or production
 
 ### Failure Classification
 
-The services distinguish:
+The Character and Case Brief services distinguish:
 
 - missing API key
 - timeout
@@ -227,29 +227,67 @@ The services distinguish:
 
 Only timeout, connection, 408, 429, and 5xx-style failures are treated as transient. Non-transient 4xx errors and aborts are not retried.
 
-## Planned Contract C: Course Packet Ingestion
+Course alignment exposes only invalid request, payload-too-large, stale-version, and route-rate-limit errors. A missing key, provider failure, or invalid alignment plan is converted to the deterministic exact-term profile inside the service rather than exposed as a model failure.
 
-Course packet ingestion is not implemented. The approved future boundary remains:
+## Contract C: Course Packet Alignment
 
-- teacher material may align terminology, objectives, hints, and reporting
-- teacher material is untrusted class material, not historical ground truth
-- it may not add facts, change evidence, expand character knowledge, alter the solution, or define correctness
+Contract C is implemented for the reviewed sample, pasted text, and UTF-8 TXT/Markdown files. It is an alignment transform, not a historical-content or assessment transform.
 
-## Planned Contract D: Hint Adaptation
+### Supported Input And Retention
 
-Hint adaptation is not implemented. A future model may select from currently valid authored hint IDs and adapt reading level, but may not invent a clue or reveal a locked solution component.
+The public request accepts exactly:
 
-## Planned Contract E: Teacher Report
+- `{ kind: "sample" }`
+- titled pasted text up to 40,000 characters
+- titled `.txt` or `.md` content with MIME `text/plain` or `text/markdown`, originating from a file no larger than 64 KB
 
-AI-authored teacher-report narration is not implemented. A future report model may narrate validated telemetry and approved formative feedback, but may not recalculate repair status, invent student behavior, infer personal traits, or recommend high-stakes grading without teacher review.
+PDF and DOCX are intentionally unsupported in the secure first phase. The application does not yet provide hardened binary extraction/OCR with file-signature validation, page and embedded-object limits, decompression bounds, external-resource handling, malformed-container behavior, and temporary-artifact cleanup. The public schema therefore rejects those types rather than pretending to parse them safely.
+
+The route rate-limits before body consumption, requires `application/json`, rejects a declared or streamed body above 96,000 bytes, validates course-alignment/prompt/catalog/case/request versions, and clears app-owned mutable body buffers. Text is processed transiently. The application persists no raw pasted text or uploaded file. An approved profile retains only a SHA-256 packet digest, reviewed IDs, exact short terms/excerpts, references, limitations, and approval metadata.
+
+### Model Plan
+
+For arbitrary supported text, the server creates sequential `SEG-####` records of at most 800 characters and supplies only those bounded segments plus the closed alignment catalog. GPT-5.6 may return:
+
+- authored objective IDs paired with existing segment IDs
+- authored concept IDs paired with an existing segment ID, an exact case-sensitive `packetTerm`, and a bounded confidence enum
+- authored historical-boundary IDs and injection-kind enums paired with existing segment IDs
+- a bounded reading-support enum and authored limitation IDs
+
+The plan cannot contain facts, evidence IDs, source IDs, character knowledge, historical explanations, hint prose, scores, repair requirements, win conditions, or case state. Unknown properties or IDs fail strict schema validation.
+
+### Exact-Segment Server Authorization
+
+Exact server-authorized segments are mandatory. The server resolves every proposed segment ID against the transient segment map and verifies that `packetTerm` is an exact substring of that segment. It derives the retained excerpt and reference label itself and drops unresolved mappings. This prevents a model from fabricating packet quotations, citing text outside the bounded request, or converting packet instructions into authority. Because the raw packet is not retained, the exact short authorized excerpt plus segment/reference metadata is the auditable content the teacher approves.
+
+The resulting profile is always `authority: "alignment_only"`, `mutatesCaseState: false`, and `reviewStatus: "pending_teacher_review"`. The teacher must inspect mappings, conflicts, instruction-like text marked `ignored_as_data`, and limitations before the application can persist a `teacher_approved` profile. A reviewed sample requires no model; a missing key or provider/validation failure uses deterministic exact-term matching.
+
+Teacher material may align terminology, selected objectives, authored hint prefixes, class-material references, support preferences, and report emphasis. It may not add facts, change evidence, expand character knowledge, alter the causal graph or solution, define correctness, affect scoring, or change repair eligibility.
+
+## Contract D: Authored Hint Adaptation
+
+Hint adaptation is implemented without a model call. A pure selector chooses one of four authored route-finding hint IDs from deterministic inspected/comparison state. Each hint contains repository-authored standard and reduced-reading text plus an authored alignment-prefix template. If an approved profile has a mapping for the hint's reviewed concept ID, the renderer inserts only the approved exact packet term into that template.
+
+The ladder becomes more explicit as the student inspects the authored prerequisites and disappears after the supported comparison is recorded. It cannot introduce a new clue, skip a reducer gate, reveal content outside the four authored hints, or change repair eligibility. Viewing a hint records only a bounded `hint_viewed` event code and hint ID in the separate learning session.
+
+## Contract E: Deterministic Teacher Report
+
+The implemented teacher report does not call GPT-5.6. A pure builder reads:
+
+- validated current `CaseState`
+- an optional teacher-approved alignment profile
+- the three support preferences
+- bounded typed observable events from the separate learning session
+
+It emits completion status, final evidence/comparison/condition/causal-link counts, hint-use count, the student's recorded Case Brief, teacher-selected objective observations, approved packet references, and explicit teacher-review/AI boundaries. It does not reproduce raw packet text, recalculate an AI rubric, infer unobserved revision history, personality, ability, motivation, disability, emotion, belief, or future performance. It is a local printable formative artifact, not a secure grade record.
 
 ## Contract F: Player Transcription
 
-Contract F is implemented as strict provider-independent schemas and pure validation helpers. The transcription route, multipart parser, recorder, provider call, and transcript UI remain Task 12 work.
+Contract F is implemented as strict schemas, a bounded multipart route, a push-to-talk recorder, an OpenAI transcription provider, and an editable transcript UI.
 
 ### Correlation And Input
 
-Every request and response carries media contract `1.0.0`, case ID, generated station ID, request UUID, and nonnegative state revision. Audio metadata is constructed from the bytes the future server boundary actually receives rather than trusted client claims. It permits exactly one channel, at most decimal `2,000,000` audio bytes, and at most `20,000` milliseconds for both advisory and provider-detected duration.
+Every request and response carries media contract `1.0.0`, case ID, generated station ID, request UUID, and nonnegative state revision. Audio metadata is constructed from the bytes the server boundary actually receives rather than trusted client claims. It permits exactly one channel, at most decimal `2,000,000` audio bytes, and at most `20,000` milliseconds for both advisory and server-detected duration.
 
 Canonical MIME values are `audio/webm`, `audio/mp4`, `audio/ogg`, and `audio/wav`. A pure helper may convert a browser value such as `audio/webm; codecs=opus` to its canonical value before schema parsing. The schema itself accepts only canonical values, and declared/detected MIME disagreement fails closed.
 
@@ -265,11 +303,11 @@ The pure current-correlation check requires exact media version, case, station, 
 
 Failure reasons preserve the existing operational set of `missing_api_key`, `timeout`, `aborted`, `rate_limited`, and `provider_error`, plus invalid request/version, payload, duration, MIME, transcript, stale-correlation, and authorization failures. Timeout and rate-limit failures are transient. Provider errors are retryable only when separately classified transient. Abort and validation failures are never retryable.
 
-Task 12 must keep raw audio and full transcripts out of logs, enforce the byte limit while streaming before multipart parsing, and release every temporary byte buffer or file in a `finally` path after success, rejection, timeout, abort, or provider failure. No raw audio retention is authorized by this contract.
+The route keeps raw audio and full transcripts out of logs, enforces rate limits before body consumption, enforces the byte limit while streaming before multipart parsing, cancels aborted readers, and clears app-owned mutable byte buffers after success, rejection, timeout, abort, or provider failure. Platform `File` instances are immutable and cannot be zeroed; they are not retained beyond the request and remain subject to the platform lifecycle. No raw audio retention is authorized by this contract. The provider path uses `gpt-4o-transcribe` and JSON output.
 
 ## Contract G: Authorized Speech Synthesis
 
-Contract G is implemented as strict schemas, route-bound character authorization, and HMAC ticket verification. The speech endpoint, provider gateway, generated-audio response, and playback UI remain Task 12 work.
+Contract G is implemented as strict schemas, route-bound character authorization, HMAC ticket verification, an exact-caption speech endpoint, an OpenAI provider gateway, and explicit provider/browser playback UI.
 
 ### Trusted Mint Boundary
 
@@ -279,7 +317,7 @@ There is no ticket-mint endpoint and no application path that mints from client-
 
 ### Exact Text And Signature
 
-The logical app-owned voices are `drouet-source-v1` and `louis-source-v1`. Their station mapping is private server policy, not a provider voice name or a client choice. Task 12 may map those IDs to provider configuration without changing the public contract.
+The logical app-owned voices are `drouet-source-v1` and `louis-source-v1`. Their station mapping is private server policy, not a provider voice name or a client choice. The current server policy maps them to the provider's `cedar` and `marin` voices without exposing that choice as client authority.
 
 The ticket binds media version, case ID, generated station ID, original character request UUID, state revision, logical voice ID, SHA-256 of the exact UTF-8 visible caption, and integer expiry. Signing uses HMAC-SHA256 over a domain-separated, byte-length-prefixed canonical representation and emits an unpadded base64url signature. Verification decodes a canonical 32-byte signature and uses `timingSafeEqual` only after equal-length checks.
 
@@ -289,10 +327,12 @@ Speech-request parsing and verification do not trim or Unicode-normalize the cap
 
 Tickets expire after 120 seconds. Verification rejects expired tickets and tickets whose remaining lifetime exceeds that bound. Expiry limits replay but does not identify the browser's globally current interaction. Signed fields prevent tampering; the client must also run the current-correlation check against the active station, request, revision, and visible caption before playing returned audio. A station switch, superseding request, revision change, or caption change rejects stale playback.
 
-A successful future speech transform may return only correlated audio metadata, logical voice ID, and the authorized caption hash. It returns no new text, historical fact, source, evidence, score, command, CaseState, authority, or state transition. Generated audio is not application-persisted. Task 12 must redact caption/audio content from operational logs and clean temporary generated bytes on every completion path.
+A successful speech transform returns only WAV bytes plus correlated audio metadata, logical voice ID, and the authorized caption hash. It returns no new text, historical fact, source, evidence, score, command, CaseState, authority, or state transition. Generated audio is capped at 12 MB and is not application-persisted. Operational logs omit caption/audio content, and app-owned mutable provider and response buffers are cleared on every completion path. The default provider model is `gpt-4o-mini-tts`.
 
 ## Verification Boundary
 
-The current automated corpus covers station allowlists, evidence prerequisites, exact-span validation, one-lineage corroboration rejection, contradictory-status coherence, prompt injection, attempted solution leakage, moderation mapping, request cancellation, retry behavior, provider-error classification, rate limiting, no-key fallbacks, strict media limits, MIME mismatch, stale media correlation, exact-caption hashes, ticket expiry, signature tampering, route-only nullable/minted authorization, and legacy AI-contract rejection.
+The current automated corpus covers station allowlists, evidence prerequisites, exact-span validation, one-lineage corroboration rejection, contradictory-status coherence, prompt injection, attempted solution leakage, moderation mapping, request cancellation, retry behavior, provider-error classification, rate limiting, no-key fallbacks, strict media limits, MIME mismatch, stale media correlation, exact-caption hashes, ticket expiry, signature tampering, route-only nullable/minted authorization, legacy AI-contract rejection, alignment schema closure, exact segment/term authorization, sample and deterministic no-key alignment, instruction-like packet text, teacher approval, raw-packet exclusion from persistence, authored hint selection, and deterministic report construction.
 
-The source-bounded paths have not yet been verified against a live `OPENAI_API_KEY` in this repository session. No transcription or provider-speech route exists yet, so media verification is contract-level only. Until Task 12 and live smoke tests are recorded, documentation must distinguish schema, ticket, and fallback verification from provider verification.
+The source-bounded paths have not yet been verified against a live `OPENAI_API_KEY` in this repository session. Media handlers are integration-tested with injected provider adapters, and browser voice flows use deterministic network fixtures; neither is a live paid-provider smoke test. Documentation must continue to distinguish local contract/handler/browser verification from live OpenAI provider verification.
+
+Focused Phase 4 contract/component verification passes 11 unit/integration/historical test files and 42 tests. `tests/e2e/phase4-classroom.spec.ts` separately passes 3/3 focused production-browser tests covering sample review/approval into an unchanged canonical investigation, approved E3/E4/E5/E7 class-material connections, separate learning-session persistence, 320 x 700 world-HUD fit, and distinct accessible names for all six historical records. Manual desktop/mobile QA additionally covered `/teacher`, `/teacher/report`, and the 320 x 700 world controls without overflow, overlap, or application console errors; existing Three/dependency deprecation warnings remain. The fresh integrated no-key gate passes warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and all 19 Playwright tests. Screen-reader-oriented, cross-route accessibility-equivalence, live-provider, and physical-Chromebook verification remain open.

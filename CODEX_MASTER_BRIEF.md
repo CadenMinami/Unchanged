@@ -8,9 +8,9 @@ The project is an AI-powered historical mystery game. The player investigates a 
 
 ## Current Authorization
 
-Phase 0 was completed and explicitly approved on 14 July 2026. The deterministic case and first source-bounded GPT-5.6 layer are implemented. On 15 July 2026, the user approved the diegetic 3D investigation specification and its gated implementation plan. The current build authorization is the archive graybox and fail-closed spatial-contract sequence defined in `docs/superpowers/specs/2026-07-15-diegetic-3d-investigation-design.md` and `.Codex/plans/diegetic-3d-investigation-implementation.md`.
+Phase 0 was completed and explicitly approved on 14 July 2026. The deterministic case, source-bounded GPT-5.6 layer, staged voice path, archive graybox, bounded teacher alignment, accessibility preferences, authored hints, and deterministic teacher report are implemented in the working tree. On 15 July 2026, the user approved the diegetic 3D investigation specification and gated implementation plan; on 16 July 2026, the approved teacher-alignment phase was implemented and browser-tested. The current authorization is integrated hardening and Phase 5 polish. Do not restart completed phases or treat unchecked scratch-plan boxes as stronger authority than `AGENTS.md`, the versioned contracts, and the implemented tests.
 
-The existing non-spatial route remains complete and directly selectable. It is also the accessible DOM interaction layer for the spatial route. The historical case engine remains the only educational authority; the 3D runtime is presentation and navigation, not a second game-state system.
+The existing non-spatial route remains complete and directly selectable. It is also the accessible DOM interaction layer for the spatial route. The historical case engine remains the only educational authority; the 3D runtime is presentation and navigation, not a second game-state system. Teacher alignment is separately persisted support metadata and may never mutate case state, evidence, character knowledge, scoring, repair, or the solution.
 
 The "do not write application code" language below records the completed Phase 0 gate and is no longer the current stop condition. `AGENTS.md`, the approved 3D specification, the versioned case package, and `docs/REPAIR_GATE_TRACEABILITY.md` define current authority.
 
@@ -101,7 +101,7 @@ Add:
 
 ### Phase 4: Teacher Alignment and Accessibility
 
-Add:
+Implemented in the working tree:
 
 - sample course packet
 - teacher objective selection
@@ -112,6 +112,8 @@ Add:
 - reduced-motion mode
 - keyboard path
 - accessible labels
+
+The secure first course-material path supports the reviewed sample, pasted text, TXT, and Markdown. PDF and DOCX remain explicitly unsupported until a bounded binary extraction/OCR design can preserve exact server-authorized segment provenance and cleanup guarantees.
 
 ### Phase 5: Polish, Test, Deploy, and Demo
 
@@ -163,11 +165,12 @@ GPT-5.6 handles flexible language, perspective, adaptation, and reasoning feedba
 - character dialogue within a dossier
 - evidence-aware reactions
 - Socratic questions
-- reduced-reading adaptations
-- course-packet terminology mapping
+- selection among authored standard and reduced-reading units
+- course-packet concept/term mapping through reviewed IDs and exact server-created segment IDs
 - hypothesis parsing
 - rubric evaluation
-- narrative teacher-report comments
+
+The model does not write historical dialogue, hint prose, packet excerpts, or teacher-report narration directly. The server renders authorized authored units, derives short packet references from exact transient segments, and builds the teacher report deterministically from validated state and bounded observable events.
 
 Deterministic logic controls:
 

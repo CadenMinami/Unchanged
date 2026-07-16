@@ -1379,3 +1379,100 @@ The final production run reported:
 
 - Begin Task 12 with bounded push-to-talk transcription, exact-caption authorized speech, provider mocks, captions, mute/replay controls, and deterministic typed/browser-speech fallback.
 - No commit, push, deployment, purchase, publication, or live paid provider call occurred.
+
+## 2026-07-16 / 3D Gate Task 12 Staged Voice Runtime
+
+### Intent and decisions
+
+- Implemented optional staged voice without creating an unconstrained speech-to-speech character agent.
+- Preserved typed input and visible captions as the authoritative, always-available interaction path.
+- Kept all transcription and speech presentation-only: neither transform can add historical facts, become evidence, issue reducer commands, alter scores, or change repair eligibility.
+- Used the official current OpenAI media paths: `gpt-4o-transcribe` with JSON output and `gpt-4o-mini-tts` with WAV output. A live paid-provider call was not made.
+
+### What Codex implemented
+
+- Added explicit push-to-talk recording with a 20-second, decimal 2 MB, mono-audio boundary and browser MIME negotiation limited to provider-supported WebM, MP4, and WAV paths.
+- Added a bounded streaming multipart parser, independent server-side media inspection, MIME/duration/channel checks, and request rate limiting before body consumption.
+- Added `/api/ai/transcribe` and `/api/ai/speech` Node routes with strict media `1.0.0` response contracts, classified failure behavior, retries only for transient provider errors, and no-key fallbacks.
+- Added exact-caption provider speech behind the existing short-lived HMAC authorization, private logical-to-provider voice mapping, a 12 MB generated-WAV cap, and strict response-header correlation.
+- Added explicit play, stop/skip, and mute controls; visible synthetic-voice disclosure; deterministic browser-speech fallback; and stale response rejection.
+- Made transcripts editable before submission and ensured newer typed text supersedes an in-flight transcription instead of being overwritten by a late result.
+- Cleared every app-owned mutable media buffer after use, cancelled aborted readers, retained no raw audio or generated audio in application persistence, and kept captions, transcripts, and audio bytes out of operational logs.
+- Documented the unavoidable platform boundary honestly: immutable `File` instances cannot be zeroed, are not retained by the application, and follow the runtime's object lifecycle.
+
+### Test-driven and review checkpoints
+
+- Added provider contract tests for current OpenAI model IDs and formats.
+- Added route tests for pre-consumption rate limits, exact-caption ticket verification, media inspection, failure classification, log redaction, output caps, and mutable-buffer release.
+- Added recorder, multipart, voice-state, dialogue integration, and production-browser voice coverage, including microphone denial and editable transcription.
+- An independent audit found rate-limit ordering, output-size, abort-cleanup, and late-transcript hazards. Each actionable finding was corrected and protected by a regression test.
+- Focused media and dialogue verification passed 8 files and 81 tests. Fresh full verification passed 61 files and 455 tests, warning-free lint, typecheck, the production build, all 16 Playwright browser flows, and `git diff --check`.
+
+### Verification boundary and next checkpoint
+
+- Browser voice acceptance uses deterministic network fixtures, while real route handlers are exercised in integration tests with injected provider adapters. This layered coverage is not represented as a live OpenAI smoke test.
+- Task 12 is locally verified. A live OpenAI media smoke test and physical Chromebook check remain separate project-level gates.
+- No additional commit, push, deployment, publication, purchase, or live paid provider call occurred during this checkpoint.
+
+## 2026-07-16 / Phase 4 Teacher Alignment And Accessibility
+
+### Intent
+
+- Make the authored Varennes case assignable with teacher-selected classroom language and accessibility preferences while keeping historical truth, evidence, scoring, and repair authority unchanged.
+- Preserve a complete no-packet and no-key path, and keep the new learning/reporting data separate from deterministic `CaseState`.
+
+### What Codex proposed
+
+- A closed course-alignment catalog instead of open-ended teacher authoring.
+- A reviewed sample plus bounded arbitrary-text processing, explicit teacher confirmation, separate local learning-session persistence, authored packet-aware hints, and a deterministic report.
+- Exact segment references and short authorized excerpts so approved class-material connections remain auditable after raw input is discarded.
+
+### What the user decided
+
+- Phase 4 uses bounded ID-only alignment: model output may select reviewed IDs and exact terms tied to server-created segment IDs, but may not write new historical content or requirements.
+- A teacher must review the proposed mappings, conflicts, ignored instructions, and limitations before approval makes the profile active.
+- The secure first phase supports the reviewed sample, pasted text, and bounded UTF-8 TXT/Markdown files.
+- Raw packet content is not retained. Accessibility/reporting metadata persists in a learning-session envelope separate from case progress.
+- Hints remain an authored deterministic ladder, and the teacher report remains deterministic and teacher-reviewed rather than AI-narrated or automatically graded.
+
+### What was rejected or deferred
+
+- PDF and DOCX ingestion were rejected for this secure first phase. The repository has no hardened binary extraction/OCR boundary for file signatures, pages, embedded objects, decompression, external resources, malformed containers, or temporary-artifact cleanup.
+- Silent alignment activation, raw packet persistence, packet-created facts/evidence/character knowledge, packet-defined correctness, generated hint prose, AI-authored report narration, and report-based high-stakes grading were rejected.
+- A general teacher authoring platform, LMS/roster integration, authenticated cross-device reports, and tamper-resistant grade records remain outside the anonymous local MVP.
+
+### Why the decisions mattered
+
+- Exact server-authorized segments prevent the model from inventing quotations or citing text outside the bounded request. The server resolves every segment ID, verifies the term as an exact substring, and derives the retained excerpt/reference itself.
+- Restricting files to directly inspectable UTF-8 text makes byte limits, segmentation, cleanup, and retained references auditable without introducing an unreviewed document-parser attack surface.
+- Separating learning-session persistence from `CaseState` prevents teacher support metadata and observable events from becoming a second progression or repair authority.
+
+### What Codex implemented
+
+- Added course-alignment/catalog contract `1.1.0`, prompt contract `1.0.0`, learning-session contract `1.0.0`, three authored objectives, seven reviewed concepts, three historical boundaries, and a reviewed sample profile.
+- Added `/teacher` and `/api/ai/course-alignment` with sample, pasted-text, TXT, and Markdown paths; 40,000-character pasted-text, 64 KB file, and 96,000-byte streamed JSON bounds; pre-consumption rate limiting; version checks; and strict source schemas.
+- Added ephemeral packet segmentation, strict GPT-5.6 ID/segment plans when configured, deterministic exact-term fallback, exact-segment authorization, conflict/injection flags, limitations, packet digests, and `rawRetained: false`.
+- Added pending-review and teacher-approved states, explicit confirmation/clear actions, and persistence that excludes raw packet text and files.
+- Added a separate versioned learning session for approved alignment, reading/motion/guidance preferences, and at most 256 typed observable event records.
+- Added a four-tier authored route-finding hint ladder; approved packet terms can appear only through authored prefix templates.
+- Applied reduced-reading variants to primer, dialogue, Case Brief feedback, hints, and evidence details. Applied reduced motion to CSS timing, spatial ambient residents/camera behavior, and the repair presentation while preserving every reducer-owned repair action.
+- Added approved class-material references to spatial and non-spatial evidence surfaces and a printable `/teacher/report` built from validated case state, approved alignment, preferences, and bounded recorded events.
+
+### Verification completed
+
+- Focused Phase 4 verification passed 11 files and 42 tests across course-alignment contracts/services/routes/provider/setup, learning-session persistence, hint selection, deterministic reporting, and historical-authority checks.
+- Tests cover unknown-ID and authority rejection, exact sample excerpts, instruction-like packet text treated as data, stale versions, unsupported file types, body limits, approval before persistence/use, raw-packet exclusion, compatibility recovery, and report non-inference boundaries.
+- The user-recorded focused run of `tests/e2e/phase4-classroom.spec.ts` passed 3/3 in 9.5 seconds. A fresh documentation-checkpoint rerun also passed 3/3 in 11.1 seconds after `npm run typecheck` passed.
+- The focused browser flow proved that sample review and approval launch `/play`, persist the approved profile only in the separate learning-session envelope, leave canonical case state unchanged, and expose approved class-material connections on E3, E4, E5, and E7.
+- Focused Playwright also proved that the 320 x 700 world Journal/route HUD/top links fit without overlap and that all six historical-record controls keep distinct accessible names.
+- Manual browser QA found no overflow on `/teacher` at desktop or 390 x 844, rendered `/teacher/report` cleanly, and confirmed the 320 x 700 world controls remain stacked and inside the viewport.
+- The browser console showed no application errors. Existing Three/dependency deprecation warnings remained.
+
+### Verification boundary and next checkpoint
+
+- The focused teacher/classroom browser path, targeted layout QA, and full integrated no-key suite are complete.
+- Fresh integrated verification passed `git diff --check`, warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and all 19 Playwright browser tests.
+- A late lint review exposed incomplete full-tuple audio invalidation. A regression test first failed when `caseId` changed during playback, then passed after the effect was bound to every scalar correlation field without depending on object identity.
+- Pasted TXT/Markdown browser paths, aligned-hint browser acceptance, screen-reader-oriented checks, reduced-reading browser acceptance, cross-route accessibility equivalence, live OpenAI smoke tests, and physical Chromebook verification remain open.
+- This checkpoint records completed local Phase 4 implementation and integrated no-key verification, but it does not claim live-provider, production-classroom, deployment, or final submission readiness.
+- No commit, push, deployment, publication, purchase, or live paid provider call occurred.

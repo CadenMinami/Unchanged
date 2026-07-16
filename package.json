@@ -19,6 +19,7 @@
     "@react-three/rapier": "2.2.0",
     "ecctrl": "2.0.0",
     "lucide-react": "^0.468.0",
+    "music-metadata": "^11.14.0",
     "next": "^16.2.10",
     "openai": "^6.47.0",
     "react": "^19.2.7",

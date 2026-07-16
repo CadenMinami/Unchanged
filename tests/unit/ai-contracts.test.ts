@@ -126,7 +126,9 @@ describe("AI contracts", () => {
     expect(
       characterTurnResponseSchema.safeParse({ ...response, mutatesCaseState: true }).success,
     ).toBe(false);
-    const { speechAuthorization: _authorization, ...missingAuthorization } = response;
+    const missingAuthorization = Object.fromEntries(
+      Object.entries(response).filter(([key]) => key !== "speechAuthorization"),
+    );
     expect(characterTurnResponseSchema.safeParse(missingAuthorization).success).toBe(false);
 
     const authorizedResponse = {
@@ -162,8 +164,9 @@ describe("AI contracts", () => {
       retryable: false,
     };
     expect(characterTurnResponseSchema.safeParse(fallback).success).toBe(true);
-    const { speechAuthorization: _fallbackAuthorization, ...missingFallbackAuthorization } =
-      fallback;
+    const missingFallbackAuthorization = Object.fromEntries(
+      Object.entries(fallback).filter(([key]) => key !== "speechAuthorization"),
+    );
     expect(characterTurnResponseSchema.safeParse(missingFallbackAuthorization).success).toBe(
       false,
     );

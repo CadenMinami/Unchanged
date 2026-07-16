@@ -182,7 +182,9 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
   await expect(
     page.getByRole("dialog", { name: /conversation with drouet station/i }),
   ).toBeVisible();
-  await expect(page.getByRole("status")).toContainText(/cinematic/i);
+  await expect(
+    page.locator('section[role="status"]').filter({ hasText: /spatial archive/i }),
+  ).toContainText(/cinematic/i);
   await expect(page.getByText(/ai-directed dramatization is bounded/i)).toBeVisible();
   await expect(page.getByLabel(/choose source station/i)).toHaveCount(0);
   const evidenceSelect = page.getByLabel(/present inspected evidence/i);
@@ -198,7 +200,9 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
   await expect(page.getByRole("button", { name: /hear response/i })).toBeVisible();
 
   await page.getByRole("button", { name: /close conversation/i }).click();
-  await expect(page.getByRole("status")).toContainText(/exploring/i);
+  await expect(
+    page.locator('section[role="status"]').filter({ hasText: /spatial archive/i }),
+  ).toContainText(/exploring/i);
   await expect(drouetPrompt).toBeFocused();
 });
 
@@ -248,7 +252,9 @@ test("discovers the route by walking and fast travels without changing case auth
     .click();
 
   await expect(location).toContainText(/post-road square/i);
-  await expect(page.getByRole("status")).toContainText(/exploring/i);
+  await expect(
+    page.locator('section[role="status"]').filter({ hasText: /spatial archive/i }),
+  ).toContainText(/exploring/i);
   const caseRevisionAfter = await page.evaluate(() => {
     const saved = JSON.parse(
       window.localStorage.getItem("history-unbroken:varennes:state") ?? "null",

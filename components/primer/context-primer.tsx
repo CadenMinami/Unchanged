@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
 import { ProvenanceBadge } from "@/components/provenance/provenance-badge";
 import type { ContextPrimer, PrimerCard } from "@/schemas/context-primer";
 
@@ -45,7 +46,11 @@ function ContextVisual({ card }: { card: PrimerCard }) {
 
 export function ContextPrimerView({ primer, onComplete }: ContextPrimerViewProps) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [reducedReading, setReducedReading] = useState(false);
+  const [localReducedReading, setLocalReducedReading] = useState(false);
+  const courseAlignment = useOptionalCourseAlignment();
+  const reducedReading = courseAlignment
+    ? courseAlignment.preferences.readingMode === "reduced"
+    : localReducedReading;
   const titleRef = useRef<HTMLHeadingElement>(null);
   const card = primer.cards[activeIndex];
   const lastCard = activeIndex === primer.cards.length - 1;
@@ -101,7 +106,15 @@ export function ContextPrimerView({ primer, onComplete }: ContextPrimerViewProps
             <label>
               <input
                 checked={reducedReading}
-                onChange={(event) => setReducedReading(event.target.checked)}
+                onChange={(event) => {
+                  if (courseAlignment) {
+                    courseAlignment.updatePreferences({
+                      readingMode: event.target.checked ? "reduced" : "standard",
+                    });
+                  } else {
+                    setLocalReducedReading(event.target.checked);
+                  }
+                }}
                 type="checkbox"
               />
               Reduced reading

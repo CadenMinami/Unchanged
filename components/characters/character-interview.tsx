@@ -1,9 +1,16 @@
 "use client";
 
-import { Crown, LoaderCircle, Send, Square, UserRoundSearch, Volume2 } from "lucide-react";
+import { Crown, LoaderCircle, Send, UserRoundSearch } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { useCaseSession } from "@/components/case-session/case-session-provider";
+import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
+import { PushToTalkControl } from "@/components/world/dialogue/push-to-talk-control";
+import {
+  VoicedResponse,
+  type ProviderAudioAdapter,
+} from "@/components/world/dialogue/voiced-response";
+import { createBoundedAudioRecorder } from "@/lib/audio/recorder";
 import { AIRequestCoordinator } from "@/lib/openai/ai-request-coordinator";
 import { buildAIRequestMetadata } from "@/lib/openai/request-metadata";
 import {
@@ -55,19 +62,24 @@ function isAbortError(error: unknown): boolean {
 interface CharacterInterviewProps {
   lockedStationId?: StationId;
   speechAdapterFactory?: () => BrowserSpeechAdapter;
+  providerAudioFactory?: () => ProviderAudioAdapter;
+  recorderFactory?: typeof createBoundedAudioRecorder;
 }
 
 export function CharacterInterview({
   lockedStationId,
+  providerAudioFactory,
+  recorderFactory,
   speechAdapterFactory = createBrowserSpeechAdapter,
 }: CharacterInterviewProps = {}) {
   const { state } = useCaseSession();
+  const courseAlignment = useOptionalCourseAlignment();
   const coordinatorRef = useRef(new AIRequestCoordinator());
-  const speechAdapterRef = useRef<BrowserSpeechAdapter | null>(null);
-  const speechRequestRef = useRef(0);
   const [selectedStationId, setSelectedStationId] = useState<StationId>("CHAR-DROUET");
   const stationId = lockedStationId ?? selectedStationId;
   const [question, setQuestion] = useState("");
+  const [questionRevision, setQuestionRevision] = useState(0);
+  const questionRevisionRef = useRef(0);
   const [evidenceId, setEvidenceId] = useState("");
   const [result, setResult] = useState<{
     stateRevision: number;
@@ -84,9 +96,6 @@ export function CharacterInterview({
     stationId: StationId;
     message: string;
   } | null>(null);
-  const [speechStatus, setSpeechStatus] = useState<
-    "idle" | "speaking" | "unsupported" | "error"
-  >("idle");
 
   const inspectedEvidence = casePackage.evidence.filter(
     (item) =>
@@ -98,45 +107,14 @@ export function CharacterInterview({
     const coordinator = coordinatorRef.current;
     return () => {
       coordinator.invalidate();
-      speechRequestRef.current += 1;
-      speechAdapterRef.current?.cancel();
     };
   }, [state.revision, stationId]);
 
-  function stopSpeech() {
-    speechRequestRef.current += 1;
-    speechAdapterRef.current?.cancel();
-    setSpeechStatus("idle");
-  }
-
   function invalidateDraftResponse() {
-    stopSpeech();
     coordinatorRef.current.invalidate();
     setResult(null);
     setPendingRequest(null);
     setOperationalIssue(null);
-  }
-
-  async function speakResponse(text: string) {
-    const adapter = speechAdapterRef.current ?? speechAdapterFactory();
-    speechAdapterRef.current = adapter;
-    if (!adapter.isSupported()) {
-      setSpeechStatus("unsupported");
-      return;
-    }
-
-    const request = speechRequestRef.current + 1;
-    speechRequestRef.current = request;
-    setSpeechStatus("speaking");
-    const result = await adapter.speak(text);
-    if (speechRequestRef.current !== request) return;
-    setSpeechStatus(
-      result.status === "unsupported"
-        ? "unsupported"
-        : result.status === "error"
-          ? "error"
-          : "idle",
-    );
   }
 
   function chooseStation(nextStationId: StationId) {
@@ -154,7 +132,7 @@ export function CharacterInterview({
       playerMessage: question,
       inspectedEvidenceIds: inspectedEvidence.map((item) => item.id),
       presentedEvidenceIds: evidenceId ? [evidenceId] : [],
-      readingMode: "standard",
+      readingMode: courseAlignment?.preferences.readingMode ?? "standard",
     });
     const { signal } = coordinatorRef.current.begin(metadata);
 
@@ -272,11 +250,28 @@ export function CharacterInterview({
           maxLength={600}
           onChange={(event) => {
             invalidateDraftResponse();
+            questionRevisionRef.current += 1;
+            setQuestionRevision(questionRevisionRef.current);
             setQuestion(event.target.value);
           }}
           placeholder="Ask what this station observed, inferred, or cannot know."
           rows={4}
           value={question}
+        />
+
+        <PushToTalkControl
+          caseId={casePackage.caseId}
+          className={styles.pushToTalk}
+          draftRevision={questionRevision}
+          disabled={pending}
+          onTranscript={(transcript, startingDraftRevision) => {
+            if (startingDraftRevision !== questionRevisionRef.current) return;
+            invalidateDraftResponse();
+            setQuestion(transcript);
+          }}
+          recorderFactory={recorderFactory}
+          stateRevision={state.revision}
+          stationId={stationId}
         />
 
         <button disabled={pending || question.trim().length === 0} type="submit">
@@ -303,32 +298,22 @@ export function CharacterInterview({
             <span>{response.status === "ok" ? "GPT-5.6 directed" : "Authored fallback"}</span>
           </div>
           <blockquote>{response.turn.spokenResponse}</blockquote>
-          <div className={styles.speechControls}>
-            {speechStatus === "speaking" ? (
-              <button onClick={stopSpeech} type="button">
-                <Square aria-hidden="true" />
-                Stop voice
-              </button>
-            ) : (
-              <button
-                onClick={() => void speakResponse(response.turn.spokenResponse)}
-                type="button"
-              >
-                <Volume2 aria-hidden="true" />
-                Hear response
-              </button>
-            )}
-            <span className={styles.speechDisclosure}>
-              Synthetic browser voice, not {activeDetails.name.replace(" station", "")}&apos;s historical voice. The visible caption is the authoritative text of this dramatized, non-evidentiary response.
-            </span>
-            <span aria-live="polite">
-              {speechStatus === "unsupported"
-                ? "Voice playback is unavailable in this browser."
-                : speechStatus === "error"
-                  ? "Voice playback failed. The caption remains available."
-                  : "Voice playback is optional."}
-            </span>
-          </div>
+          <VoicedResponse
+            authorization={response.speechAuthorization}
+            caption={response.turn.spokenResponse}
+            className={styles.speechControls}
+            correlation={{
+              mediaVersion: "1.0.0",
+              caseId: response.caseId,
+              stationId,
+              requestId: response.requestId,
+              stateRevision: response.stateRevision,
+            }}
+            disclosureClassName={styles.speechDisclosure}
+            providerAudioFactory={providerAudioFactory}
+            speakerName={activeDetails.name.replace(" station", "")}
+            speechAdapterFactory={speechAdapterFactory}
+          />
           {response.turn.followUpQuestion ? <p>{response.turn.followUpQuestion}</p> : null}
           <dl>
             <div>

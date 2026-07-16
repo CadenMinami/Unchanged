@@ -184,6 +184,7 @@ export const caseBriefFeedbackRequestSchema = correlationSchema
   .extend({
     promptVersion: z.literal(CASE_BRIEF_PROMPT_VERSION),
     caseState: caseStateSchema,
+    readingMode: readingModeSchema.optional(),
   })
   .strict()
   .superRefine((value, context) => {

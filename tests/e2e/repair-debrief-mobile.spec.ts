@@ -66,7 +66,18 @@ test("repair and debrief complete at a 320px viewport", async ({ page }) => {
   await expectNoOverflow(page);
 
   await page.getByLabel("Reduced motion").check();
-  await page.getByRole("button", { name: "Mark reconstruction sequence reviewed" }).click();
+  for (const action of [
+    "Restore Varennes route information",
+    "Send the pursuit toward Varennes",
+    "Warn people in Varennes",
+    "Mobilize the local response",
+  ]) {
+    await page.getByRole("button", { name: action }).click();
+  }
+  await page.getByRole("button", { name: "Restore passage control" }).click();
+  await page.getByRole("button", { name: "Restore passport inspection" }).click();
+  await page.getByRole("button", { name: "Restore passage control and inspection" }).click();
+  await page.getByRole("button", { name: "Place the travelers under guard" }).click();
   await page.getByRole("button", { name: "Complete reconstruction" }).click();
   await page.getByRole("link", { name: "Open learning summary" }).click();
 

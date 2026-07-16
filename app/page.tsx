@@ -1,5 +1,7 @@
-import { ArrowRight, Clock3, FileSearch2 } from "lucide-react";
+import { ArrowRight, Clock3, FileSearch2, Settings2 } from "lucide-react";
 import Link from "next/link";
+
+import styles from "@/components/teacher/teacher-setup.module.css";
 
 export default function HomePage() {
   return (
@@ -41,10 +43,16 @@ export default function HomePage() {
             </div>
           </dl>
 
-          <Link className="primary-command" href="/play">
-            Begin investigation
-            <ArrowRight aria-hidden="true" />
-          </Link>
+          <div>
+            <Link className="primary-command" href="/play">
+              Begin investigation
+              <ArrowRight aria-hidden="true" />
+            </Link>
+            <Link className={styles.teacherEntry} href="/teacher">
+              <Settings2 aria-hidden="true" />
+              Teacher setup
+            </Link>
+          </div>
         </div>
 
         <aside className="case-entry__notice" aria-label="Historical authority notice">

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, BookOpenCheck, Check, ExternalLink, RotateCcw, ShieldCheck } from "lucide-react";
+import { ArrowRight, BookOpenCheck, Check, ExternalLink, FileText, RotateCcw, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 import { useCaseSession } from "@/components/case-session/case-session-provider";
@@ -74,7 +74,10 @@ export function LearningSummary() {
 
       <section className={styles.teacherBoundary}>
         <div><p className={styles.eyebrow}>Teacher review boundary</p><h2>Formative, not automatic grading.</h2><p>{reconstruction.debrief.teacherReviewBoundary}</p></div>
-        <Link href="/play" onClick={reset}>Start case again<RotateCcw aria-hidden="true" /></Link>
+        <div>
+          <Link href="/teacher/report">Open teacher report<FileText aria-hidden="true" /></Link>
+          <Link href="/play" onClick={reset}>Start case again<RotateCcw aria-hidden="true" /></Link>
+        </div>
       </section>
     </main>
   );

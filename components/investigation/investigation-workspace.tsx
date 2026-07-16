@@ -19,12 +19,16 @@ import Link from "next/link";
 
 import { useCaseSession } from "@/components/case-session/case-session-provider";
 import { CharacterInterview } from "@/components/characters/character-interview";
+import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
+import { HintDrawer } from "@/components/guidance/hint-drawer";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { isInvestigationComplete } from "@/lib/case-engine/selectors";
+import { loadVarennesAlignmentCatalog } from "@/lib/course-alignment/load-catalog";
 
 import styles from "./investigation-workspace.module.css";
 
 const casePackage = loadVarennesCase();
+const alignmentCatalog = loadVarennesAlignmentCatalog();
 
 const comparisonActions: Record<
   string,
@@ -56,6 +60,8 @@ function StatusMark({ complete }: { complete: boolean }) {
 
 export function InvestigationWorkspace() {
   const { state, ready, issue } = useCaseSession();
+  const courseAlignment = useOptionalCourseAlignment();
+  const reducedReading = courseAlignment?.preferences.readingMode === "reduced";
 
   if (!ready) {
     return (
@@ -87,15 +93,28 @@ export function InvestigationWorkspace() {
   const pinnedEvidence = new Set(state.pinnedEvidenceIds);
 
   function inspect(itemId: string) {
-    if (!inspected.has(itemId)) issue({ type: "inspect_item", itemId });
+    if (!inspected.has(itemId)) {
+      issue({ type: "inspect_item", itemId });
+      courseAlignment?.recordObservableEvent({
+        type: "evidence_inspected",
+        subjectId: itemId,
+      });
+    }
   }
 
   function togglePin(evidenceId: string) {
+    const pinning = !pinnedEvidence.has(evidenceId);
     issue(
-      pinnedEvidence.has(evidenceId)
+      !pinning
         ? { type: "unpin_evidence", evidenceId }
         : { type: "pin_evidence", evidenceId },
     );
+    if (pinning) {
+      courseAlignment?.recordObservableEvent({
+        type: "evidence_pinned",
+        subjectId: evidenceId,
+      });
+    }
   }
 
   function makeAnomalyDecision(comparisonId: string) {
@@ -125,7 +144,7 @@ export function InvestigationWorkspace() {
           </Link>
           <span className={styles.caseCode}>CASE 01 / INVESTIGATION</span>
         </div>
-        <div className={styles.progress} aria-label="Investigation progress">
+        <div className={styles.progress} aria-label="Investigation progress" aria-live="polite">
           <span>
             <b>{completedEvidence}</b>/6 records inspected
           </span>
@@ -152,6 +171,8 @@ export function InvestigationWorkspace() {
           <span>VARENNES</span>
         </div>
       </section>
+
+      <HintDrawer />
 
       <div className={styles.layout}>
         <aside className={styles.stations} aria-labelledby="stations-heading">
@@ -233,6 +254,7 @@ export function InvestigationWorkspace() {
                     <p>{anomaly.summary}</p>
                     <div className={styles.cardActions}>
                       <button
+                        aria-label={`${inspected.has(anomaly.id) ? "Inspected" : "Inspect"} ${anomaly.title} (${anomaly.id})`}
                         className={styles.inspectButton}
                         data-testid={`inspect-${anomaly.id}`}
                         onClick={() => inspect(anomaly.id)}
@@ -282,6 +304,7 @@ export function InvestigationWorkspace() {
                   <h4>{observation.title}</h4>
                   <p>{observation.content}</p>
                   <button
+                    aria-label={`${inspected.has(observation.id) ? "Inspected" : "Inspect"} ${observation.title} (${observation.id})`}
                     className={styles.inspectButton}
                     data-testid={`inspect-${observation.id}`}
                     onClick={() => inspect(observation.id)}
@@ -307,6 +330,18 @@ export function InvestigationWorkspace() {
               {casePackage.evidence.map((evidence) => {
                 const isInspected = inspected.has(evidence.id);
                 const isPinned = pinnedEvidence.has(evidence.id);
+                const classConnections = courseAlignment?.approvedAlignment
+                  ? courseAlignment.approvedAlignment.profile.conceptMappings.filter(
+                      (mapping) => {
+                        const concept = alignmentCatalog.concepts.find(
+                          (candidate) => candidate.id === mapping.conceptId,
+                        );
+                        return concept?.caseFactIds.some((factId) =>
+                          evidence.factIds.includes(factId),
+                        );
+                      },
+                    )
+                  : [];
                 return (
                   <article className={styles.evidenceRecord} key={evidence.id}>
                     <div className={styles.evidenceBody}>
@@ -318,10 +353,28 @@ export function InvestigationWorkspace() {
                       </div>
                       <h4>{evidence.title}</h4>
                       <blockquote>{evidence.studentExcerpt}</blockquote>
-                      <p>{evidence.description}</p>
+                      {reducedReading ? (
+                        <details className={styles.sourceLimit}>
+                          <summary>Source limit</summary>
+                          <p>{evidence.description}</p>
+                        </details>
+                      ) : (
+                        <p>{evidence.description}</p>
+                      )}
+                      {classConnections.length > 0 ? (
+                        <aside className={styles.classConnection} aria-label="Class material connection">
+                          <strong>Class material</strong>
+                          {classConnections.slice(0, 2).map((mapping) => (
+                            <span key={`${evidence.id}-${mapping.conceptId}`}>
+                              {mapping.packetTerm} / {mapping.referenceLabel}
+                            </span>
+                          ))}
+                        </aside>
+                      ) : null}
                     </div>
                     <div className={styles.evidenceActions}>
                       <button
+                        aria-label={`${isInspected ? "Inspected" : "Inspect source"} ${evidence.title} (${evidence.id})`}
                         className={styles.inspectButton}
                         data-testid={`inspect-${evidence.id}`}
                         onClick={() => inspect(evidence.id)}

@@ -33,6 +33,7 @@ interface InvestigatorControllerProps {
   enabled: boolean;
   initialPosition: [number, number, number];
   onPositionChange?: (position: [number, number, number]) => void;
+  reducedMotion?: boolean;
 }
 
 export function InvestigatorController({
@@ -40,6 +41,7 @@ export function InvestigatorController({
   enabled,
   initialPosition,
   onPositionChange,
+  reducedMotion = false,
 }: InvestigatorControllerProps) {
   const lastPositionSampleAt = useRef(Number.NEGATIVE_INFINITY);
 
@@ -102,7 +104,7 @@ export function InvestigatorController({
       >
         <InvestigatorModel />
       </Ecctrl>
-      <FollowCamera controllerRef={controllerRef} enabled={enabled} />
+      <FollowCamera controllerRef={controllerRef} enabled={enabled} reducedMotion={reducedMotion} />
     </KeyboardControls>
   );
 }

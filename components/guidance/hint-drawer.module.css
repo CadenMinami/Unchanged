@@ -1,0 +1,61 @@
+.drawer {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 18px;
+}
+
+.drawer > button,
+.drawer > div {
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.drawer > button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 13px;
+  color: var(--ink);
+}
+
+.drawer[data-guidance="challenge"] > button {
+  color: var(--graphite);
+  border-style: dashed;
+}
+
+.drawer > div {
+  position: relative;
+  padding: 14px 48px 14px 16px;
+  border-left: 3px solid var(--ochre);
+}
+
+.drawer > div > div {
+  display: flex;
+  gap: 12px;
+  color: var(--graphite);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.drawer p {
+  margin: 8px 0 0;
+  max-width: 78ch;
+  line-height: 1.55;
+}
+
+.drawer > div > button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.drawer svg {
+  width: 17px;
+  height: 17px;
+}

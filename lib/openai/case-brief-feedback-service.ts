@@ -157,7 +157,7 @@ function renderFeedback(
   plan: CaseBriefFeedbackPlan,
   policy: ModelPolicy,
 ) {
-  const textKey = "standard" as const;
+  const textKey = request.readingMode ?? "standard";
   const summary = policy.feedbackUnits.summaryTemplates.find(
     (unit) => unit.summaryTemplateId === plan.summaryTemplateId,
   );

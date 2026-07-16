@@ -9,9 +9,10 @@ import { Vector3 } from "three";
 interface FollowCameraProps {
   controllerRef: RefObject<EcctrlHandle | null>;
   enabled: boolean;
+  reducedMotion?: boolean;
 }
 
-export function FollowCamera({ controllerRef, enabled }: FollowCameraProps) {
+export function FollowCamera({ controllerRef, enabled, reducedMotion = false }: FollowCameraProps) {
   const { camera } = useThree();
   const target = useRef(new Vector3());
   const desiredPosition = useRef(new Vector3());
@@ -24,8 +25,12 @@ export function FollowCamera({ controllerRef, enabled }: FollowCameraProps) {
     target.current.y += 1.05;
     desiredPosition.current.copy(target.current).add(cameraOffset.current);
 
-    const damping = 1 - Math.exp(-deltaSeconds * 5.2);
-    camera.position.lerp(desiredPosition.current, damping);
+    if (reducedMotion) {
+      camera.position.copy(desiredPosition.current);
+    } else {
+      const damping = 1 - Math.exp(-deltaSeconds * 5.2);
+      camera.position.lerp(desiredPosition.current, damping);
+    }
     camera.lookAt(target.current);
   });
 

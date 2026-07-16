@@ -8,6 +8,7 @@ import {
 import {
   MAX_AUDIO_BYTES,
   MAX_AUDIO_DURATION_MS,
+  MAX_SPEECH_AUDIO_BYTES,
   MAX_SPEECH_CAPTION_CHARACTERS,
   MAX_TRANSCRIPT_CHARACTERS,
   MEDIA_CONTRACT_VERSION,
@@ -141,6 +142,22 @@ describe("media contracts", () => {
       authorizedSpeechRequestSchema.safeParse({
         ...authorizedSpeechRequest,
         caption: "x".repeat(MAX_SPEECH_CAPTION_CHARACTERS + 1),
+      }).success,
+    ).toBe(false);
+  });
+
+  it("caps successful provider speech metadata at twelve decimal megabytes", () => {
+    expect(MAX_SPEECH_AUDIO_BYTES).toBe(12_000_000);
+    expect(
+      authorizedSpeechResponseSchema.safeParse({
+        ...authorizedSpeechResponse,
+        audioByteLength: MAX_SPEECH_AUDIO_BYTES,
+      }).success,
+    ).toBe(true);
+    expect(
+      authorizedSpeechResponseSchema.safeParse({
+        ...authorizedSpeechResponse,
+        audioByteLength: MAX_SPEECH_AUDIO_BYTES + 1,
       }).success,
     ).toBe(false);
   });
