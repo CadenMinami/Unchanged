@@ -203,6 +203,10 @@ The prose length and wording are not repair gates. Deterministic eligibility rea
 
 After identifying the active anomaly, the player restores the supported route information, sends the warning to Varennes, and places local mobilization, blocked-onward-passage, passport-inspection, and guarded-detention nodes. Blocked passage and passport inspection branch from collective local action; either may be restored first, and both reducer-owned actions must be present before the authored joint-response step completes. Both links into detention use the cautious `contributed_to` verb and display their authored-reconstruction limitation. This requirement represents the collective response in the reconstruction; the records do not prove either action or their pair as a strict but-for cause. The two rejected anomaly candidates remain visible as unsupported alternatives.
 
+In standard motion, the student guides a schematic paired pursuit trace between bounded checkpoints by controlling pace and lateral steering. Travel cannot skip the next checkpoint, cannot fail, and does not affect correctness or score. The controls do not cast the student as Drouet or claim exact geography, timing, distance, route, or actor ownership. Each reached checkpoint exposes only the current reducer-owned action. The fictional branch visibly terminates at `UNKNOWN`; no alternate France is simulated.
+
+Reduced motion and failed WebGL capability use the same canonical reconstruction data and granular reducer commands in a stepped DOM presentation. No mode may atomically complete or review the repair sequence.
+
 ### Reconstructed Timeline
 
 Two tracks rebuild:
@@ -326,7 +330,7 @@ Implemented Phase 4 behavior:
 - reduced-reading preference persists independently of case state and selects authored shorter primer, character-response, feedback, and hint variants
 - reduced-reading evidence surfaces retain the authoritative excerpt while moving longer source limitations behind an accessible disclosure
 - reduced-motion preference persists independently of case state, honors the operating-system preference on first compatible load, suppresses CSS animation/transition timing, removes ambient 3D residents, and uses a direct follow camera
-- reduced-motion repair shows the complete static reconstruction sequence while preserving every ordered reducer-owned repair action; it does not provide a progression shortcut
+- reduced-motion repair shows the complete static reconstruction sequence while preserving every ordered reducer-owned repair action and both order-independent local actions; it does not provide a progression shortcut
 - keyboard-operable teacher controls, semantic review/report sections, live progress status, and explicit labels for investigation actions
 - glossary support, color-independent state, no timed decision gate, visible dialogue captions, optional audio, and responsive text sizing remain available
 

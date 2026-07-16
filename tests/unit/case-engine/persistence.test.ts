@@ -117,7 +117,19 @@ describe("case-state persistence", () => {
     expect(repairedPhase.recovered).toBe(false);
     expect(repairedPhase.state.phase).toBe("repair");
 
-    state = issue(state, { type: "review_repair_sequence" });
+    for (const stepId of repairStepIds) {
+      if (stepId === "RS-05-OBSTRUCTION") {
+        state = issue(state, {
+          type: "complete_repair_action",
+          actionId: "RA-05-OBSTRUCTION",
+        });
+        state = issue(state, {
+          type: "complete_repair_action",
+          actionId: "RA-05-PASSPORT",
+        });
+      }
+      state = issue(state, { type: "complete_repair_step", stepId });
+    }
     expect(state.completedRepairActionIds).toEqual([
       "RA-05-OBSTRUCTION",
       "RA-05-PASSPORT",

@@ -32,7 +32,7 @@ describe("scene manifest", () => {
     const manifest = loadVarennesSceneManifest();
 
     expect(manifest).toMatchObject({
-      sceneManifestVersion: "1.0.0",
+      sceneManifestVersion: "1.1.0",
       caseId: casePackage.caseId,
       caseVersion: casePackage.caseVersion,
       modelPolicyVersion: modelPolicy.policyVersion,
@@ -43,6 +43,9 @@ describe("scene manifest", () => {
       "royal-lodging-civic-area",
       "bridge-approach",
     ]);
+    expect(manifest.repairPath.checkpoints).toHaveLength(
+      reconstruction.repairSteps.length,
+    );
     expect(() => validate(manifest)).not.toThrow();
   });
 
@@ -108,6 +111,25 @@ describe("scene manifest", () => {
     }
     checkpoint.canonicalTarget.repairCheckpointId = "RS-UNKNOWN";
     expect(() => validate(checkpointManifest)).toThrow(/RS-UNKNOWN/i);
+
+    const pursuitManifest = structuredClone(loadVarennesSceneManifest());
+    Object.assign(pursuitManifest.repairPath.checkpoints[0]!, {
+      repairStepId: "RS-UNKNOWN",
+    });
+    expect(sceneManifestSchema.safeParse(pursuitManifest).success).toBe(false);
+  });
+
+  it("rejects reordered or duplicate pursuit checkpoints and local actions", () => {
+    const reordered = structuredClone(loadVarennesSceneManifest());
+    const first = reordered.repairPath.checkpoints[0]!;
+    reordered.repairPath.checkpoints[0] = reordered.repairPath.checkpoints[1]!;
+    reordered.repairPath.checkpoints[1] = first;
+    expect(sceneManifestSchema.safeParse(reordered).success).toBe(false);
+
+    const duplicateAction = structuredClone(loadVarennesSceneManifest());
+    duplicateAction.repairPath.localActions[1]!.repairActionId =
+      duplicateAction.repairPath.localActions[0]!.repairActionId;
+    expect(sceneManifestSchema.safeParse(duplicateAction).success).toBe(false);
   });
 
   it("rejects a valid evidence target paired with another record's provenance", () => {

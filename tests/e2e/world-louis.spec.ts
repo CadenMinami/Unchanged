@@ -37,7 +37,7 @@ test("questions Louis from E1 without changing case authority", async ({ page })
     spatialSessionVersion: "1.0.0",
     caseId: "varennes",
     caseVersion: "1.0.3",
-    sceneManifestVersion: "1.0.0",
+    sceneManifestVersion: "1.1.0",
     mode: "spatial",
     lastSafeSpawn: {
       zoneId: "royal-lodging-civic-area",

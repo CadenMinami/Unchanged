@@ -51,7 +51,7 @@ The deterministic command path, spatial path, model path, and teacher-alignment 
 | Case state | `1.2.0` |
 | Persistence envelope | `1.2.0` |
 | Reconstruction companion | `1.1.0` |
-| Scene manifest | `1.0.0` |
+| Scene manifest | `1.1.0` |
 | Spatial session | `1.0.0` |
 | Model policy | `1.0.1` |
 | AI contract | `1.1.0` |
@@ -159,13 +159,23 @@ Responsibilities:
 - discarded spatial state after any version mismatch, removed zone, or removed spawn without touching deterministic case progress
 - ambient lines that are always dramatization, non-evidentiary, and progression-neutral
 
-The current district renders exactly four player-facing zones: archive antechamber, post-road square, royal lodging and civic area, and bridge approach. Drouet and Louis are the only rendered, proximity-eligible generated stations. The repair checkpoint remains a reserved manifest binding until its implementation gate passes.
+The current district renders exactly four player-facing zones: archive antechamber, post-road square, royal lodging and civic area, and bridge approach. Drouet and Louis are the only rendered, proximity-eligible generated stations. The repair route uses a separately versioned manifest path whose ordered checkpoints bind to the existing reconstruction IDs; it does not add historical facts or a second repair state.
 
 Walking discovery resolves only against the four active zone IDs and each zone's authored safe spawn. The latest safe spawn and discovered-zone set are persisted in the spatial envelope. Fast travel is available only after a valid first visit and only where the manifest declares `first_valid_visit`; it remounts the controller at the authored spawn and cannot issue a case reducer command. The same authorization permits returning to the current district's safe point after discovery, which provides navigation recovery without bypassing first-visit travel.
 
 The route journal is a semantic DOM dialog over the world. It displays a schematic, not-to-scale navigation diagram rather than historical geography or chronology. Its E6A/E6B/E6C anomaly candidates and FO1/FO2/FO3 branch observations have equal presentation weight and can be inspected only through the existing deterministic reducer. The journal has no model call path. Off, subtle, and guided objective settings are player-selected and persist only in the spatial envelope.
 
 Static civic and Assembly stations are fixed dossiers with no free-form model input. E5 and E7 become inspected only after an explicit player action. The Assembly copy identifies its position as situated political interpretation rather than national consensus. Anonymous ambient residents use deterministic placements and captions, and every caption is labeled as authored dramatization rather than testimony or evidence.
+
+### Guided Pursuit Repair
+
+The standard-motion repair renders a compact third-person pursuit trace on `/play/repair`. W/Up advances, S/Down eases back, A/D or Left/Right steers inside the authored corridor, and Shift changes presentation pace. The runtime clamps movement between the last completed reducer checkpoint and the next available checkpoint. Movement speed, steering, spacing, checkpoint positions, local-action markers, camera behavior, and the paired embodiment are all `RECONSTRUCTION_ONLY`, explicitly not to scale, and never become evidence, scoring input, or persisted case state.
+
+At a reached checkpoint the runtime may request only `complete_repair_step`. At the parallel local-response checkpoint it may instead request either `complete_repair_action` first; the reducer requires both actions before accepting the joint step and the later guarded-detention step. The old atomic `review_repair_sequence` command has been removed, so standard, reduced-motion, and direct non-WebGL routes share the same granular reducer commands. Visible links into detention remain `contributed_to`, with the limitation that the records do not prove either local action or their pair as necessary or sufficient.
+
+Refresh resumes at the last completed reducer checkpoint rather than persisting transient path position. The counterfactual branch ends at the manifest-owned `UNKNOWN` boundary after the carriage passes Varennes. Reduced motion replaces the canvas with a source-linked stepped DOM sequence; a failed WebGL capability check, renderer error, or active context loss exposes direct controls for the same current step and actions. Graphics-failure state lives above checkpoint-local motion state, so direct fallback persists for the remainder of the repair. The Canvas stays mounted while motion refs reset between checkpoints, avoiding repeated renderer and graphics-context creation. Held input is cleared on step changes, blur, visibility loss, renderer failure, and unmount.
+
+The repair shell loads the standard-motion pursuit through a client-only `next/dynamic` boundary. An initially reduced-motion session therefore keeps the Three.js/R3F runtime outside its executed path; the deterministic DOM sequence, case state, and completion authority do not depend on the spatial chunk.
 
 ### Spatial Presentation Resilience
 

@@ -4,6 +4,7 @@ import { Component, type ReactNode } from "react";
 
 interface WorldErrorBoundaryProps {
   children: ReactNode;
+  onError?: () => void;
   renderFallback: (retry: () => void) => ReactNode;
   resetKey: number;
 }
@@ -24,6 +25,7 @@ export class WorldErrorBoundary extends Component<
 
   componentDidCatch() {
     // The fallback is intentionally local; no student data is sent to a logger.
+    this.props.onError?.();
   }
 
   componentDidUpdate(previousProps: WorldErrorBoundaryProps) {

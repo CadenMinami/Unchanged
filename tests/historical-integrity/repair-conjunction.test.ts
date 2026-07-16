@@ -56,4 +56,18 @@ describe("collective detention reconstruction", () => {
       /historically necessary|historically sufficient|bridge.*arrested/i,
     );
   });
+
+  it("keeps the pursuit wording inside the approved report and reconstruction limits", () => {
+    const reconstruction = loadVarennesReconstruction();
+    const pursuitStep = reconstruction.repairSteps.find(
+      (step) => step.id === "RS-02-PURSUIT",
+    );
+    const combinedCopy = reconstruction.repairSteps
+      .map((step) => `${step.title} ${step.actionLabel} ${step.statement}`)
+      .join(" ");
+
+    expect(pursuitStep?.statement).toMatch(/by side roads toward Varennes/i);
+    expect(combinedCopy).not.toMatch(/shorter road|necessary|sufficient|single-handed/i);
+    expect(combinedCopy).not.toMatch(/bridge (?:arrested|captured|stopped) (?:the )?(?:king|travelers)/i);
+  });
 });

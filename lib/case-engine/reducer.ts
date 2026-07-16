@@ -94,7 +94,6 @@ export function reduceCase(
     [
       "complete_repair_action",
       "complete_repair_step",
-      "review_repair_sequence",
       "complete_repair",
     ].includes(command.type) &&
     state.phase !== "repair"
@@ -327,15 +326,6 @@ export function reduceCase(
         completedRepairStepIds: [...state.completedRepairStepIds, command.stepId],
       });
     }
-
-    case "review_repair_sequence":
-      if (!getRepairEligibility(casePackage, state).eligible) {
-        return reject(state, "repair-not-eligible");
-      }
-      return applyCommand(state, command.commandId, {
-        completedRepairActionIds: [...repairActionIds],
-        completedRepairStepIds: [...repairStepIds],
-      });
 
     case "complete_repair": {
       if (!getRepairEligibility(casePackage, state).eligible) {

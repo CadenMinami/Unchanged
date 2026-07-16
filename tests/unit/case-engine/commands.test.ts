@@ -35,4 +35,14 @@ describe("case commands", () => {
       }).success,
     ).toBe(false);
   });
+
+  it("rejects an atomic repair-sequence shortcut", () => {
+    expect(
+      caseCommandSchema.safeParse({
+        type: "review_repair_sequence",
+        commandId: "bypass-repair-sequence",
+        expectedRevision: 12,
+      }).success,
+    ).toBe(false);
+  });
 });

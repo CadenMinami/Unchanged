@@ -22,7 +22,7 @@
       "sequence": 2,
       "title": "Redirect the pursuit",
       "actionLabel": "Send the pursuit toward Varennes",
-      "statement": "In Drouet's report, the route information enabled him and Guillaume to take a shorter road toward Varennes.",
+      "statement": "In Drouet's report, the route information enabled him and Guillaume to travel by side roads toward Varennes.",
       "nodeIds": ["NODE-PURSUIT"],
       "edgeIds": ["EDGE-ROUTE-PURSUIT"],
       "requiredActionIds": [],

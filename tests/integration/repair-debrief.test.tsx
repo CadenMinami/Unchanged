@@ -75,7 +75,7 @@ describe("repair and debrief", () => {
         await user.click(screen.getByRole("button", { name: /restore passage control/i }));
         await user.click(screen.getByRole("button", { name: /restore passport inspection/i }));
       }
-      await user.click(screen.getByRole("button", { name: step.actionLabel }));
+      await user.click(await screen.findByRole("button", { name: step.actionLabel }));
     }
 
     expect(screen.getAllByText("Bounded historical observation")).toHaveLength(
@@ -98,7 +98,7 @@ describe("repair and debrief", () => {
 
     expect(screen.getByRole("status")).toHaveTextContent(/step 1 of 6/i);
     await user.click(
-      screen.getByRole("button", { name: reconstruction.repairSteps[0].actionLabel }),
+      await screen.findByRole("button", { name: reconstruction.repairSteps[0].actionLabel }),
     );
     expect(screen.getByRole("status")).toHaveTextContent(/step 2 of 6/i);
   });
@@ -112,7 +112,7 @@ describe("repair and debrief", () => {
     );
 
     for (const step of reconstruction.repairSteps.slice(0, 4)) {
-      await user.click(screen.getByRole("button", { name: step.actionLabel }));
+      await user.click(await screen.findByRole("button", { name: step.actionLabel }));
     }
 
     await user.click(screen.getByRole("button", { name: /restore passport inspection/i }));
@@ -144,7 +144,7 @@ describe("repair and debrief", () => {
     );
   });
 
-  it("resumes at the next source-linked repair step after persisted progress", () => {
+  it("resumes at the next source-linked repair step after persisted progress", async () => {
     const state = {
       ...eligibleState(),
       completedRepairStepIds: [...repairStepIds.slice(0, 2)],
@@ -157,7 +157,7 @@ describe("repair and debrief", () => {
 
     expect(screen.getByText(reconstruction.repairSteps[2].statement)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: reconstruction.repairSteps[2].actionLabel }),
+      await screen.findByRole("button", { name: reconstruction.repairSteps[2].actionLabel }),
     ).toBeInTheDocument();
   });
 

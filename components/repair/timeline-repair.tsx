@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight, Check, CircleDashed, ExternalLink, FileSearch, Route, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, CircleDashed, ExternalLink, ShieldCheck } from "lucide-react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -8,23 +9,30 @@ import { useCaseSession } from "@/components/case-session/case-session-provider"
 import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { loadVarennesReconstruction } from "@/lib/case-engine/load-reconstruction";
+import { ReducedMotionRepair } from "@/components/world/repair/reduced-motion-repair";
 
 import styles from "./timeline-repair.module.css";
 
 const casePackage = loadVarennesCase();
 const reconstruction = loadVarennesReconstruction();
-const repairActionCopy = {
-  "RA-05-OBSTRUCTION": {
-    label: "Restore passage control",
-    completedLabel: "Passage control restored",
-    icon: Route,
+
+const PursuitRuntime = dynamic(
+  () =>
+    import("@/components/world/repair/pursuit-runtime").then(
+      (module) => module.PursuitRuntime,
+    ),
+  {
+    loading: () => (
+      <section className={styles.activeStep} aria-busy="true">
+        <div>
+          <p className={styles.reconstructionLabel}>Spatial reconstruction</p>
+          <h2>Preparing the guided pursuit.</h2>
+        </div>
+      </section>
+    ),
+    ssr: false,
   },
-  "RA-05-PASSPORT": {
-    label: "Restore passport inspection",
-    completedLabel: "Passport inspection restored",
-    icon: FileSearch,
-  },
-} as const;
+);
 
 export function TimelineRepair() {
   const { state, ready, issue } = useCaseSession();
@@ -70,9 +78,6 @@ export function TimelineRepair() {
   const completedRequiredActions = requiredActions.filter((actionId) =>
     state.completedRepairActionIds.includes(actionId),
   ).length;
-  const allRequiredActionsComplete = requiredActions.every((actionId) =>
-    state.completedRepairActionIds.includes(actionId),
-  );
   const progressAnnouncement = sequenceComplete
     ? `All ${reconstruction.repairSteps.length} reconstruction steps reviewed.`
     : `Step ${completedSteps + 1} of ${reconstruction.repairSteps.length}: ${currentStep?.title}.${
@@ -120,6 +125,9 @@ export function TimelineRepair() {
       </section>
 
       <section className={styles.routeStage} aria-labelledby="repair-stage-heading">
+        <h2 className={styles.srOnly} id="repair-stage-heading">
+          Timeline repair sequence
+        </h2>
         <p
           aria-atomic="true"
           aria-live="polite"
@@ -144,70 +152,34 @@ export function TimelineRepair() {
           </ol>
         </div>
 
-        {reducedMotion && !sequenceComplete ? (
-          <section className={styles.reducedReview} aria-label="Static reconstruction sequence">
-            <div>
-              <span className={styles.reconstructionLabel}>Reduced-motion reconstruction</span>
-              <h2>Review the complete supported sequence.</h2>
-              <p>The actions remain separate and must still be completed in order.</p>
-            </div>
-            <ol>
-              {reconstruction.repairSteps.map((step) => (
-                <li key={step.id}>
-                  <div><small>{String(step.sequence).padStart(2, "0")}</small><h3>{step.title}</h3></div>
-                  <p>{step.statement}</p>
-                  <div className={styles.sourceLinks}>{sourceLinks(step.sourceIds)}</div>
-                </li>
-              ))}
-            </ol>
-          </section>
-        ) : null}
-
         {!sequenceComplete && currentStep ? (
-          <section className={styles.activeStep} aria-labelledby="repair-stage-heading">
-            <div>
-              <span className={styles.reconstructionLabel}>Historical reconstruction</span>
-              <h2 id="repair-stage-heading">{currentStep.title}</h2>
-              {!reducedMotion ? <p>{currentStep.statement}</p> : null}
-              {!reducedMotion ? <div className={styles.sourceLinks}>{sourceLinks(currentStep.sourceIds)}</div> : null}
-            </div>
-            {requiredActions.length > 0 ? (
-              <div className={styles.actionPanel}>
-                {requiredActions.map((actionId) => {
-                  const action = repairActionCopy[actionId];
-                  const complete = state.completedRepairActionIds.includes(actionId);
-                  const ActionIcon = action.icon;
-                  return (
-                    <button
-                      disabled={complete}
-                      key={actionId}
-                      onClick={() => issue({ type: "complete_repair_action", actionId })}
-                      type="button"
-                    >
-                      {complete ? <Check aria-hidden="true" /> : <ActionIcon aria-hidden="true" />}
-                      {complete ? action.completedLabel : action.label}
-                    </button>
-                  );
-                })}
-                {allRequiredActionsComplete ? (
-                  <button
-                    onClick={() => issue({ type: "complete_repair_step", stepId: currentStep.id })}
-                    type="button"
-                  >
-                    <ShieldCheck aria-hidden="true" />{currentStep.actionLabel}
-                  </button>
-                ) : null}
-              </div>
-            ) : (
-              <button onClick={() => issue({ type: "complete_repair_step", stepId: currentStep.id })} type="button">
-                <Route aria-hidden="true" />{currentStep.actionLabel}
-              </button>
-            )}
-          </section>
+          reducedMotion ? (
+            <ReducedMotionRepair
+              completedActionIds={state.completedRepairActionIds}
+              completedStepIds={state.completedRepairStepIds}
+              onRequestAction={(actionId) =>
+                issue({ type: "complete_repair_action", actionId })
+              }
+              onRequestStep={(stepId) =>
+                issue({ type: "complete_repair_step", stepId })
+              }
+            />
+          ) : (
+            <PursuitRuntime
+              completedActionIds={state.completedRepairActionIds}
+              completedStepIds={state.completedRepairStepIds}
+              onRequestAction={(actionId) =>
+                issue({ type: "complete_repair_action", actionId })
+              }
+              onRequestStep={(stepId) =>
+                issue({ type: "complete_repair_step", stepId })
+              }
+            />
+          )
         ) : (
-          <section className={styles.completion} aria-labelledby="repair-stage-heading">
+          <section className={styles.completion} aria-labelledby="repair-completion-heading">
             <p className={styles.eyebrow}>Bounded consequence</p>
-            <h2 id="repair-stage-heading">Reconstruct meaning without claiming inevitability.</h2>
+            <h2 id="repair-completion-heading">Reconstruct meaning without claiming inevitability.</h2>
             <div className={styles.meaningGrid}>
               {reconstruction.politicalMeaning.map((item) => (
                 <article key={item.id}>

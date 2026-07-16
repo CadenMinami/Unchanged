@@ -1,11 +1,54 @@
 {
-  "sceneManifestVersion": "1.0.0",
+  "sceneManifestVersion": "1.1.0",
   "caseId": "varennes",
   "caseVersion": "1.0.3",
   "modelPolicyVersion": "1.0.1",
   "initialSpawn": {
     "zoneId": "archive-antechamber",
     "spawnId": "SPAWN-ARCHIVE-ENTRY"
+  },
+  "repairPath": {
+    "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
+    "placementStatus": "schematic_temporal_reconstruction",
+    "reconstructionConfidence": "low",
+    "limitations": {
+      "location": "The playable path is an authored spatial sequence, not historical geography or an exact road trace.",
+      "ownership": "The controls guide a reconstruction trace and do not assign the player's actions to one historical actor.",
+      "scale": "Checkpoint spacing, travel speed, and the road corridor are not historical distance or timing and are not to scale.",
+      "appearance": "Road, riders, buildings, checkpoints, and local-action markers are game reconstructions, not historical evidence."
+    },
+    "provenance": "reconstruction",
+    "countsAsHistoricalEvidence": false,
+    "startDistance": 0,
+    "corridorHalfWidth": 2.25,
+    "checkpointRadius": 0.7,
+    "checkpoints": [
+      { "repairStepId": "RS-01-ROUTE", "distance": 8 },
+      { "repairStepId": "RS-02-PURSUIT", "distance": 20 },
+      { "repairStepId": "RS-03-WARNING", "distance": 32 },
+      { "repairStepId": "RS-04-MOBILIZATION", "distance": 44 },
+      { "repairStepId": "RS-05-OBSTRUCTION", "distance": 56 },
+      { "repairStepId": "RS-06-DETENTION", "distance": 70 }
+    ],
+    "localActions": [
+      {
+        "repairActionId": "RA-05-OBSTRUCTION",
+        "parentStepId": "RS-05-OBSTRUCTION",
+        "lateralOffset": -1.4
+      },
+      {
+        "repairActionId": "RA-05-PASSPORT",
+        "parentStepId": "RS-05-OBSTRUCTION",
+        "lateralOffset": 1.4
+      }
+    ],
+    "counterfactualBoundary": {
+      "label": "UNKNOWN",
+      "statement": "The fictional branch stops after the carriage passes Varennes. The game does not claim a knowable alternate future.",
+      "distance": 18,
+      "lateralOffset": 5.5,
+      "provenance": "fictional_counterfactual"
+    }
   },
   "zones": [
     {

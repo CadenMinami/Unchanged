@@ -11,7 +11,11 @@ const ambientLines = loadVarennesAmbientLines();
 
 describe("world manifest historical integrity", () => {
   it("labels every zone and graybox interaction as a limited schematic reconstruction", () => {
-    for (const placement of [...manifest.zones, ...manifest.interactables]) {
+    for (const placement of [
+      ...manifest.zones,
+      ...manifest.interactables,
+      manifest.repairPath,
+    ]) {
       expect(placement.placementLabel).toBe(SCHEMATIC_PLACEMENT_LABEL);
       expect(placement.placementStatus).toBe("schematic_temporal_reconstruction");
       expect(placement.reconstructionConfidence).toBe("low");
@@ -24,6 +28,18 @@ describe("world manifest historical integrity", () => {
       expect(interactable.presentation).toBe("graybox");
       expect(interactable.countsAsHistoricalEvidence).toBe(false);
     }
+  });
+
+  it("keeps the playable pursuit spatially schematic and non-evidentiary", () => {
+    expect(manifest.repairPath.countsAsHistoricalEvidence).toBe(false);
+    expect(manifest.repairPath.provenance).toBe("reconstruction");
+    expect(manifest.repairPath.limitations.location).toMatch(/not historical geography/i);
+    expect(manifest.repairPath.limitations.scale).toMatch(/not historical distance|not to scale/i);
+    expect(manifest.repairPath.limitations.appearance).toMatch(/not historical evidence/i);
+    expect(manifest.repairPath.counterfactualBoundary.label).toBe("UNKNOWN");
+    expect(manifest.repairPath.counterfactualBoundary.provenance).toBe(
+      "fictional_counterfactual",
+    );
   });
 
   it("contains only approved character and static station targets", () => {

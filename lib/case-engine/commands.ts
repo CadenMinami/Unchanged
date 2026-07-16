@@ -79,7 +79,6 @@ export const caseCommandSchema = z.discriminatedUnion("type", [
       stepId: repairStepIdSchema,
     })
     .strict(),
-  z.object({ ...commandBase, type: z.literal("review_repair_sequence") }).strict(),
   z.object({ ...commandBase, type: z.literal("complete_repair") }).strict(),
   z
     .object({

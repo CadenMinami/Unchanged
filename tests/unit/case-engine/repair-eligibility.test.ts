@@ -307,17 +307,38 @@ describe("repair eligibility", () => {
     expect(result.reason).toBe("repair-actions-incomplete");
   });
 
-  it("authorizes every repair action and step in reduced-motion review mode", () => {
-    const state: CaseState = createRepairReadyState();
-    const reviewed = reduceCase(casePackage, state, {
-      type: "review_repair_sequence",
-      commandId: "review-complete-sequence",
-      expectedRevision: state.revision,
-    });
+  it("requires reduced-motion repair to use the same granular action and step commands", () => {
+    let state: CaseState = createRepairReadyState();
+    let commandSequence = 0;
 
-    expect(reviewed.status).toBe("applied");
-    expect(reviewed.state.completedRepairActionIds).toEqual([...repairActionIds]);
-    expect(reviewed.state.completedRepairStepIds).toEqual([...repairStepIds]);
+    for (const stepId of repairStepIds) {
+      if (stepId === "RS-05-OBSTRUCTION") {
+        for (const actionId of repairActionIds) {
+          commandSequence += 1;
+          const action = reduceCase(casePackage, state, {
+            type: "complete_repair_action",
+            actionId,
+            commandId: `reduced-action-${commandSequence}`,
+            expectedRevision: state.revision,
+          });
+          expect(action.status).toBe("applied");
+          state = action.state;
+        }
+      }
+
+      commandSequence += 1;
+      const step = reduceCase(casePackage, state, {
+        type: "complete_repair_step",
+        stepId,
+        commandId: `reduced-step-${commandSequence}`,
+        expectedRevision: state.revision,
+      });
+      expect(step.status).toBe("applied");
+      state = step.state;
+    }
+
+    expect(state.completedRepairActionIds).toEqual([...repairActionIds]);
+    expect(state.completedRepairStepIds).toEqual([...repairStepIds]);
   });
 
   it("does not complete repair from an earlier phase", () => {

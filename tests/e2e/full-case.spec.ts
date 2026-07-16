@@ -86,7 +86,7 @@ test("a novice can complete the deterministic case from context to debrief", asy
 
   await expect(page.getByRole("heading", { name: "Restore the link. Preserve the uncertainty." })).toBeVisible();
   await page.getByLabel("Reduced motion").check();
-  await expect(page.getByText("In Drouet's report, the route information enabled him and Guillaume to take a shorter road toward Varennes.")).toBeVisible();
+  await expect(page.getByText("In Drouet's report, the route information enabled him and Guillaume to travel by side roads toward Varennes.")).toBeVisible();
   for (const action of [
     "Restore Varennes route information",
     "Send the pursuit toward Varennes",

@@ -1476,3 +1476,50 @@ The final production run reported:
 - Pasted TXT/Markdown browser paths, aligned-hint browser acceptance, screen-reader-oriented checks, reduced-reading browser acceptance, cross-route accessibility equivalence, live OpenAI smoke tests, and physical Chromebook verification remain open.
 - This checkpoint records completed local Phase 4 implementation and integrated no-key verification, but it does not claim live-provider, production-classroom, deployment, or final submission readiness.
 - No commit, push, deployment, publication, purchase, or live paid provider call occurred.
+
+## 2026-07-16 / 3D Gate Task 13 Guided Pursuit Repair
+
+### Intent and decisions
+
+- Turn the repair climax into a short playable explanation without creating a second historical state engine.
+- Keep pace and steering tactile but bounded: no combat, timer, fail state, score, unrestricted riding, or exact route simulation.
+- Classify every path coordinate, checkpoint, movement rate, marker, and embodiment as schematic reconstruction rather than historical evidence.
+- Preserve one semantic contract across standard motion, reduced motion, and non-WebGL fallback.
+
+### What Codex proposed and implemented
+
+- Added scene manifest `1.1.0` with a validated six-checkpoint repair path, two parallel local-action markers, corridor bounds, placement limitations, and an explicit fictional `UNKNOWN` boundary.
+- Added pure pursuit derivation and movement functions. Completed steps must form a canonical prefix; transient travel is clamped from the last completed checkpoint to the next reducer checkpoint and is never persisted.
+- Added a compact React Three Fiber pursuit with keyboard and pointer controls, a paired schematic trace, source-linked checkpoint copy, and direct controls when WebGL capability is unavailable.
+- Added a source-linked reduced-motion sequence driven by the same reconstruction and the same granular action and step callbacks.
+- Removed the unused `review_repair_sequence` command, which could atomically complete every repair step and conflicted with the approved no-shortcut accessibility contract.
+- Corrected the pursuit statement from the unsupported comparative “shorter road” to the approved source wording that Drouet and Guillaume traveled “by side roads toward Varennes.”
+
+### Historical-integrity boundaries
+
+- The authored checkpoint order and the two-action joint gate are `RECONSTRUCTION_ONLY`; internal progression does not claim historical necessity or sufficiency.
+- Obstruction and passport inspection may be restored in either order. Their visible relationship to guarded detention remains `contributed to`.
+- The controls guide a reconstruction trace rather than assigning the player's actions to Drouet, Guillaume, or a single hero.
+- Exact geography, speed, distance, timing, road choice, bridge architecture, obstruction appearance, and alternate outcomes remain excluded.
+
+### Test-driven and review checkpoints
+
+- Initial contract tests failed on the absent manifest path, pursuit derivation, movement function, WebGL/direct components, and reduced-motion component.
+- Focused integrated verification passed 9 files and 68 tests after mounting the runtime on the canonical repair page.
+- Lint and typecheck passed after making capability detection hydration-safe and correcting a deliberately invalid manifest-test assignment.
+- A code-quality audit identified missing renderer-failure fallback, pointer-only movement controls, retained input after focus loss, per-frame React rerenders, fixed-delay WebGL tests, checkpoint-level renderer remounts, non-persistent fallback state, eager Three.js loading, and an unresolved section label. The runtime now contains renderer errors and active context loss, preserves direct fallback across later checkpoints, keeps one Canvas mounted, supports focused Enter/Space and pointer hold controls, clears input on step change, blur, or visibility loss, keeps motion in frame-loop refs, polls actual canvas readiness, lazy-loads the spatial chunk, and exposes a valid repair-region label.
+- Production Chromium coverage validates standard pursuit completion, keyboard-held movement, nonblank canvas pixels, either-order local actions, reduced motion, refresh resume, malformed out-of-order recovery, ineligible-phase guarding, active WebGL context-loss fallback, and phone-width control fit.
+- An independent specification and historical-integrity review approved the implementation with no remaining compliance findings.
+
+### Fresh integrated verification
+
+- `git diff --check`, warning-free lint, and typecheck passed.
+- Vitest passed 78 files and 524 tests.
+- The production Next.js build completed and generated all student, teacher, and API routes.
+- Playwright passed all 26 no-key Chromium flows, including the seven guided-pursuit scenarios.
+- The production classroom proxy performance gate passed under 4x CPU slowdown and throttled network: 3.65-second interactive time, 56 FPS median, 55 FPS p10, 24.7 ms maximum post-load stall, and a nonblank canvas.
+
+### Remaining gates
+
+- Physical Chromebook performance, final visual assets, cross-route accessibility review, live-provider smoke testing, deployment, unfamiliar-user playtesting, screenshots, and demo production remain separate gates.
+- No push, deployment, purchase, publication, or live paid provider call occurred during this checkpoint.

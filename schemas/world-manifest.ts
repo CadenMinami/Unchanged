@@ -1,6 +1,13 @@
 import { z } from "zod";
 
-export const SCENE_MANIFEST_VERSION = "1.0.0" as const;
+import {
+  repairActionIdSchema,
+  repairActionIds,
+  repairStepIdSchema,
+  repairStepIds,
+} from "./reconstruction";
+
+export const SCENE_MANIFEST_VERSION = "1.1.0" as const;
 export const AMBIENT_LINES_VERSION = "1.0.0" as const;
 export const SCHEMATIC_PLACEMENT_LABEL =
   "SCHEMATIC RECONSTRUCTION - NOT TO SCALE" as const;
@@ -144,6 +151,98 @@ const interactableSchema = z
   })
   .strict();
 
+const repairPathCheckpointSchema = z
+  .object({
+    repairStepId: repairStepIdSchema,
+    distance: z.number().finite().positive(),
+  })
+  .strict();
+
+const repairPathActionSchema = z
+  .object({
+    repairActionId: repairActionIdSchema,
+    parentStepId: z.literal("RS-05-OBSTRUCTION"),
+    lateralOffset: z.number().finite(),
+  })
+  .strict();
+
+const repairPathSchema = z
+  .object({
+    ...schematicPlacementFields,
+    provenance: z.literal("reconstruction"),
+    countsAsHistoricalEvidence: z.literal(false),
+    startDistance: z.number().finite().min(0),
+    corridorHalfWidth: z.number().finite().positive(),
+    checkpointRadius: z.number().finite().positive(),
+    checkpoints: z.array(repairPathCheckpointSchema).length(repairStepIds.length),
+    localActions: z.array(repairPathActionSchema).length(repairActionIds.length),
+    counterfactualBoundary: z
+      .object({
+        label: z.literal("UNKNOWN"),
+        statement: z.string().min(1),
+        distance: z.number().finite().positive(),
+        lateralOffset: z.number().finite(),
+        provenance: z.literal("fictional_counterfactual"),
+      })
+      .strict(),
+  })
+  .strict()
+  .superRefine((repairPath, context) => {
+    const checkpointIds = repairPath.checkpoints.map(
+      (checkpoint) => checkpoint.repairStepId,
+    );
+    if (!repairStepIds.every((stepId, index) => checkpointIds[index] === stepId)) {
+      context.addIssue({
+        code: "custom",
+        path: ["checkpoints"],
+        message: "Repair path checkpoints must follow the canonical reconstruction order.",
+      });
+    }
+
+    const checkpointDistances = repairPath.checkpoints.map(
+      (checkpoint) => checkpoint.distance,
+    );
+    if (
+      checkpointDistances.some(
+        (distance, index) =>
+          distance <=
+          (index === 0
+            ? repairPath.startDistance
+            : checkpointDistances[index - 1]!),
+      )
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["checkpoints"],
+        message: "Repair path checkpoint distances must increase from the authored start.",
+      });
+    }
+
+    const actionIds = repairPath.localActions.map((action) => action.repairActionId);
+    if (
+      new Set(actionIds).size !== repairActionIds.length ||
+      !repairActionIds.every((actionId) => actionIds.includes(actionId))
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["localActions"],
+        message: "Repair path actions must contain each approved local action exactly once.",
+      });
+    }
+
+    if (
+      repairPath.localActions.some(
+        (action) => Math.abs(action.lateralOffset) > repairPath.corridorHalfWidth,
+      )
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["localActions"],
+        message: "Repair path actions must stay inside the schematic travel corridor.",
+      });
+    }
+  });
+
 export const sceneManifestSchema = z
   .object({
     sceneManifestVersion: z.literal(SCENE_MANIFEST_VERSION),
@@ -156,6 +255,7 @@ export const sceneManifestSchema = z
         spawnId: canonicalIdSchema,
       })
       .strict(),
+    repairPath: repairPathSchema,
     zones: z.array(zoneSchema).length(worldZoneIdSchema.options.length),
     interactables: z.array(interactableSchema).min(1),
   })
