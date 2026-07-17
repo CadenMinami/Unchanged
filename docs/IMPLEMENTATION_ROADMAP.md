@@ -2,7 +2,7 @@
 
 ## Current Rule
 
-Phases 0-2 are complete for the current vertical slice. The Phase 3 GPT-5.6 source-bounded layer and Task 12 staged voice runtime are implemented and locally tested; live API-key smoke tests remain before provider-level verification can be claimed. Phase 4 teacher alignment/accessibility is implemented and passes focused authority/browser checks plus the full integrated no-key gate: warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and 19 Playwright tests. Remaining screen-reader-oriented/cross-route checks are open. Phase 5 polish, verification, deployment, and demo work is the next product gate.
+Phases 0-4 are complete for the current vertical slice. The Phase 3 GPT-5.6 source-bounded layer and Task 12 staged voice runtime are implemented and locally tested; live API-key smoke tests remain before provider-level verification can be claimed. Phase 4 teacher alignment/accessibility is implemented with bounded authority and deterministic reporting. Phase 5's grounded visual pass is implemented with scene manifest `1.2.0`, asset ledger `1.0.0`, exact runtime hashes, project-authored license records, optional-asset fallbacks, articulated figures, late-evening environment treatment, and muted-by-default procedural ambience. Remaining Phase 5 work is release closure: cross-route accessibility, physical Chromebook verification, live-provider smoke, deployment regression, unfamiliar-user playtesting, screenshots, and demo production.
 
 ## Phase 0: Historical Verification And Wireframes
 
@@ -145,6 +145,8 @@ Contract/component evidence supports the authority, ingestion, approval, persist
 ## Phase 5: Polish, Testing, Deployment, Demo
 
 Goal: submission-ready package.
+
+Status: grounded visual implementation and local provenance closure are complete; release and submission gates remain open.
 
 Build/test:
 

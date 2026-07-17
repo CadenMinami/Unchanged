@@ -1,8 +1,9 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CaseSessionProvider } from "@/components/case-session/case-session-provider";
+import type { AmbientSoundscape } from "@/lib/audio/ambient-soundscape";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { createInitialCaseState } from "@/lib/case-engine/state";
 import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
@@ -26,6 +27,27 @@ let reportNearbyInteraction:
   | undefined;
 let reportContextLost: (() => void) | undefined;
 let runtimeInitialPosition: [number, number, number] | undefined;
+
+const ambientAudioMocks = vi.hoisted(() => {
+  const defaultSoundscape = {
+    destroy: vi.fn(async () => undefined),
+    setMuted: vi.fn(async () => undefined),
+  };
+  return {
+    create: vi.fn<() => AmbientSoundscape>(() => defaultSoundscape),
+    defaultSoundscape,
+  };
+});
+
+vi.mock("@/lib/audio/ambient-soundscape", async (importOriginal) => {
+  const original = await importOriginal<
+    typeof import("@/lib/audio/ambient-soundscape")
+  >();
+  return {
+    ...original,
+    createAmbientSoundscape: ambientAudioMocks.create,
+  };
+});
 
 vi.mock("@/components/world/scene-runtime", () => ({
   SceneRuntime: (props: {
@@ -61,6 +83,13 @@ function renderShell(capabilityCheck: () => boolean, initialState?: CaseState) {
 
 describe("world runtime shell", () => {
   beforeEach(() => {
+    vi.stubGlobal("AudioContext", vi.fn());
+    ambientAudioMocks.create.mockReset();
+    ambientAudioMocks.create.mockImplementation(
+      () => ambientAudioMocks.defaultSoundscape,
+    );
+    ambientAudioMocks.defaultSoundscape.destroy.mockClear();
+    ambientAudioMocks.defaultSoundscape.setMuted.mockClear();
     window.localStorage.clear();
     window.sessionStorage.clear();
     delete (
@@ -76,6 +105,7 @@ describe("world runtime shell", () => {
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
@@ -100,6 +130,16 @@ describe("world runtime shell", () => {
     expect(screen.getByRole("link", { name: /return to case briefing/i })).toHaveAttribute(
       "href",
       "/play",
+    );
+    expect(
+      screen.getByRole("button", { name: /enable ambient sound/i }),
+    ).toHaveAttribute("aria-pressed", "false");
+    expect(
+      screen.getByRole("complementary", {
+        name: /ambient reconstruction caption/i,
+      }),
+    ).toHaveTextContent(
+      /the archive remains still around the open case materials.*authored dramatization; not testimony or evidence/i,
     );
   });
 
@@ -156,6 +196,72 @@ describe("world runtime shell", () => {
     expect(
       screen.getByRole("region", { name: /fracture records/i }),
     ).toHaveTextContent("E6A Inspected");
+  });
+
+  it("destroys enabled ambience before replacing the world after context loss", async () => {
+    const user = userEvent.setup();
+
+    renderShell(() => true);
+    await user.click(
+      screen.getByRole("button", { name: /enable ambient sound/i }),
+    );
+    expect(ambientAudioMocks.defaultSoundscape.setMuted).toHaveBeenCalledWith(false);
+
+    act(() => reportContextLost?.());
+
+    await waitFor(() => {
+      expect(ambientAudioMocks.defaultSoundscape.destroy).toHaveBeenCalledTimes(1);
+    });
+    expect(
+      screen.getByRole("heading", { name: /3d reconstruction unavailable/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("ignores a rejected unmute from a destroyed soundscape after retry", async () => {
+    const user = userEvent.setup();
+    let rejectFirstUnmute: ((reason?: unknown) => void) | undefined;
+    const firstSoundscape = {
+      destroy: vi.fn(async () => undefined),
+      setMuted: vi.fn(
+        () =>
+          new Promise<void>((_resolve, reject) => {
+            rejectFirstUnmute = reject;
+          }),
+      ),
+    };
+    const secondSoundscape = {
+      destroy: vi.fn(async () => undefined),
+      setMuted: vi.fn(async () => undefined),
+    };
+    ambientAudioMocks.create
+      .mockReturnValueOnce(firstSoundscape)
+      .mockReturnValueOnce(secondSoundscape);
+
+    renderShell(() => true);
+    await user.click(
+      screen.getByRole("button", { name: /enable ambient sound/i }),
+    );
+    act(() => reportContextLost?.());
+    await waitFor(() => expect(firstSoundscape.destroy).toHaveBeenCalledTimes(1));
+
+    await user.click(
+      screen.getByRole("button", { name: /retry 3d reconstruction/i }),
+    );
+    await user.click(
+      screen.getByRole("button", { name: /enable ambient sound/i }),
+    );
+    expect(
+      screen.getByRole("button", { name: /mute ambient sound/i }),
+    ).toBeInTheDocument();
+
+    await act(async () => {
+      rejectFirstUnmute?.(new Error("old context failed"));
+      await Promise.resolve();
+    });
+    expect(
+      screen.getByRole("button", { name: /mute ambient sound/i }),
+    ).toBeInTheDocument();
+    expect(secondSoundscape.destroy).not.toHaveBeenCalled();
   });
 
   it("lets the player choose and persist objective guidance", async () => {
@@ -544,9 +650,26 @@ describe("world runtime shell", () => {
       SPATIAL_SESSION_STORAGE_KEY,
       serializeSpatialSession(returnedToArchive.session),
     );
+    const e3 = manifest.interactables.find(
+      (item) =>
+        item.canonicalTarget.targetType === "evidence" &&
+        item.canonicalTarget.evidenceId === "E3",
+    );
+    if (!e3) throw new Error("Missing E3 interaction fixture.");
 
     renderShell(() => true);
     expect(runtimeInitialPosition).toEqual([0, 1.2, 0]);
+    act(() =>
+      reportNearbyInteraction?.({
+        interactableId: e3.interactableId,
+        zoneId: e3.zoneId,
+        interactionType: e3.interactionType,
+        canonicalTarget: e3.canonicalTarget,
+      }),
+    );
+    expect(
+      screen.getByRole("button", { name: /inspect drouet account table/i }),
+    ).toBeInTheDocument();
 
     await user.click(
       screen.getByRole("button", { name: /open route journal/i }),
@@ -559,6 +682,9 @@ describe("world runtime shell", () => {
     );
 
     expect(runtimeInitialPosition).toEqual([24, 1.2, 0]);
+    expect(
+      screen.queryByRole("button", { name: /inspect drouet account table/i }),
+    ).toBeNull();
     expect(
       screen.getByRole("complementary", {
         name: /current reconstruction location/i,

@@ -1,11 +1,9 @@
 "use client";
 
-import { Html } from "@react-three/drei";
-
-import { WORLD_HTML_Z_INDEX_RANGE } from "@/lib/world/world-overlay";
 import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
 import type { SceneManifest } from "@/schemas/world-manifest";
 
+import { PeriodFigure } from "../character/period-figure";
 import type { ProximityCandidate } from "../interactions/proximity-registry";
 
 const manifest = loadVarennesSceneManifest();
@@ -33,7 +31,6 @@ if (!postRoadManifestZone) {
 }
 
 const postRoadSpawn = postRoadManifestZone.safeSpawns[0].position;
-const postRoadPlacementLabel = postRoadManifestZone.placementLabel;
 const drouetPosition: [number, number, number] = [
   postRoadSpawn[0] - 1.5,
   postRoadSpawn[1],
@@ -75,7 +72,7 @@ export const POST_ROAD_CANDIDATES = [
   POST_ROAD_E4_CANDIDATE,
 ] as const satisfies readonly ProximityCandidate[];
 
-export function PostRoadZone() {
+export function PostRoadZone({ reducedMotion = false }: { reducedMotion?: boolean }) {
   return (
     <group>
       <mesh
@@ -96,18 +93,19 @@ export function PostRoadZone() {
       </mesh>
 
       <group position={drouetPosition}>
-        <mesh castShadow position={[0, 1.62, 0]}>
-          <sphereGeometry args={[0.23, 18, 18]} />
-          <meshStandardMaterial color="#b79879" roughness={0.9} />
-        </mesh>
-        <mesh castShadow position={[0, 0.88, 0]} scale={[0.5, 0.9, 0.34]}>
-          <capsuleGeometry args={[0.5, 1, 8, 16]} />
-          <meshStandardMaterial color="#654238" roughness={0.94} />
-        </mesh>
-        <mesh castShadow position={[0, 1.86, 0]} scale={[0.39, 0.08, 0.39]}>
-          <cylinderGeometry args={[1, 1.15, 1, 20]} />
-          <meshStandardMaterial color="#3c3028" roughness={0.96} />
-        </mesh>
+        <PeriodFigure
+          palette={{
+            skin: "#ad8062",
+            coat: "#684437",
+            waistcoat: "#9b8053",
+            breeches: "#4b3d35",
+            stockings: "#aaa28f",
+            shoes: "#24211e",
+            hair: "#433027",
+            hat: "#2f2924",
+          }}
+          reducedMotion={reducedMotion}
+        />
       </group>
 
       <group position={e4Position}>
@@ -125,33 +123,6 @@ export function PostRoadZone() {
         </mesh>
       </group>
 
-      <group position={[postRoadSpawn[0], 2.5, postRoadSpawn[2] - 3.8]}>
-        <mesh scale={[3.6, 0.42, 0.06]}>
-          <boxGeometry />
-          <meshStandardMaterial color="#30363a" roughness={0.92} />
-        </mesh>
-        <Html
-          center
-          distanceFactor={9}
-          position={[0, 0, 0.07]}
-          transform
-          zIndexRange={WORLD_HTML_Z_INDEX_RANGE}
-        >
-          <div
-            aria-hidden="true"
-            style={{
-              color: "#f4f2ec",
-              fontFamily: "monospace",
-              fontSize: "6px",
-              lineHeight: 1.2,
-              textAlign: "center",
-              width: "210px",
-            }}
-          >
-            {postRoadPlacementLabel}
-          </div>
-        </Html>
-      </group>
     </group>
   );
 }

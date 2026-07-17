@@ -51,7 +51,8 @@ The deterministic command path, spatial path, model path, and teacher-alignment 
 | Case state | `1.2.0` |
 | Persistence envelope | `1.2.0` |
 | Reconstruction companion | `1.1.0` |
-| Scene manifest | `1.1.0` |
+| Scene manifest | `1.2.0` |
+| World asset ledger | `1.0.0` |
 | Spatial session | `1.0.0` |
 | Model policy | `1.0.1` |
 | AI contract | `1.1.0` |
@@ -63,6 +64,18 @@ The deterministic command path, spatial path, model path, and teacher-alignment 
 AI `1.1.0` is the sole active browser/server contract. Character success and fallback responses require nullable speech authorization; Case Brief responses do not. Media `1.0.0` independently versions the implemented transcription and speech transforms. The routes remain presentation-only and cannot issue reducer commands.
 
 Course alignment `1.1.0` is a separate `alignment_only` contract. It cannot carry evidence, repair, scoring, or case-state authority. Learning session `1.0.0` persists approved alignment, support preferences, and bounded observable event codes independently of deterministic case-state persistence `1.2.0`.
+
+### World asset boundary
+
+- Scene manifest `1.2.0` identifies interactable presentation as `grounded_reconstruction` while retaining low-confidence schematic placement and non-evidentiary status.
+- Asset ledger `1.0.0` records imported CC0 files and repository-authored procedural presentation systems through a strict discriminated schema.
+- Every shipped file below `public/world/` must close exactly over one ledger output with matching byte count and SHA-256. Raw acquisition files are excluded from `public/`.
+- Downloaded assets require creator, source, retrieval date, original-file hashes, SPDX license ID, a locally preserved license proof, modification steps, and exact runtime outputs.
+- Procedural assets use tracked repository source paths and repository-owned rights metadata. Tests require exact equality with an explicit reviewed inventory of 17 environment, figure, station, fallback, repair, styling, and audio source files; those assets cannot be mislabeled CC0.
+- Asset uses repeat the approved placement status, confidence, and location/ownership/scale/appearance limitations. All assets are permanently `countsAsHistoricalEvidence: false`.
+- Visual GLBs and textures never own colliders, proximity IDs, evidence access, score, or progression. Authored primitive colliders and the reducer remain authoritative.
+- Each optional downloaded model or texture is isolated behind a local error boundary with a repository-authored procedural fallback. An asset fetch failure cannot remove the world or require a retry of the historical session.
+- The optional Web Audio dusk soundscape starts muted, requires an explicit player action, and is a dramatization with no historical claim or game-state authority. Runtime failure destroys the current soundscape, and async completion is accepted only from that same live instance.
 
 ### Current world reasoning handoff
 

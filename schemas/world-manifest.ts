@@ -7,7 +7,7 @@ import {
   repairStepIds,
 } from "./reconstruction";
 
-export const SCENE_MANIFEST_VERSION = "1.1.0" as const;
+export const SCENE_MANIFEST_VERSION = "1.2.0" as const;
 export const AMBIENT_LINES_VERSION = "1.0.0" as const;
 export const SCHEMATIC_PLACEMENT_LABEL =
   "SCHEMATIC RECONSTRUCTION - NOT TO SCALE" as const;
@@ -127,7 +127,7 @@ const interactableSchema = z
     interactableId: canonicalIdSchema,
     zoneId: worldZoneIdSchema,
     label: z.string().min(1),
-    presentation: z.literal("graybox"),
+    presentation: z.literal("grounded_reconstruction"),
     interactionType: worldInteractionTypeSchema,
     canonicalTarget: canonicalTargetSchema,
     focusOverlay: focusOverlaySchema,

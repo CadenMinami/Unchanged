@@ -1,15 +1,17 @@
 "use client";
 
-import { Map } from "lucide-react";
+import { Map, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
 import type { RefObject } from "react";
 
-import { QualityNotice } from "./quality-notice";
+import { PerformanceNotice, QualityBadge } from "./quality-notice";
 import styles from "./world-shell.module.css";
 
 interface WorldHudProps {
+  ambientCaption: string;
   currentZoneIndex: number;
   currentZoneLabel: string;
+  ambientMuted: boolean;
   graphicsTier: "high" | "balanced" | "classroom";
   handoffHref: string;
   handoffLabel: string;
@@ -22,14 +24,17 @@ interface WorldHudProps {
   reasoningButtonRef: RefObject<HTMLButtonElement | null>;
   nearbyInteractionLabel: string | null;
   onInteract: () => void;
+  onAmbientMuteChange: () => void;
   onGuidanceSettingChange: (setting: "off" | "subtle" | "guided") => void;
   onOpenJournal: () => void;
   onOpenCaseboard: () => void;
 }
 
 export function WorldHud({
+  ambientCaption,
   currentZoneIndex,
   currentZoneLabel,
+  ambientMuted,
   graphicsTier,
   handoffHref,
   handoffLabel,
@@ -42,6 +47,7 @@ export function WorldHud({
   reasoningButtonRef,
   nearbyInteractionLabel,
   onInteract,
+  onAmbientMuteChange,
   onGuidanceSettingChange,
   onOpenJournal,
   onOpenCaseboard,
@@ -88,6 +94,14 @@ export function WorldHud({
         <span>Journal</span>
       </button>
 
+      <aside
+        aria-label="Ambient reconstruction caption"
+        className={styles.ambientCaption}
+      >
+        <span>{ambientCaption}</span>
+        <small>Authored dramatization; not testimony or evidence.</small>
+      </aside>
+
       <nav
         aria-label={`Reconstruction route, stop ${currentZoneIndex + 1} of 4`}
         className={styles.routeCompass}
@@ -132,7 +146,20 @@ export function WorldHud({
         </div>
       </aside>
 
-      <QualityNotice offerNonSpatial={offerNonSpatial} tier={graphicsTier} />
+      <div className={styles.topRightControls}>
+        <button
+          aria-label={ambientMuted ? "Enable ambient sound" : "Mute ambient sound"}
+          aria-pressed={!ambientMuted}
+          className={styles.soundControl}
+          onClick={onAmbientMuteChange}
+          title={ambientMuted ? "Enable ambient sound" : "Mute ambient sound"}
+          type="button"
+        >
+          {ambientMuted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+        </button>
+        <QualityBadge tier={graphicsTier} />
+      </div>
+      {offerNonSpatial ? <PerformanceNotice /> : null}
       {nearbyInteractionLabel ? (
         <button
           className={styles.interactionPrompt}

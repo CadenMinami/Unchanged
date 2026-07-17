@@ -37,7 +37,7 @@ test("questions Louis from E1 without changing case authority", async ({ page })
     spatialSessionVersion: "1.0.0",
     caseId: "varennes",
     caseVersion: "1.0.3",
-    sceneManifestVersion: "1.1.0",
+    sceneManifestVersion: "1.2.0",
     mode: "spatial",
     lastSafeSpawn: {
       zoneId: "royal-lodging-civic-area",
@@ -152,7 +152,9 @@ test("questions Louis from E1 without changing case authority", async ({ page })
   expect(persistedAfter.state.pinnedEvidenceIds).toEqual([]);
 
   await page.getByRole("button", { name: /close conversation/i }).click();
-  await expect(page.getByRole("status")).toContainText(/exploring/i);
+  await expect(
+    page.locator('section[role="status"]').filter({ hasText: /spatial archive/i }),
+  ).toContainText(/exploring/i);
   const focusedButton = page.locator("button:focus");
   await expect(focusedButton).toHaveCount(1);
   await expect(focusedButton).toHaveAccessibleName(

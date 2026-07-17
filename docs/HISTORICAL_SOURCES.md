@@ -49,6 +49,14 @@ For example, E4 and E5 list `L11-ROUTE-SCHOLARSHIP` as a dependency but do not c
 
 For the MVP, student evidence uses project-authored text excerpts, close translations, or clearly labeled paraphrases. Do not embed scan images unless an item-level license permits that use. Public-domain underlying text does not automatically grant unrestricted reuse of a host's scan, transcription, annotations, or layout.
 
+## Visual Reconstruction Boundary
+
+The playable district is a low-confidence schematic teaching environment, not a surveyed reconstruction of Varennes in June 1791. Building facades, paving, furniture, barrels, lanterns, water, lighting, clothing colors, figure appearance, and object placement make no scored historical claim. They cannot corroborate testimony, open evidence by their appearance alone, or satisfy a hypothesis gate.
+
+The versioned asset ledger at `data/cases/varennes/world/asset-ledger.json` records every shipped world file and every repository-authored procedural presentation system. It distinguishes creator and rights provenance from historical provenance, pins exact runtime-file hashes, and repeats location, ownership, scale, and appearance limitations for each use. Downloaded assets point to source and license URLs plus a project-authored local verification record; copied website pages are not redistributed as license proof. Imported CC0 assets remain `RECONSTRUCTION`; a permissive copyright license does not make an asset historically authentic.
+
+The bridge approach remains especially constrained: the visual path may show a chokepoint and authored obstruction interface, but it must not depict the bridge itself or one prop as independently arresting the carriage. Exact actor attribution remains contested as documented under S2 and S3.
+
 ## Source Ledger
 
 ### S1: Louis XVI Declaration Before Flight

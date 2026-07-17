@@ -32,7 +32,7 @@ describe("scene manifest", () => {
     const manifest = loadVarennesSceneManifest();
 
     expect(manifest).toMatchObject({
-      sceneManifestVersion: "1.1.0",
+      sceneManifestVersion: "1.2.0",
       caseId: casePackage.caseId,
       caseVersion: casePackage.caseVersion,
       modelPolicyVersion: modelPolicy.policyVersion,

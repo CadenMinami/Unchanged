@@ -35,10 +35,14 @@ Implemented foundations include:
 - reduced-reading and reduced-motion behavior across the primer, evidence surfaces, dialogue/feedback, spatial scene, and repair sequence
 - a deterministic, printable teacher report derived from validated case state and recorded interface events
 - historical-integrity tests and a source-bounded model-policy evaluation corpus
+- a full-bleed, four-zone grounded stylized district with articulated period-inspired figures, late-evening lighting, route travel, and deterministic DOM evidence overlays
+- a strict world asset ledger covering repository-authored presentation systems and five optimized CC0 runtime files with exact hashes, project-authored license verification, modifications, and non-evidentiary limitations
+- optional-asset error boundaries and procedural fallbacks so a failed prop or texture request cannot remove the historical investigation
+- muted-by-default procedural ambience with explicit sound control, hidden-tab muting, and no historical-evidence authority
 
 Task 12's staged voice runtime is implemented and locally verified: explicit push-to-talk transcription, exact-caption provider speech, browser-speech fallback, editable captions, mute/stop controls, strict media correlation, and bounded cleanup are present. Provider behavior is covered through injected gateways and browser network fixtures; a live API-key run is still required before claiming provider-level OpenAI media verification.
 
-Phase 4's teacher-alignment and accessibility implementation is also present in the working tree. Focused unit, integration, and historical-authority verification covers profile authorization, sample/no-key behavior, teacher approval, bounded persistence, authored hints, and deterministic reporting. The dedicated Phase 4 Playwright file passes 3/3 tests for teacher approval into an unchanged aligned investigation, 320 x 700 world-HUD fit, and distinct accessible names for all six historical records. Focused desktop/mobile browser QA also passed the teacher setup, teacher report, aligned E3/E4/E5/E7 class-material connections, and stacked world controls without app-console errors. The fresh integrated no-key gate passes warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and all 19 Playwright tests. Live-provider, formal screen-reader/cross-route equivalence, physical Chromebook, deployment, and submission gates remain separate.
+Phase 4 teacher alignment/accessibility and the Phase 5 grounded visual pass are present in the working tree. The world remains explicitly schematic and non-evidentiary even though its materials, lighting, figures, motion, and props are more grounded. The browser still offers the complete non-spatial route, reduced reading, reduced motion, keyboard operation, authored media fallbacks, and deterministic no-key completion. Live-provider, formal screen-reader/cross-route equivalence, physical Chromebook, deployment, unfamiliar-user playtesting, and submission gates remain separate.
 
 ## Local Setup
 

@@ -1,0 +1,453 @@
+{
+  "assetLedgerVersion": "1.0.0",
+  "sceneManifestVersion": "1.2.0",
+  "caseId": "varennes",
+  "caseVersion": "1.0.3",
+  "disclosure": "The scene is an authored, schematic teaching reconstruction. Imported and procedural assets support atmosphere and navigation; none count as historical evidence or document the exact appearance, ownership, location, or scale of Varennes in June 1791.",
+  "assets": [
+    {
+      "assetId": "ASSET-ENV-GROUNDED-DISTRICT",
+      "title": "Grounded district architecture, lighting, lanterns, and water",
+      "category": "environment",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "The geometry establishes a legible late-evening teaching space without claiming an exact site plan or architectural survey.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Create a cohesive late-evening district around the deterministic four-zone teaching layout.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Building, road, river, and lantern placement is authored for traversal rather than historical geography.",
+            "ownership": "No facade, furnishing, lantern, or environmental object is assigned to a historical owner.",
+            "scale": "Building dimensions, road width, spacing, and sightlines are compressed and not to scale.",
+            "appearance": "Materials and silhouettes are grounded stylization, not a verified reconstruction of Varennes in June 1791."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "repository_authored_procedural",
+      "origin": {
+        "creator": "History Unbroken project",
+        "rightsHolder": "Caden Minami",
+        "sourcePaths": [
+          "components/world/scene-runtime.tsx",
+          "components/world/environment/grounded-district.tsx",
+          "components/world/environment/cobblestone-surface.tsx",
+          "components/world/environment/licensed-props.tsx",
+          "components/world/environment/optional-asset-boundary.tsx"
+        ]
+      },
+      "license": {
+        "rightsBasis": "repository_owned",
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "proof": "repository_history"
+      },
+      "modifications": { "status": "original", "steps": [] },
+      "delivery": {
+        "kind": "runtime_procedural",
+        "sourcePaths": [
+          "components/world/scene-runtime.tsx",
+          "components/world/environment/grounded-district.tsx",
+          "components/world/environment/cobblestone-surface.tsx",
+          "components/world/environment/licensed-props.tsx",
+          "components/world/environment/optional-asset-boundary.tsx"
+        ],
+        "compression": "not_applicable"
+      }
+    },
+    {
+      "assetId": "ASSET-PROP-PROCEDURAL-STATIONS",
+      "title": "Evidence stations, disclosures, and procedural cast markers",
+      "category": "prop",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "These forms provide interaction affordances and dramatized character silhouettes; canonical evidence remains in the DOM records they open.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Render navigation markers, non-evidentiary source stations, ambient residents, and the unnamed investigator.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Station and figure placement follows gameplay transforms, not a documented historical arrangement.",
+            "ownership": "Furniture and clothing colors do not establish ownership or identity beyond the labeled interface station.",
+            "scale": "Figure and prop dimensions are adjusted for classroom readability and collision safety.",
+            "appearance": "Procedural figures and stations are dramatized visual markers, not portraits or authentic artifacts."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "repository_authored_procedural",
+      "origin": {
+        "creator": "History Unbroken project",
+        "rightsHolder": "Caden Minami",
+        "sourcePaths": [
+          "components/world/interactions/interactable.tsx",
+          "components/world/character/investigator-model.tsx",
+          "components/world/character/period-figure.tsx",
+          "components/world/ambient/ambient-residents.tsx",
+          "components/world/zones/archive-zone.tsx",
+          "components/world/zones/post-road-zone.tsx",
+          "components/world/zones/civic-zone.tsx",
+          "components/world/zones/bridge-zone.tsx"
+        ]
+      },
+      "license": {
+        "rightsBasis": "repository_owned",
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "proof": "repository_history"
+      },
+      "modifications": { "status": "original", "steps": [] },
+      "delivery": {
+        "kind": "runtime_procedural",
+        "sourcePaths": [
+          "components/world/interactions/interactable.tsx",
+          "components/world/character/investigator-model.tsx",
+          "components/world/character/period-figure.tsx",
+          "components/world/ambient/ambient-residents.tsx",
+          "components/world/zones/archive-zone.tsx",
+          "components/world/zones/post-road-zone.tsx",
+          "components/world/zones/civic-zone.tsx",
+          "components/world/zones/bridge-zone.tsx"
+        ],
+        "compression": "not_applicable"
+      }
+    },
+    {
+      "assetId": "ASSET-AUDIO-PROCEDURAL-DUSK",
+      "title": "Procedural dusk wind and distant tone",
+      "category": "audio",
+      "epistemicClassification": "dramatization",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "The optional soundscape is an atmospheric accessibility-controlled layer and makes no historical sound claim.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Provide optional low-volume ambience after explicit player activation.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "The generated ambience is not localized to a documented street or building.",
+            "ownership": "No sound is attributed to a historical person, object, animal, or institution.",
+            "scale": "Volume, frequency, and mix are tuned for interface comfort rather than acoustic simulation.",
+            "appearance": "The soundscape is a dramatized mood layer and not evidence of what Varennes sounded like."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "repository_authored_procedural",
+      "origin": {
+        "creator": "History Unbroken project",
+        "rightsHolder": "Caden Minami",
+        "sourcePaths": ["lib/audio/ambient-soundscape.ts"]
+      },
+      "license": {
+        "rightsBasis": "repository_owned",
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "proof": "repository_history"
+      },
+      "modifications": { "status": "original", "steps": [] },
+      "delivery": {
+        "kind": "runtime_procedural",
+        "sourcePaths": ["lib/audio/ambient-soundscape.ts"],
+        "compression": "not_applicable"
+      }
+    },
+    {
+      "assetId": "ASSET-ENV-SCHEMATIC-REPAIR",
+      "title": "Guided pursuit and reduced-motion repair reconstruction",
+      "category": "environment",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "The route trace, checkpoints, figures, markers, and reduced-motion sequence visualize reducer-owned repair steps without claiming exact geography, speed, timing, or historical appearance.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "repair_path",
+          "ownerId": "varennes-repair-path",
+          "purpose": "Present the bounded repair sequence through equivalent spatial and reduced-motion interfaces.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "The repair corridor, route trace, checkpoint positions, and action-marker placement are authored teaching geometry rather than historical geography.",
+            "ownership": "Figures, markers, controls, and path elements do not establish a historical actor's ownership or exclusive agency.",
+            "scale": "Distances, speeds, lateral movement, spacing, and timing are compressed and not to scale.",
+            "appearance": "The spatial and reduced-motion presentations are schematic reconstructions, not evidence of roads, people, vehicles, clothing, or objects in June 1791."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "repository_authored_procedural",
+      "origin": {
+        "creator": "History Unbroken project",
+        "rightsHolder": "Caden Minami",
+        "sourcePaths": [
+          "components/world/repair/pursuit-runtime.tsx",
+          "components/world/repair/reduced-motion-repair.tsx",
+          "components/world/repair/pursuit-repair.module.css"
+        ]
+      },
+      "license": {
+        "rightsBasis": "repository_owned",
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "proof": "repository_history"
+      },
+      "modifications": { "status": "original", "steps": [] },
+      "delivery": {
+        "kind": "runtime_procedural",
+        "sourcePaths": [
+          "components/world/repair/pursuit-runtime.tsx",
+          "components/world/repair/reduced-motion-repair.tsx",
+          "components/world/repair/pursuit-repair.module.css"
+        ],
+        "compression": "not_applicable"
+      }
+    },
+    {
+      "assetId": "ASSET-PROP-WOODEN-TABLE-01",
+      "title": "Wooden Table 01",
+      "category": "prop",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "A generic vintage table supports interaction staging but does not document a Varennes artifact.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Provide a consistent grounded base for evidence and archive interaction surfaces.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Table placement is invented for navigation and evidence access.",
+            "ownership": "The model is not presented as property of Drouet, Louis XVI, or any resident of Varennes.",
+            "scale": "Scale is adjusted to the interaction and camera system rather than measured from a historical artifact.",
+            "appearance": "The generic vintage design is not evidence of the furniture used during the royal journey."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "Ethan Place",
+        "sourceUrl": "https://polyhaven.com/a/WoodenTable_01",
+        "downloadUrl": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/WoodenTable_01/WoodenTable_01_1k.gltf",
+        "retrievedAt": "2026-07-16",
+        "originalFiles": [
+          { "name": "WoodenTable_01_1k.gltf", "bytes": 2688, "sha256": "413804e054055c397b4cfbd0916027097d2a20853b165b533007a46d131e1d17" },
+          { "name": "WoodenTable_01.bin", "bytes": 42064, "sha256": "1083a3442969d27e18e6a7a454bc164407439e3908bf8f17f5fb24d58cd0172e" },
+          { "name": "WoodenTable_01_diff_1k.jpg", "bytes": 160147, "sha256": "9535de577ad6b64deb68457af14240dd9b6d82143da0b6d2bf337660ebd855f3" },
+          { "name": "WoodenTable_01_nor_gl_1k.jpg", "bytes": 151350, "sha256": "330655534ea1fc7c7387b5d2ba5ca3231711a9fa680b980933a3a9c82cdb1c67" },
+          { "name": "WoodenTable_01_arm_1k.jpg", "bytes": 198099, "sha256": "ad876f814215006d35f74670d4fc14a9f6eab386a9307764521449464a1cd6ef" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/poly-haven-cc0-record.md", "sha256": "50b10d1d5c2e5e06b8a7047c0eaf7679e483993da797f38e3df6697746d3caa5" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Wooden Table 01 by Ethan Place via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Embedded the original glTF, binary mesh, and 1K textures into GLB.",
+          "Resized textures to a 512-pixel maximum, converted them to WebP, and applied Meshopt compression with glTF Transform 4.4.1.",
+          "Kept authored primitive colliders independent from the visual mesh."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/models/wooden-table-01/wooden-table-01.glb", "bytes": 89560, "sha256": "a0ddc8da04299c2db08d718cde47b9d34d584b2c4f43daf5c3a4fea131fd3d58" }
+        ]
+      }
+    },
+    {
+      "assetId": "ASSET-PROP-WOODEN-BARRELS-01",
+      "title": "Wooden Barrels 01",
+      "category": "prop",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "Generic weathered barrels add scale and material variation but do not document goods or containers at Varennes.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Non-interactive set dressing near the post road and bridge approach.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Barrel clusters are positioned for composition and never establish a historical storage site.",
+            "ownership": "No historical person or institution is identified as an owner.",
+            "scale": "Cluster size and spacing are adjusted for the compressed teaching district.",
+            "appearance": "The generic maritime and farmhouse reference is not proof of local barrel design in 1791."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "James Ray Cock",
+        "sourceUrl": "https://polyhaven.com/a/wooden_barrels_01",
+        "downloadUrl": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wooden_barrels_01/wooden_barrels_01_1k.gltf",
+        "retrievedAt": "2026-07-16",
+        "originalFiles": [
+          { "name": "wooden_barrels_01_1k.gltf", "bytes": 31017, "sha256": "ff785e2150198c4cdb3cc74e532b02ce9574d6a7fc3606f5801fcbf68e3136af" },
+          { "name": "wooden_barrels_01.bin", "bytes": 1243556, "sha256": "7de8294b07ecb6bd57ea3542760fa45bbefc296a47dd044723eb599ffc56084f" },
+          { "name": "wooden_barrels_01_barrel01_diff_1k.jpg", "bytes": 605063, "sha256": "639e616e8d69acaadbf69725bb3d13f07a28fdff6c6b15e1d7f0574336564c72" },
+          { "name": "wooden_barrels_01_barrel01_nor_gl_1k.jpg", "bytes": 538634, "sha256": "3dfa658b4a38a711887c9e4a492a319b20e2a821e4e08435368f98fe0c78a1b8" },
+          { "name": "wooden_barrels_01_barrel01_arm_1k.jpg", "bytes": 852652, "sha256": "35e34115f7657cadce27422730e936418a30e23397fb5c126591dff711acbf4b" },
+          { "name": "wooden_barrels_01_barrel02_diff_1k.jpg", "bytes": 618495, "sha256": "c75f506a0c31093d4d3d425d4c979f49fce2dc99a8e6caefb50809fcf329845e" },
+          { "name": "wooden_barrels_01_barrel02_nor_gl_1k.jpg", "bytes": 555954, "sha256": "57c3d5682f299c97270228e3ec08f6c982fb2c2696ec30a74d0edbfe067235dd" },
+          { "name": "wooden_barrels_01_barrel02_arm_1k.jpg", "bytes": 848051, "sha256": "970de5e9f682d4ac2a2098c88dafc1e5a6c27cf1dbe31eb7ed3f8bc2a92eb58f" },
+          { "name": "wooden_barrels_01_pieces_diff_1k.jpg", "bytes": 672604, "sha256": "399134703c974ad4c8bc71107d513e8c89f5ca09f9b6175dc02e2e607b75c43d" },
+          { "name": "wooden_barrels_01_pieces_nor_gl_1k.jpg", "bytes": 620276, "sha256": "3be77f6310507c9c37414809ba31c39c89621e8bde916893bd676d54a5ceade2" },
+          { "name": "wooden_barrels_01_pieces_arm_1k.jpg", "bytes": 904545, "sha256": "785b59a19add1951bcd54d7607c18fcafa5a09068349ac437640d495b45a62fd" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/poly-haven-cc0-record.md", "sha256": "50b10d1d5c2e5e06b8a7047c0eaf7679e483993da797f38e3df6697746d3caa5" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Wooden Barrels 01 by James Ray Cock via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Embedded the original glTF, binary mesh, and 1K textures into GLB.",
+          "Resized textures to a 512-pixel maximum and converted them to WebP.",
+          "Simplified meshes to a 0.65 target ratio and applied Meshopt compression with glTF Transform 4.4.1.",
+          "Kept the cluster non-interactive and outside evidence and progression systems."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/models/wooden-barrels-01/wooden-barrels-01.glb", "bytes": 576492, "sha256": "f6f303799efe478b885ab3cd8b7db09bfbc00a80c41954d0faea8a071893b9ae" }
+        ]
+      }
+    },
+    {
+      "assetId": "ASSET-MATERIAL-COBBLESTONE-FLOOR-08",
+      "title": "Cobblestone Floor 08",
+      "category": "texture",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "A generic worn paving material supports grounded readability but does not establish the surface used on the historical route.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Surface the compressed road and bridge-approach teaching geometry.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Material placement follows the authored route rather than a documented paving survey.",
+            "ownership": "The surface implies no historical owner or responsible institution.",
+            "scale": "Texture repetition and road dimensions are selected for rendering and are not to scale.",
+            "appearance": "The generic mossy cobble reference does not document the actual road material or condition in June 1791."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "Rob Tuytel",
+        "sourceUrl": "https://polyhaven.com/a/cobblestone_floor_08",
+        "downloadUrl": "https://api.polyhaven.com/files/cobblestone_floor_08",
+        "retrievedAt": "2026-07-16",
+        "originalFiles": [
+          { "name": "cobblestone_floor_08_diff_1k.jpg", "bytes": 585727, "sha256": "ec131f7a99a1e7f9df25d4725609c55a6dad1df487630685e9a66ecbf41ec33a" },
+          { "name": "cobblestone_floor_08_nor_gl_1k.jpg", "bytes": 1002410, "sha256": "26bfff70b266a4e86983814c7e56a9b48daf93cd34dcdc16a5db13e4fabcfbb6" },
+          { "name": "cobblestone_floor_08_rough_1k.jpg", "bytes": 408718, "sha256": "f92bcaf897cd98bc3cf11e6409b3e42145e7d0f659eaaad8807dfb0c5d16afc6" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/poly-haven-cc0-record.md", "sha256": "50b10d1d5c2e5e06b8a7047c0eaf7679e483993da797f38e3df6697746d3caa5" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Cobblestone Floor 08 by Rob Tuytel via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Selected and renamed the 1K diffuse, OpenGL normal, and roughness JPG maps.",
+          "Applied reduced normal intensity at runtime and retained source resolution for acceptable close-range road detail."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/textures/cobblestone-floor-08/cobblestone-floor-08-diff-1k.jpg", "bytes": 585727, "sha256": "ec131f7a99a1e7f9df25d4725609c55a6dad1df487630685e9a66ecbf41ec33a" },
+          { "path": "/world/textures/cobblestone-floor-08/cobblestone-floor-08-normal-1k.jpg", "bytes": 1002410, "sha256": "26bfff70b266a4e86983814c7e56a9b48daf93cd34dcdc16a5db13e4fabcfbb6" },
+          { "path": "/world/textures/cobblestone-floor-08/cobblestone-floor-08-roughness-1k.jpg", "bytes": 408718, "sha256": "f92bcaf897cd98bc3cf11e6409b3e42145e7d0f659eaaad8807dfb0c5d16afc6" }
+        ]
+      }
+    }
+  ]
+}

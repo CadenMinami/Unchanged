@@ -25,7 +25,7 @@ When documents disagree, stop at the conflict and report it. Do not silently cho
 
 ## Current Gate
 
-Phase 0, the deterministic primer-to-debrief vertical slice, the source-bounded GPT-5.6 layer, the four-zone 3D investigation through the Louis station, push-to-talk transcription, authorized speech playback, bounded teacher alignment, and the reducer-owned guided pursuit repair are implemented in the working tree. AI contract `1.1.0`, media contract `1.0.0`, course-alignment contract `1.1.0`, and scene manifest `1.1.0` are active. The current gate is Phase 5 visual and operational polish: replace approved graybox surfaces with provenance-labeled grounded stylized assets without changing spatial authority, then complete cross-route accessibility, performance, live-provider smoke, deployment, playtesting, screenshots, and demo-production gates.
+Phase 0, the deterministic primer-to-debrief vertical slice, the source-bounded GPT-5.6 layer, the four-zone 3D investigation through the Louis station, push-to-talk transcription, authorized speech playback, bounded teacher alignment, the reducer-owned guided pursuit repair, and the grounded stylized world pass are implemented in the working tree. AI contract `1.1.0`, media contract `1.0.0`, course-alignment contract `1.1.0`, scene manifest `1.2.0`, and world asset ledger `1.0.0` are active. The current gate is Phase 5 release closure: preserve the completed provenance-labeled visual pass while finishing cross-route accessibility, physical-device verification, live-provider smoke, deployment, unfamiliar-user playtesting, screenshots, and demo-production gates.
 
 The current 2D route is frozen as the complete, directly selectable non-spatial experience and as the DOM focus-overlay system used by the 3D route. Do not delete or weaken it while adding spatial presentation or media. Teacher alignment now uses a separately persisted, teacher-approved profile composed only of repository-owned concept IDs, exact server-authorized packet segments, and authored definitions. It may affect vocabulary, hints, reading support, selected objectives, and report emphasis; it may never alter case state, evidence, character knowledge, scoring, repair, or the solution. The secure first ingestion path supports the reviewed sample, pasted text, TXT, and Markdown; PDF and DOCX remain unsupported until their extraction can preserve the same exact-segment authorization boundary.
 
@@ -87,7 +87,7 @@ Only Drouet and Louis are authorized for generated dialogue. Drouet may combine 
 - Keep modules focused and avoid framework or infrastructure additions without a concrete requirement.
 - Preserve accessibility: keyboard operation, semantic labels, color-independent state, reduced motion, and text that fits at supported viewports.
 - Keep all reading, comparison, dialogue captions, caseboard work, and assessment in accessible React DOM overlays. Do not make difficult-to-read 3D text the only path.
-- Target ordinary school laptops and Chromebooks. The archive graybox must pass the plan's asset, loading, nonblank-canvas, and frame-rate gate before district expansion.
+- Target ordinary school laptops and Chromebooks. The grounded district must preserve the asset, loading, optional-asset-fallback, nonblank-canvas, and frame-rate gates before any further visual expansion.
 - Do not commit or push unless the user explicitly asks.
 - Keep `.Codex/` ignored and do not add generated scratch plans to version control.
 

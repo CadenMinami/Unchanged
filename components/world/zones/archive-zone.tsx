@@ -1,8 +1,5 @@
 "use client";
 
-import { Html } from "@react-three/drei";
-
-import { WORLD_HTML_Z_INDEX_RANGE } from "@/lib/world/world-overlay";
 import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
 import type { SceneManifest } from "@/schemas/world-manifest";
 
@@ -46,7 +43,6 @@ const archiveManifestZone = manifest.zones.find(
 if (!archiveManifestZone) throw new Error("The archive interactables require an authored zone.");
 
 const archiveSpawn = archiveManifestZone.safeSpawns[0].position;
-const archivePlacementLabel = archiveManifestZone.placementLabel;
 const e3Position: [number, number, number] = [
   archiveSpawn[0],
   archiveSpawn[1],
@@ -130,33 +126,6 @@ export function ArchiveZone() {
           <boxGeometry />
           <meshStandardMaterial color="#d3b86f" roughness={0.86} />
         </mesh>
-      </group>
-      <group position={[archiveSpawn[0] + 1.4, 2.2, archiveSpawn[2] - 3.35]}>
-        <mesh scale={[3.6, 0.42, 0.06]}>
-          <boxGeometry />
-          <meshStandardMaterial color="#30363a" roughness={0.92} />
-        </mesh>
-        <Html
-          center
-          distanceFactor={9}
-          position={[0, 0, 0.07]}
-          transform
-          zIndexRange={WORLD_HTML_Z_INDEX_RANGE}
-        >
-          <div
-            aria-hidden="true"
-            style={{
-              color: "#f4f2ec",
-              fontFamily: "monospace",
-              fontSize: "6px",
-              lineHeight: 1.2,
-              textAlign: "center",
-              width: "210px",
-            }}
-          >
-            {archivePlacementLabel}
-          </div>
-        </Html>
       </group>
     </group>
   );

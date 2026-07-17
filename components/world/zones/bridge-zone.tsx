@@ -1,8 +1,5 @@
 "use client";
 
-import { Html } from "@react-three/drei";
-
-import { WORLD_HTML_Z_INDEX_RANGE } from "@/lib/world/world-overlay";
 import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
 import type { SceneManifest } from "@/schemas/world-manifest";
 
@@ -25,7 +22,6 @@ const bridgeManifestZone = manifest.zones.find(
 if (!bridgeManifestZone) throw new Error("The bridge interactable requires an authored zone.");
 
 const bridgeSpawn = bridgeManifestZone.safeSpawns[0].position;
-const bridgePlacementLabel = bridgeManifestZone.placementLabel;
 const e5Position: [number, number, number] = [
   bridgeSpawn[0],
   bridgeSpawn[1],
@@ -100,33 +96,6 @@ export function BridgeZone() {
         </mesh>
       </group>
 
-      <group position={[bridgeSpawn[0], 2.5, bridgeSpawn[2] - 3.45]}>
-        <mesh scale={[3.6, 0.42, 0.06]}>
-          <boxGeometry />
-          <meshStandardMaterial color="#30363a" roughness={0.92} />
-        </mesh>
-        <Html
-          center
-          distanceFactor={9}
-          position={[0, 0, 0.07]}
-          transform
-          zIndexRange={WORLD_HTML_Z_INDEX_RANGE}
-        >
-          <div
-            aria-hidden="true"
-            style={{
-              color: "#f4f2ec",
-              fontFamily: "monospace",
-              fontSize: "6px",
-              lineHeight: 1.2,
-              textAlign: "center",
-              width: "210px",
-            }}
-          >
-            {bridgePlacementLabel}
-          </div>
-        </Html>
-      </group>
     </group>
   );
 }

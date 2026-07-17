@@ -12,17 +12,20 @@ interface FollowCameraProps {
   reducedMotion?: boolean;
 }
 
+export const FOLLOW_CAMERA_OFFSET = [4.15, 2.35, 5.3] as const;
+export const FOLLOW_CAMERA_TARGET_Y = 0.92;
+
 export function FollowCamera({ controllerRef, enabled, reducedMotion = false }: FollowCameraProps) {
   const { camera } = useThree();
   const target = useRef(new Vector3());
   const desiredPosition = useRef(new Vector3());
-  const cameraOffset = useRef(new Vector3(5.5, 3.4, 7));
+  const cameraOffset = useRef(new Vector3(...FOLLOW_CAMERA_OFFSET));
 
   useFrame((_state, deltaSeconds) => {
     if (!enabled || !controllerRef.current) return;
 
     target.current.copy(controllerRef.current.currPos);
-    target.current.y += 1.05;
+    target.current.y += FOLLOW_CAMERA_TARGET_Y;
     desiredPosition.current.copy(target.current).add(cameraOffset.current);
 
     if (reducedMotion) {

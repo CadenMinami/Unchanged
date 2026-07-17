@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   type ProximityCandidate,
   selectNearestEligibleInteraction,
+  selectProximityInteraction,
 } from "@/components/world/interactions/proximity-registry";
 
 const request = {
@@ -70,5 +71,41 @@ describe("proximity registry", () => {
       selectNearestEligibleInteraction([0, 0, 0], guardedCandidates, 3)
         ?.candidateId,
     ).toBe("A");
+  });
+
+  it("retains the current interaction inside a larger exit radius", () => {
+    const candidates: readonly ProximityCandidate[] = [
+      { candidateId: "current", eligible: true, position: [3.8, 0, 0], request },
+    ];
+
+    expect(
+      selectProximityInteraction([0, 0, 0], candidates, 3, "current", 4.5)
+        ?.candidateId,
+    ).toBe("current");
+    expect(
+      selectProximityInteraction([0, 0, 0], candidates, 3, "current", 3.5),
+    ).toBeNull();
+  });
+
+  it("uses a forgiving default exit band for stop-and-interact momentum", () => {
+    const candidates: readonly ProximityCandidate[] = [
+      { candidateId: "current", eligible: true, position: [5.2, 0, 0], request },
+    ];
+
+    expect(
+      selectProximityInteraction([0, 0, 0], candidates, 3, "current")?.candidateId,
+    ).toBe("current");
+  });
+
+  it("prefers a newly entered nearer interaction over exit hysteresis", () => {
+    const candidates: readonly ProximityCandidate[] = [
+      { candidateId: "current", eligible: true, position: [3.8, 0, 0], request },
+      { candidateId: "near", eligible: true, position: [1.2, 0, 0], request },
+    ];
+
+    expect(
+      selectProximityInteraction([0, 0, 0], candidates, 3, "current", 4.5)
+        ?.candidateId,
+    ).toBe("near");
   });
 });

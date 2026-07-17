@@ -54,14 +54,4 @@ describe("ambient resident placements", () => {
       ).toBeLessThanOrEqual(6);
     }
   });
-
-  it("shows each authored ambient caption at most once", () => {
-    const placements = buildAmbientResidentPlacements(manifest, ambientLines, 16);
-    const visibleCaptionIds = placements
-      .filter((placement) => placement.showCaption)
-      .map((placement) => placement.ambientLineId);
-
-    expect(visibleCaptionIds).toHaveLength(ambientLines.lines.length);
-    expect(new Set(visibleCaptionIds).size).toBe(visibleCaptionIds.length);
-  });
 });

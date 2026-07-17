@@ -1,21 +1,16 @@
 "use client";
 
-import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import type { Group } from "three";
 
-import { WORLD_HTML_Z_INDEX_RANGE } from "@/lib/world/world-overlay";
 import type {
   AmbientLines,
   SceneManifest,
   WorldZoneId,
 } from "@/schemas/world-manifest";
 
-import styles from "./ambient-residents.module.css";
-
-export const AMBIENT_AUTHORITY_DISCLOSURE =
-  "Authored dramatization; not testimony or evidence." as const;
+import { PeriodFigure } from "../character/period-figure";
 
 export type AmbientResidentPlacement = Readonly<{
   residentId: string;
@@ -26,7 +21,6 @@ export type AmbientResidentPlacement = Readonly<{
   pathRadius: number;
   phase: number;
   speed: number;
-  showCaption: boolean;
 }>;
 
 export function buildAmbientResidentPlacements(
@@ -64,7 +58,6 @@ export function buildAmbientResidentPlacements(
       pathRadius: 0.75 + (cycle % 3) * 0.18,
       phase: entry.zoneIndex * 1.31 + cycle * 0.83,
       speed: 0.16 + (index % 4) * 0.018,
-      showCaption: cycle === 0,
     };
   });
 }
@@ -112,55 +105,20 @@ export function AmbientResidents({
             residentRefs.current[index] = resident;
           }}
         >
-          <mesh castShadow position={[0, 1.55, 0]}>
-            <sphereGeometry args={[0.2, 10, 10]} />
-            <meshStandardMaterial color="#a78f78" roughness={0.96} />
-          </mesh>
-          <mesh castShadow position={[0, 0.8, 0]} scale={[0.38, 0.78, 0.28]}>
-            <capsuleGeometry args={[0.48, 1, 5, 10]} />
-            <meshStandardMaterial
-              color={index % 2 === 0 ? "#5f6962" : "#68645c"}
-              roughness={0.98}
-            />
-          </mesh>
-          {placement.showCaption ? (
-            <Html
-              center
-              distanceFactor={10}
-              position={[0, 2.35, 0]}
-              zIndexRange={WORLD_HTML_Z_INDEX_RANGE}
-            >
-              <aside
-                aria-label="Ambient reconstruction caption"
-                className={styles.caption}
-                style={{
-                  width: "210px",
-                  padding: "8px 10px",
-                  color: "#f5f1e8",
-                  fontFamily: "system-ui, sans-serif",
-                  fontSize: "11px",
-                  lineHeight: 1.35,
-                  textAlign: "left",
-                  border: "1px solid rgba(255,255,255,.28)",
-                  background: "rgba(25,31,28,.9)",
-                  pointerEvents: "none",
-                }}
-              >
-                <span>{placement.caption}</span>
-                <small
-                  style={{
-                    marginTop: "5px",
-                    display: "block",
-                    color: "#d5bd82",
-                    fontSize: "8px",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {AMBIENT_AUTHORITY_DISCLOSURE}
-                </small>
-              </aside>
-            </Html>
-          ) : null}
+          <PeriodFigure
+            motion="walk"
+            palette={{
+              skin: index % 3 === 0 ? "#8d6852" : "#ae8569",
+              coat: index % 2 === 0 ? "#4d5f58" : "#62564c",
+              waistcoat: index % 2 === 0 ? "#93805e" : "#6d776c",
+              breeches: "#4e4841",
+              stockings: "#aaa393",
+              shoes: "#292622",
+              hair: index % 2 === 0 ? "#40342c" : "#594539",
+              hat: "#34312c",
+            }}
+            scale={0.78 + (index % 3) * 0.04}
+          />
         </group>
       ))}
     </>

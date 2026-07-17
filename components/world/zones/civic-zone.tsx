@@ -1,11 +1,9 @@
 "use client";
 
-import { Html } from "@react-three/drei";
-
-import { WORLD_HTML_Z_INDEX_RANGE } from "@/lib/world/world-overlay";
 import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
 import type { SceneManifest } from "@/schemas/world-manifest";
 
+import { PeriodFigure } from "../character/period-figure";
 import type { ProximityCandidate } from "../interactions/proximity-registry";
 
 const manifest = loadVarennesSceneManifest();
@@ -39,7 +37,6 @@ const civicManifestZone = manifest.zones.find(
 if (!civicManifestZone) throw new Error("The civic interactables require an authored zone.");
 
 const civicSpawn = civicManifestZone.safeSpawns[0].position;
-const civicPlacementLabel = civicManifestZone.placementLabel;
 const e1Position: [number, number, number] = [
   civicSpawn[0] - 2,
   civicSpawn[1],
@@ -88,7 +85,7 @@ export const CIVIC_CANDIDATES = [
   CIVIC_STATION_CANDIDATE,
 ] as const satisfies readonly ProximityCandidate[];
 
-export function CivicZone() {
+export function CivicZone({ reducedMotion = false }: { reducedMotion?: boolean }) {
   return (
     <group>
       <mesh
@@ -131,18 +128,19 @@ export function CivicZone() {
       </group>
 
       <group position={louisPosition}>
-        <mesh castShadow position={[0, 1.48, 0]}>
-          <sphereGeometry args={[0.24, 14, 14]} />
-          <meshStandardMaterial color="#c9b69f" roughness={0.92} />
-        </mesh>
-        <mesh castShadow position={[0, 0.78, 0]} scale={[0.48, 0.9, 0.34]}>
-          <capsuleGeometry args={[0.5, 1, 6, 14]} />
-          <meshStandardMaterial color="#3e4a52" roughness={0.95} />
-        </mesh>
-        <mesh castShadow position={[0, 1.73, 0]} scale={[0.29, 0.08, 0.29]}>
-          <cylinderGeometry args={[1, 1.12, 1, 8]} />
-          <meshStandardMaterial color="#786843" roughness={0.88} />
-        </mesh>
+        <PeriodFigure
+          palette={{
+            skin: "#c0a087",
+            coat: "#3c4c5a",
+            waistcoat: "#c2ab74",
+            breeches: "#45413e",
+            stockings: "#d0c8b6",
+            shoes: "#242321",
+            hair: "#665347",
+            hat: "#5c4b32",
+          }}
+          reducedMotion={reducedMotion}
+        />
       </group>
 
       <group position={civicStationPosition}>
@@ -152,45 +150,24 @@ export function CivicZone() {
         </mesh>
         {[-1.25, 0, 1.25].map((x) => (
           <group key={x} position={[x, 0, -0.4]}>
-            <mesh castShadow position={[0, 1.2, 0]}>
-              <sphereGeometry args={[0.18, 12, 12]} />
-              <meshStandardMaterial color="#7f8582" roughness={0.96} />
-            </mesh>
-            <mesh castShadow position={[0, 0.66, 0]} scale={[0.35, 0.72, 0.25]}>
-              <capsuleGeometry args={[0.5, 1, 6, 12]} />
-              <meshStandardMaterial color="#626a6c" roughness={0.97} />
-            </mesh>
+            <PeriodFigure
+              palette={{
+                skin: "#85817b",
+                coat: x === 0 ? "#515e5e" : "#5f5d55",
+                waistcoat: "#777162",
+                breeches: "#4f4d48",
+                stockings: "#8e8a80",
+                shoes: "#30302d",
+                hair: "#4c4944",
+                hat: "#3e403d",
+              }}
+              reducedMotion={reducedMotion}
+              scale={0.76}
+            />
           </group>
         ))}
       </group>
 
-      <group position={[civicSpawn[0], 2.65, civicSpawn[2] + 3.35]}>
-        <mesh scale={[3.6, 0.42, 0.06]}>
-          <boxGeometry />
-          <meshStandardMaterial color="#30363a" roughness={0.92} />
-        </mesh>
-        <Html
-          center
-          distanceFactor={9}
-          position={[0, 0, 0.07]}
-          transform
-          zIndexRange={WORLD_HTML_Z_INDEX_RANGE}
-        >
-          <div
-            aria-hidden="true"
-            style={{
-              color: "#f4f2ec",
-              fontFamily: "monospace",
-              fontSize: "6px",
-              lineHeight: 1.2,
-              textAlign: "center",
-              width: "210px",
-            }}
-          >
-            {civicPlacementLabel}
-          </div>
-        </Html>
-      </group>
     </group>
   );
 }

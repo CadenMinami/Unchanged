@@ -4,10 +4,11 @@ import { KeyboardControls, type KeyboardControlsEntry } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber";
 import { Ecctrl, type EcctrlHandle, type MovementInput } from "ecctrl";
 import type { RefObject } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { FollowCamera } from "./follow-camera";
 import { InvestigatorModel } from "./investigator-model";
+import type { FigureMotion } from "./period-figure";
 
 type ControlName = "forward" | "backward" | "leftward" | "rightward" | "run";
 
@@ -28,6 +29,15 @@ const stoppedMovement: MovementInput = {
   jump: false,
 };
 
+export function resolveInvestigatorMotion(
+  moving: boolean,
+  runActive: boolean,
+  enabled: boolean,
+): FigureMotion {
+  if (!enabled || !moving) return "idle";
+  return runActive ? "run" : "walk";
+}
+
 interface InvestigatorControllerProps {
   controllerRef: RefObject<EcctrlHandle | null>;
   enabled: boolean;
@@ -44,8 +54,17 @@ export function InvestigatorController({
   reducedMotion = false,
 }: InvestigatorControllerProps) {
   const lastPositionSampleAt = useRef(Number.NEGATIVE_INFINITY);
+  const movingRef = useRef(false);
+  const [motion, setMotion] = useState<FigureMotion>("idle");
 
   useFrame(({ clock }) => {
+    const nextMotion = resolveInvestigatorMotion(
+      movingRef.current,
+      controllerRef.current?.runActive ?? false,
+      enabled,
+    );
+    if (nextMotion !== motion) setMotion(nextMotion);
+
     if (!onPositionChange || clock.elapsedTime - lastPositionSampleAt.current < 0.1) {
       return;
     }
@@ -65,13 +84,18 @@ export function InvestigatorController({
       { x: 0, y: velocity.y, z: 0 },
       true,
     );
+    setMotion("idle");
   }, [controllerRef, enabled]);
 
   return (
     <KeyboardControls
       map={keyboardMap}
       onChange={(_name, _pressed, state) => {
-        controllerRef.current?.setMovement(
+        const moving =
+          state.forward || state.backward || state.leftward || state.rightward;
+        movingRef.current = moving;
+        const controller = controllerRef.current;
+        controller?.setMovement(
           enabled
             ? {
                 forward: state.forward,
@@ -83,6 +107,10 @@ export function InvestigatorController({
               }
             : stoppedMovement,
         );
+        if (enabled && !moving && controller) {
+          const velocity = controller.body.linvel();
+          controller.body.setLinvel({ x: 0, y: velocity.y, z: 0 }, true);
+        }
       }}
     >
       <Ecctrl
@@ -102,7 +130,7 @@ export function InvestigatorController({
         position={initialPosition}
         ref={controllerRef}
       >
-        <InvestigatorModel />
+        <InvestigatorModel motion={motion} reducedMotion={reducedMotion} />
       </Ecctrl>
       <FollowCamera controllerRef={controllerRef} enabled={enabled} reducedMotion={reducedMotion} />
     </KeyboardControls>

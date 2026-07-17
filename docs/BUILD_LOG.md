@@ -1523,3 +1523,58 @@ The final production run reported:
 
 - Physical Chromebook performance, final visual assets, cross-route accessibility review, live-provider smoke testing, deployment, unfamiliar-user playtesting, screenshots, and demo production remain separate gates.
 - No push, deployment, purchase, publication, or live paid provider call occurred during this checkpoint.
+
+## 2026-07-16 / Phase 5 Grounded World And Asset Integrity Pass
+
+### Intent and user direction
+
+- Advance the approved hybrid spatial experience from a technical graybox to a grounded stylized late-evening reconstruction without turning travel into the main learning mechanic.
+- Preserve responsive source-bound NPC dialogue, audible responses, a small number of non-agent ambient residents, the complete non-spatial route, and deterministic historical authority.
+- Aim for a more credible historical-game silhouette without claiming Red Dead Redemption-level photorealism or exact reconstruction.
+
+### What Codex proposed and implemented
+
+- Advanced the scene manifest from `1.1.0` to `1.2.0` and changed interactable presentation to `grounded_reconstruction` while retaining low-confidence schematic placement and explicit non-evidentiary limitations.
+- Replaced the blockout district with a full-bleed late-evening environment using authored gabled facades, lit windows, street lanterns, water, fog, cobbled routes, stable building colliders, and a lower follow camera.
+- Replaced block figures with articulated, late-18th-century-inspired procedural silhouettes for the investigator, Drouet, Louis, civic figures, and ambient residents. Walk, toggled run, idle, talk, and interact states remain presentation-only.
+- Added a small optimized CC0 set: Wooden Table 01, Wooden Barrels 01, and Cobblestone Floor 08 from Poly Haven. The shipped world contains two optimized GLBs and three optimized texture maps; raw acquisition files are excluded from `public/`.
+- Added asset ledger `1.0.0`, a strict Zod contract, case/scene cross-validation, exact byte and SHA-256 checks, shipped-file closure, procedural Canvas inverse closure, repository-source existence checks, and a project-authored license verification record.
+- Added local procedural fallbacks and error boundaries for every downloaded model and texture. Optional asset failure can no longer remove the 3D investigation or require retrying the historical session.
+- Added muted-by-default procedural dusk ambience with an explicit icon control, hidden-tab muting, cleanup, and no evidence or progression authority.
+- Removed floating zone placards that read as debug geometry; the persistent DOM HUD remains the visible schematic-reconstruction disclosure.
+
+### Reliability corrections from testing and review
+
+- Moved initial proximity publication outside the visual Suspense boundary so authored interaction affordances do not wait for decorative assets.
+- Added proximity exit hysteresis, immediate horizontal stopping when movement keys are released, and explicit proximity clearing on unmount, retry, and fast travel. This prevents prompt detachment without retaining a previous-zone interaction.
+- Limited the general browser suite to four workers because seven simultaneous WebGL worlds created unrealistic GPU contention; the separate single-world classroom proxy remains the actual performance gate.
+- Disposed cloned cobblestone textures on remount and changed custom roof geometry to declarative R3F geometry so repeated fast travel does not leak those resources.
+- Propagated reduced motion to stationary source figures and made the investigator's visible gait follow the controller's toggled `runActive` state.
+- Replaced a copied license-page snapshot with project-authored verification metadata, added the repair runtime to procedural-asset coverage, and rejected stale graybox wording through historical-integrity tests.
+- Replaced Canvas-only procedural discovery with an explicit reviewed inventory of all 17 authored environment, figure, station, fallback, repair, styling, and audio source files represented by the asset ledger.
+- Grouped the sound and graphics-quality controls in one measured flow layout so longer graphics-tier labels cannot overlap the sound control at phone widths.
+- Destroyed enabled ambience whenever the 3D runtime becomes unavailable and guarded both success and rejection paths by soundscape identity, so a stale asynchronous failure cannot mute or destroy audio created after retry.
+- Moved ambient dramatization text out of distance-scaled world anchors into one current-district HUD caption so disclosure text cannot be projected off-screen or duplicated across residents.
+- Replaced two walking tests' accidental dependency on world-anchored caption timing with an explicit visible-canvas and animation-frame readiness barrier before keyboard input.
+
+### Independent review
+
+- Historical-integrity and licensing re-review: `APPROVED`, with exact closure over all five shipped world files and no evidence-authority or learner-answerability regression.
+- Visual acceptance re-review: acceptable for this checkpoint with no blockers at desktop, `390 x 844`, and `320 x 720`. Remaining suggestions are optional variety and facial/facade polish.
+- Final code-quality re-review: `APPROVED` after regression coverage closed runtime-failure audio teardown, stale rejected-unmute ordering, exact procedural-inventory closure, and sound/quality control overlap.
+
+### Verification
+
+- Warning-free lint and TypeScript checks passed.
+- Vitest passed 81 files and 537 tests, including deferred stale-audio rejection and runtime-failure teardown regressions.
+- The production build completed and generated every student, teacher, and API route.
+- The production browser suite passed all 27 no-key Chromium flows, including the real-entry walking case, mobile layouts, staged voice, repair, context-loss fallback, and a forced failure of every downloaded world asset.
+- Both canvas-readiness traversal regressions passed three consecutive isolated repetitions before the final full-suite run.
+- The real-entry world case also passed four concurrent repetitions after the movement/proximity correction.
+- The final classroom proxy passed under 4x CPU slowdown and throttled network: 4,145,016 compressed bytes, 4,001 ms to the first canonical interaction, 34 FPS median, 32 FPS p10, 79.6 ms maximum post-load stall, and a nonblank canvas.
+
+### Remaining gates
+
+- Physical Chromebook performance, live-provider smoke testing, formal screen-reader and cross-route equivalence review, deployment, unfamiliar-user playtesting, final screenshots, and demo production remain open.
+- The classroom proxy passes but has less frame-rate margin than the graybox; do not add more always-rendered geometry before physical-device verification.
+- No commit, push, deployment, purchase, publication, or live paid provider call occurred during this checkpoint.

@@ -3,7 +3,7 @@ import sharp from "sharp";
 
 test.use({ viewport: { width: 1280, height: 720 } });
 
-test("renders a nonblank Varennes graybox inside the client-only world route", async ({ page }) => {
+test("renders a nonblank grounded Varennes reconstruction inside the client-only world route", async ({ page }, testInfo) => {
   await page.addInitScript(() => {
     window.sessionStorage.setItem("history-unbroken:world-test-mode", "1");
   });
@@ -12,6 +12,11 @@ test("renders a nonblank Varennes graybox inside the client-only world route", a
   await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
     timeout: 15_000,
   });
+  await expect(
+    page.getByRole("complementary", {
+      name: /ambient reconstruction caption/i,
+    }),
+  ).toHaveCount(1);
   const canvas = page.getByTestId("world-canvas").locator("canvas");
   await expect(canvas).toBeVisible();
 
@@ -20,6 +25,10 @@ test("renders a nonblank Varennes graybox inside the client-only world route", a
   expect(bounds?.height).toBeGreaterThan(500);
 
   const screenshot = await canvas.screenshot();
+  await testInfo.attach("grounded-varennes-reconstruction", {
+    body: screenshot,
+    contentType: "image/png",
+  });
   expect(screenshot.byteLength).toBeGreaterThan(10_000);
   const { data: pixels, info } = await sharp(screenshot)
     .removeAlpha()
@@ -36,6 +45,24 @@ test("renders a nonblank Varennes graybox inside the client-only world route", a
   await expect(
     page.getByRole("link", { name: /use non-spatial investigation/i }),
   ).toHaveAttribute("href", "/play/investigate");
+});
+
+test("keeps the authored world usable when optional downloaded assets fail", async ({
+  page,
+}) => {
+  await page.route("**/world/**", (route) => route.abort("failed"));
+  await page.goto("/play/world");
+
+  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
+    timeout: 15_000,
+  });
+  await expect(page.getByTestId("world-canvas").locator("canvas")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /inspect drouet account table/i }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /3d reconstruction unavailable/i }),
+  ).toHaveCount(0);
 });
 
 test("keyboard movement changes the rendered world frame", async ({ page }) => {
@@ -69,6 +96,16 @@ test("keyboard movement changes the rendered world frame", async ({ page }) => {
 test("keeps the portrait world visible without overlapping top controls", async ({
   page,
 }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window.navigator, "deviceMemory", {
+      configurable: true,
+      value: 4,
+    });
+    Object.defineProperty(window.navigator, "hardwareConcurrency", {
+      configurable: true,
+      value: 4,
+    });
+  });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/play/world");
 
@@ -80,15 +117,27 @@ test("keeps the portrait world visible without overlapping top controls", async 
     name: /inspect drouet account table/i,
   });
   const quality = page.locator('[aria-label^="Graphics quality:"]');
+  const sound = page.getByRole("button", { name: /enable ambient sound/i });
   await expect(prompt).toBeVisible();
   await expect(quality).toBeVisible();
+  await expect(sound).toBeVisible();
+  await expect(
+    page.getByRole("complementary", {
+      name: /ambient reconstruction caption/i,
+    }),
+  ).toHaveCount(0);
 
   const promptBounds = await prompt.boundingBox();
   const qualityBounds = await quality.boundingBox();
+  const soundBounds = await sound.boundingBox();
   expect(promptBounds).not.toBeNull();
   expect(qualityBounds).not.toBeNull();
+  expect(soundBounds).not.toBeNull();
   expect(promptBounds!.y).toBeGreaterThanOrEqual(
     qualityBounds!.y + qualityBounds!.height + 12,
+  );
+  expect(soundBounds!.x + soundBounds!.width + 8).toBeLessThanOrEqual(
+    qualityBounds!.x,
   );
 
   await page.waitForTimeout(1_200);
@@ -120,6 +169,14 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
   await page.getByRole("link", { name: "Enter 3D reconstruction" }).click();
 
   await expect(page.getByRole("status")).toContainText(/reconstruction ready/i);
+  const canvas = page.getByTestId("world-canvas").locator("canvas");
+  await expect(canvas).toBeVisible();
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
+      }),
+  );
   const prompt = page.getByRole("button", { name: /inspect drouet account table/i });
   await expect(prompt).toBeVisible();
   await prompt.click();
@@ -209,13 +266,20 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
 test("discovers the route by walking and fast travels without changing case authority", async ({
   page,
 }) => {
+  await page.addInitScript(() => {
+    window.sessionStorage.setItem("history-unbroken:world-telemetry", "1");
+  });
   await page.goto("/play/world");
   await expect(page.getByRole("status")).toContainText(/reconstruction ready/i);
 
-  const ambientDisclosures = page.getByText(
-    /authored dramatization; not testimony or evidence/i,
+  const canvas = page.getByTestId("world-canvas").locator("canvas");
+  await expect(canvas).toBeVisible();
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
+      }),
   );
-  await expect.poll(() => ambientDisclosures.count()).toBeGreaterThan(0);
 
   const caseRevisionBefore = await page.evaluate(() => {
     const saved = JSON.parse(
@@ -227,13 +291,21 @@ test("discovers the route by walking and fast travels without changing case auth
   const location = page.getByRole("complementary", {
     name: /current reconstruction location/i,
   });
+  const telemetry = page.getByTestId("world-player-position");
   await page.keyboard.down("ShiftLeft");
   await page.keyboard.down("KeyS");
   await page.keyboard.down("KeyD");
   try {
-    await expect(location).toContainText(/royal lodging and civic area/i, {
-      timeout: 22_000,
-    });
+    try {
+      await expect(location).toContainText(/royal lodging and civic area/i, {
+        timeout: 22_000,
+      });
+    } catch (error) {
+      throw new Error(
+        `Civic traversal ended at ${await telemetry.getAttribute("data-position")}.`,
+        { cause: error },
+      );
+    }
   } finally {
     await page.keyboard.up("KeyD");
     await page.keyboard.up("KeyS");

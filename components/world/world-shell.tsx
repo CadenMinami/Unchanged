@@ -2,12 +2,19 @@
 
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 
 import { useCaseSession } from "@/components/case-session/case-session-provider";
 import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { isInvestigationComplete } from "@/lib/case-engine/selectors";
+import {
+  ambientSoundReducer,
+  createAmbientSoundscape,
+  initialAmbientSoundState,
+  shouldMuteAmbientSound,
+  type AmbientSoundscape,
+} from "@/lib/audio/ambient-soundscape";
 import {
   GRAPHICS_PROFILES,
   selectInitialGraphicsTier,
@@ -39,7 +46,10 @@ import {
   transitionWorldMode,
   type WorldModeState,
 } from "@/lib/world/world-mode";
-import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
+import {
+  loadVarennesAmbientLines,
+  loadVarennesSceneManifest,
+} from "@/lib/world/scene-manifest";
 import { findVisitedZoneSpawn } from "@/lib/world/zone-discovery";
 import type { SpatialSessionEnvelope } from "@/schemas/spatial-session";
 import type {
@@ -81,6 +91,7 @@ function initialGraphicsTier(): GraphicsTier {
 }
 
 const manifest = loadVarennesSceneManifest();
+const ambientLines = loadVarennesAmbientLines();
 const casePackage = loadVarennesCase();
 const JOURNAL_FRACTURE_RECORD_IDS: ReadonlySet<string> = new Set([
   ...casePackage.anomalies.map((record) => record.id),
@@ -188,6 +199,10 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
   const [runtimeIssue, setRuntimeIssue] = useState<string | null>(null);
   const [graphicsTier, setGraphicsTier] = useState<GraphicsTier>(initialGraphicsTier);
   const [offerNonSpatial, setOfferNonSpatial] = useState(false);
+  const [ambientSound, dispatchAmbientSound] = useReducer(
+    ambientSoundReducer,
+    initialAmbientSoundState,
+  );
   const [worldMode, setWorldMode] = useState<WorldModeState>(createWorldModeState);
   const [nearbyInteraction, setNearbyInteraction] =
     useState<WorldInteractionRequest | null>(null);
@@ -218,6 +233,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
   const performanceMonitor = useRef<PerformanceMonitorState>(
     createPerformanceMonitor(graphicsTier),
   );
+  const ambientSoundscapeRef = useRef<AmbientSoundscape | null>(null);
   const performanceSamplesRef = useRef<
     Array<{ fps: number; timestampMs: number }>
   >([]);
@@ -244,6 +260,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
     setWebglAvailable(capabilityCheck());
     setCapabilityAttempt((attempt) => attempt + 1);
     setRuntimeIssue(null);
+    setNearbyInteraction(null);
     setRuntimePlayerPosition(
       resolveControllerStartPosition(spatialSessionRef.current),
     );
@@ -267,6 +284,25 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
       setOfferNonSpatial(true);
     }
   }, [performanceTelemetryEnabled]);
+
+  const toggleAmbientSound = useCallback(async () => {
+    const nextMuted = !ambientSound.muted;
+    let soundscape = ambientSoundscapeRef.current;
+    try {
+      if (!soundscape && !nextMuted) {
+        soundscape = createAmbientSoundscape(new AudioContext());
+        ambientSoundscapeRef.current = soundscape;
+      }
+      await soundscape?.setMuted(nextMuted);
+      if (ambientSoundscapeRef.current !== soundscape) return;
+      dispatchAmbientSound({ type: "mute_changed", muted: nextMuted });
+    } catch {
+      if (ambientSoundscapeRef.current !== soundscape) return;
+      ambientSoundscapeRef.current = null;
+      if (soundscape) void soundscape.destroy();
+      dispatchAmbientSound({ type: "mute_changed", muted: true });
+    }
+  }, [ambientSound.muted]);
 
   const recordPlayerPosition = useCallback((position: [number, number, number]) => {
     if (playerPositionOutputRef.current) {
@@ -352,8 +388,41 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
     };
   }, [performanceTelemetryEnabled]);
 
+  useEffect(
+    () => () => {
+      const soundscape = ambientSoundscapeRef.current;
+      ambientSoundscapeRef.current = null;
+      if (soundscape) void soundscape.destroy();
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (webglAvailable && !runtimeIssue) return;
+    const soundscape = ambientSoundscapeRef.current;
+    if (!soundscape) return;
+    ambientSoundscapeRef.current = null;
+    dispatchAmbientSound({ type: "mute_changed", muted: true });
+    void soundscape.destroy();
+  }, [runtimeIssue, webglAvailable]);
+
   useEffect(() => {
     const handleVisibility = () => {
+      const soundscape = ambientSoundscapeRef.current;
+      if (soundscape) {
+        void soundscape
+          .setMuted(
+            shouldMuteAmbientSound({
+              documentHidden: document.hidden,
+              userMuted: ambientSound.muted,
+            }),
+          )
+          .catch(() => {
+            if (!document.hidden) {
+              dispatchAmbientSound({ type: "mute_changed", muted: true });
+            }
+          });
+      }
       setWorldMode((current) => {
         const event = document.hidden ? { type: "suspend" as const } : { type: "resume" as const };
         return transitionWorldMode(current, event).state;
@@ -362,7 +431,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
 
     document.addEventListener("visibilitychange", handleVisibility);
     return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, []);
+  }, [ambientSound.muted]);
 
   const openNearbyInteraction = useCallback(() => {
     if (!nearbyInteraction || worldMode.mode !== "exploring") return;
@@ -457,6 +526,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
         result.safeSpawn.position[1] + 1.2,
         result.safeSpawn.position[2],
       ]);
+      setNearbyInteraction(null);
       setRuntimeKey((key) => key + 1);
       setJournalOpen(false);
       setWorldMode(transition.state);
@@ -543,6 +613,12 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
   );
   const currentZoneLabel =
     manifest.zones[currentZoneIndex]?.label ?? "Archive antechamber";
+  const currentAmbientLineId =
+    manifest.zones[currentZoneIndex]?.ambientLineIds[0];
+  const currentAmbientCaption =
+    ambientLines.lines.find(
+      (line) => line.ambientLineId === currentAmbientLineId,
+    )?.text ?? "This district has no authored ambient caption.";
 
   if (!webglAvailable) {
     return (
@@ -591,6 +667,8 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
         </WorldErrorBoundary>
       </div>
       <WorldHud
+        ambientCaption={currentAmbientCaption}
+        ambientMuted={ambientSound.muted}
         currentZoneIndex={currentZoneIndex}
         currentZoneLabel={currentZoneLabel}
         graphicsTier={graphicsTier}
@@ -604,6 +682,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
         guidanceSetting={spatialSession.guidanceSetting}
         reasoningButtonRef={reasoningButtonRef}
         nearbyInteractionLabel={nearbyInteractionLabel}
+        onAmbientMuteChange={() => void toggleAmbientSound()}
         onInteract={openNearbyInteraction}
         onGuidanceSettingChange={setGuidanceSetting}
         onOpenJournal={openJournal}
