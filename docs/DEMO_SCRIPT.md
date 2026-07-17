@@ -19,14 +19,14 @@ History Unbroken is not a historical chatbot. It is a playable evidence system w
 | Time | Visual | Voiceover purpose |
 |---:|---|---|
 | 0:00-0:12 | Carriage passes Varennes; three fictional anomaly candidates appear | "History has fractured somewhere between recognition and detention. The game does not reveal which link changed." |
-| 0:12-0:34 | Drouet interview; player presents one candidate anomaly | "GPT-5.6 responds as a source-bound character and reacts to the evidence presented." |
+| 0:12-0:34 | Drouet interview; player presents reviewed evidence | After a successful live-provider smoke: "GPT-5.6 selects a source-bound response that reacts to the evidence presented." Otherwise show and identify the authored fallback. |
 | 0:34-0:58 | Comparison lab contrasts fixed fictional branch observations with reviewed records, eliminating recognition and authorization candidates | "Students distinguish what happened in the authored fracture from what the historical record supports, then reject plausible alternatives." |
 | 0:58-1:18 | Causal board adds recognition, route information, warning, local action, and political context | "The altered information is one link in a larger network, not the sole cause of later history." |
-| 1:18-1:38 | Student submits an incomplete theory; focused feedback appears | "GPT-5.6 interprets the argument and identifies an unsupported reasoning move." |
+| 1:18-1:38 | Student submits a theory; focused feedback appears | "GPT-5.6 provides non-authoritative formative feedback on the argument; the deterministic gate remains independent." Use this line only with a successful live-provider capture. |
 | 1:38-1:58 | Student revises; deterministic requirements pass; repair restores the intended link | "Authored logic controls facts and progression. The model cannot rewrite the case." |
 | 1:58-2:17 | Journey and political-meaning tracks reconstruct | "The repair restores supported history while the alternate future remains explicitly unknowable." |
-| 2:17-2:30 | Teacher alignment and reasoning report | "A course packet changes vocabulary and feedback, never historical truth." |
-| 2:30-2:38 | Architecture and test proof | "Codex helped build and test the case engine, model contracts, and evidence interactions." |
+| 2:17-2:30 | Teacher alignment and reasoning report | "A reviewed sample, pasted text, or bounded UTF-8 TXT or Markdown packet can change vocabulary and support, never historical truth." |
+| 2:30-2:38 | Architecture and test proof | Show release-closure baseline `9f71cb0`, 554 Vitest tests, 33 Playwright tests, and the passing 4x-CPU classroom proxy. "Codex helped build and test the case engine, model contracts, evidence interactions, and release guards." |
 | 2:38-2:42 | Title screen | "History is an argument built from evidence." |
 
 ## Required On-Screen Moments
@@ -52,9 +52,9 @@ History Unbroken is not a historical chatbot. It is a playable evidence system w
 >
 > The important part is that the student cannot win by chatting. They have to prove how recognition, route information, pursuit, local warning, collective action, passport inspection, and guarded detention worked together. The bridge constrained onward passage; it did not arrest the carriage by itself.
 >
-> GPT-5.6 evaluates the student's explanation and identifies unsupported assumptions, while deterministic logic controls the facts, evidence, causal graph, and repair eligibility.
+> When the provider is configured, GPT-5.6 provides non-authoritative formative feedback on the student's explanation and can identify unsupported assumptions, while deterministic logic controls the facts, evidence, causal graph, and repair eligibility.
 >
-> Teachers can upload a course packet so hints, vocabulary, and the final report align to what students studied. The packet never changes the historical solution.
+> Teachers can use the reviewed sample, pasted text, or a bounded UTF-8 TXT or Markdown packet so hints, vocabulary, and the final report align to what students studied. The packet never changes the historical solution.
 >
 > I used Codex to design and implement the deterministic case engine, structured model contracts, evidence interactions, tests, documentation, and demo flow.
 >
@@ -64,7 +64,7 @@ Only use the Codex sentence after the build log confirms those contributions.
 
 ## Recording Notes
 
-- Record from deployed URL, not localhost, unless deployment fails.
+- Record the submission take from the verified deployed URL. A localhost recording may be used for rehearsal or backup footage, but it does not satisfy the deployment gate.
 - Use sample packet already processed to avoid live upload risk.
 - Use pre-scripted but real interactions.
 - Keep mouse movement slow and intentional.
@@ -75,11 +75,16 @@ Only use the Codex sentence after the build log confirms those contributions.
 
 ## Screenshots Needed
 
-- fracture opening
-- teacher setup
-- character interview with evidence tray
-- evidence comparison
-- causal board
-- hypothesis feedback
-- repair sequence
-- teacher report
+Regenerate all eight from a fresh production build with `npm run capture:screenshots`.
+
+- [x] Additional grounded-world overview: `docs/assets/screenshots/00-grounded-world.png`
+- [x] Fracture opening: `docs/assets/screenshots/01-fracture-opening.png`
+- [x] Teacher setup: `docs/assets/screenshots/02-teacher-setup.png`
+- [x] Character interview with evidence tray: `docs/assets/screenshots/03-evidence-interview.png`
+- [x] Evidence comparison: `docs/assets/screenshots/04-evidence-comparison.png`
+- [x] Causal board: `docs/assets/screenshots/05-causal-caseboard.png`
+- [x] Hypothesis feedback: `docs/assets/screenshots/06-hypothesis-feedback.png`
+- [x] Repair sequence: `docs/assets/screenshots/07-repair-sequence.png`
+- [x] Teacher report: `docs/assets/screenshots/08-teacher-report.png`
+
+The default capture intentionally runs without a provider key and visibly preserves authored fallback labels. After a successful live-provider smoke, recapture screenshots 03 and 06 with `HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE=1`; do not represent the no-key fallback as a live GPT-5.6 result.

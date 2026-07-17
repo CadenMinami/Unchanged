@@ -1612,3 +1612,29 @@ The final production run reported:
 - The final 4x-CPU classroom proxy passes with 4,171,778 initial compressed bytes, 3,980.5 ms to the first interactive archive, 36 FPS median, 35 FPS p10, a 43.2 ms maximum post-load stall, a nonblank canvas, and 1.485 units of measured player movement.
 - Formal screen-reader review, physical Chromebook verification, live-provider testing, live Vercel deployment, production credential validation, unfamiliar-user playtesting, and final submission checks remain open.
 - No push, deployment, publication, purchase, or live paid provider call is claimed for this checkpoint.
+
+## 2026-07-16 / Submission Capture And Documentation Pass
+
+### Intent and user direction
+
+- The user approved continuing the remaining work after release-closure commit `9f71cb0`.
+- Prioritize locally finishable submission evidence while keeping provider, deployment, hardware, screen-reader, and unfamiliar-user gates explicitly open.
+
+### What Codex proposed and implemented
+
+- Added a dedicated production Playwright capture configuration and `npm run capture:screenshots` command.
+- Added one deterministic capture journey that starts at teacher setup, approves the reviewed sample, advances through the novice primer and fracture, presents E3 to Drouet, switches to the non-spatial archive, completes the comparison and causal board, submits the Case Brief, runs the repair, and opens the teacher report.
+- Generated all eight storyboard artifacts under `docs/assets/screenshots/`: fracture opening, teacher setup, evidence-aware character exchange, source comparison, causal board, hypothesis feedback, repair sequence, and teacher report.
+- Kept the default capture provider-free. Provider-dependent screens visibly retain their authored fallback labels; they must be recaptured after a successful live smoke before being presented as live GPT-5.6 output.
+- Added high-signal screenshots and the release-closure baseline to the README.
+- Added a server-only `.env.example` for the supported OpenAI and exact-caption speech variables; no test-only flag or secret value is included.
+- Synchronized the roadmap, architecture, and demo script with the completed automatic accessibility, cross-route equivalence, screenshot, and performance gates.
+- Replaced broad upload and model-authority language in the demo with the implemented bounded TXT/Markdown and non-authoritative feedback boundaries.
+
+### Verification and remaining boundaries
+
+- The capture flow passed from fresh production builds and produced the eight required 1440 x 900 storyboard PNG files plus one grounded-world overview.
+- Visual review confirmed that the required screens and world overview are legible and represent the intended product states. The source-comparison, recorded-link, and repair capture points were tightened after review.
+- Release-closure baseline `9f71cb0` remains the latest fully integrated local test record: lint, typecheck, production build, 84 Vitest files with 554 tests, 33 Playwright tests, and the 4x-CPU classroom proxy all passed.
+- A post-capture isolated classroom proxy rerun passed at 4,171,780 compressed bytes, 4,110.2 ms to interaction, 31 FPS median, 30 FPS p10, a 75.9 ms maximum renderer stall, a nonblank canvas, and 1.504 units of movement. A separate run performed concurrently with other Chromium/build work fell below the gate and is not treated as valid isolated evidence. The reduced margin makes the physical Chromebook gate more important.
+- `OPENAI_API_KEY` and `VERCEL_TOKEN` are not present, the Vercel CLI is not installed, and local `main` currently reports `origin/main` as gone. No live provider call, deployment, push, publication, or paid action occurred.

@@ -2,7 +2,7 @@
 
 ## Current Rule
 
-Phases 0-4 are complete for the current vertical slice. The Phase 3 GPT-5.6 source-bounded layer and Task 12 staged voice runtime are implemented and locally tested; live API-key smoke tests remain before provider-level verification can be claimed. Phase 4 teacher alignment/accessibility is implemented with bounded authority and deterministic reporting. Phase 5's grounded visual pass is implemented with scene manifest `1.2.0`, asset ledger `1.0.0`, exact runtime hashes, project-authored license records, optional-asset fallbacks, articulated figures, late-evening environment treatment, and muted-by-default procedural ambience. Automated cross-route accessibility equivalence and axe-core checks are present. Remaining Phase 5 work is release closure: formal screen-reader and physical Chromebook verification, live-provider smoke, deployment regression, unfamiliar-user playtesting, screenshots, and demo production.
+Phases 0-4 are complete for the current case. The Phase 3 GPT-5.6 source-bounded layer and Task 12 staged voice runtime are implemented and locally tested; live API-key smoke tests remain before provider-level verification can be claimed. Phase 4 teacher alignment/accessibility is implemented with bounded authority and deterministic reporting. Phase 5's grounded visual pass is implemented with scene manifest `1.2.0`, asset ledger `1.0.0`, exact runtime hashes, project-authored license records, optional-asset fallbacks, articulated figures, late-evening environment treatment, and muted-by-default procedural ambience. Automated cross-route accessibility equivalence and axe-core checks pass. The eight required submission screens can be regenerated from one production Playwright flow. Remaining Phase 5 work is external release closure: formal screen-reader and physical Chromebook verification, live-provider smoke, public deployment regression, unfamiliar-user playtesting, final video production, repository publication, `/feedback`, and submission.
 
 ## Phase 0: Historical Verification And Wireframes
 
@@ -114,7 +114,7 @@ Exit condition:
 
 ## Phase 4: Teacher Alignment And Accessibility
 
-Status: feature implementation and integrated local no-key verification complete. Focused contract/component verification, a 3-test teacher/classroom Playwright file, targeted desktop/mobile browser QA, warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and all 19 Playwright tests passed.
+Status: feature implementation and integrated local no-key verification complete. Release-closure baseline `9f71cb0` passes warning-free lint, typecheck, 84 Vitest files with 554 tests, the production build, and all 33 Playwright tests, including automatic accessibility and cross-route equivalence coverage.
 
 Goal: demonstrate classroom fit.
 
@@ -140,13 +140,13 @@ Exit condition:
 
 - sample packet visibly changes vocabulary, hints, and reporting without changing solution
 
-Contract/component evidence supports the authority, ingestion, approval, persistence, hint, and report behavior. Focused browser evidence supports sample review/approval, separate learning-session persistence, an unchanged canonical investigation, E3/E4/E5/E7 class-material connections, six distinct historical-record control names, 320 x 700 world-HUD fit, desktop/390 x 844 teacher-layout fit, and clean report rendering. Phase 4 is locally verified against its implemented no-key scope. Formal screen-reader-oriented checks, route-equivalence accessibility checks, live-provider smoke tests, and the physical-device gate remain project-level release work.
+Contract/component evidence supports the authority, ingestion, approval, persistence, hint, and report behavior. Browser evidence supports sample review/approval, separate learning-session persistence, an unchanged canonical investigation, E3/E4/E5/E7 class-material connections, six distinct historical-record control names, 320 x 700 world-HUD fit, desktop/390 x 844 teacher-layout fit, clean report rendering, automatic axe-core audits, and cross-route reading/state/keyboard-focus equivalence. Formal screen-reader review, live-provider smoke tests, and the physical-device gate remain project-level release work.
 
 ## Phase 5: Polish, Testing, Deployment, Demo
 
 Goal: submission-ready package.
 
-Status: grounded visual implementation and local provenance closure are complete; release and submission gates remain open.
+Status: grounded visual implementation, local provenance closure, automated release regression, and reproducible screenshot capture are complete. Credential-, deployment-, hardware-, human-review-, video-, and submission-dependent gates remain open.
 
 Build/test:
 
@@ -270,15 +270,15 @@ Exit condition:
 - clean path
 - different investigation order
 - early wrong answer then revision
-- reduced-reading mode - dedicated browser acceptance pending
+- reduced-reading mode - covered across route selection and cross-route persistence
 - teacher sample review/approval into unchanged aligned investigation - covered in focused Playwright
-- pasted TXT/Markdown review/error paths - pending in browser
+- pasted malicious text and oversized Markdown rejection - covered in browser; valid TXT and Markdown upload acceptance remains open
 - aligned E3/E4/E5/E7 evidence connections and report rendering - covered in focused browser verification
-- aligned hint path - pending in browser
+- aligned hint path - dedicated browser acceptance remains open
 - 320 x 700 world HUD and six distinct record-control names - covered in focused Playwright
 - API failure path
 - refresh/resume
-- keyboard-only path - final Phase 4 route coverage pending
+- keyboard route handoff, modal focus trap, and focus restoration - covered; a complete keyboard-only case journey remains open
 
 ## Definition Of Done
 
@@ -315,13 +315,20 @@ Technical:
 - progress survives refresh
 - live GPT-5.6 and moderation paths are smoke-tested with a configured key
 
-The overall definition of done is not yet met. The full final suite, remaining accessibility-equivalence/screen-reader-oriented checks, live-provider smoke testing, physical Chromebook gate, deployment, and submission artifacts remain open.
+The overall definition of done is not yet met. The local final suite, automated accessibility equivalence, and screenshot artifact gates are complete. Formal screen-reader review, live-provider smoke testing, physical Chromebook verification, public deployment, unfamiliar-user playtesting, final video production, repository publication, `/feedback`, and submission remain open.
 
 Submission:
 
-- README complete
-- docs complete
-- demo under three minutes
-- screenshots clear
-- repository accessible
-- `/feedback` Session ID saved
+- [x] README documents the implemented product and local verification boundary
+- [x] Planning, historical, architecture, AI-contract, roadmap, demo, and build-log documents exist
+- [x] Eight reproducible local screenshot artifacts exist under `docs/assets/screenshots/`
+- [ ] Successful live GPT-5.6, moderation, transcription, and speech smoke evidence recorded
+- [ ] Formal screen-reader review recorded
+- [ ] Physical Chromebook result recorded
+- [ ] Unfamiliar-user playtest notes recorded
+- [ ] Production Vercel URL and deployed regression result recorded
+- [ ] Public repository contains the exact submitted commit
+- [ ] Two moderate PostCSS advisories explicitly accepted or superseded by a safe stable update
+- [ ] Public demo video URL recorded and duration confirmed under three minutes
+- [ ] `/feedback` Session ID saved
+- [ ] Submission confirmation and timestamp recorded before the deadline buffer

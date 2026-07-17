@@ -2,9 +2,21 @@
 
 **History Unbroken: The Road That Should Have Closed** is a teacher-aligned historical mystery game where students investigate a fractured version of the Flight to Varennes, question source-bound AI characters, compare evidence, build a causal argument, and repair one altered historical link without reducing the French Revolution to a single cause.
 
+## Product Screens
+
+![The grounded but explicitly schematic Varennes reconstruction](docs/assets/screenshots/00-grounded-world.png)
+
+![The temporal fracture presents three equally labeled fictional anomaly candidates](docs/assets/screenshots/01-fracture-opening.png)
+
+![A source-bounded conversation with Drouet after presenting reviewed evidence](docs/assets/screenshots/03-evidence-interview.png)
+
+![The student assembles an evidence-linked causal chain](docs/assets/screenshots/05-causal-caseboard.png)
+
+![The deterministic teacher report summarizes observable historical reasoning](docs/assets/screenshots/08-teacher-report.png)
+
 ## Current Status
 
-The deterministic primer-to-debrief vertical slice and the first GPT-5.6 source-bounded layer are implemented. Historical truth, evidence, case state, and repair eligibility remain repository-owned and deterministic.
+The complete local submission case and GPT-5.6 source-bounded layer are implemented. Historical truth, evidence, case state, and repair eligibility remain repository-owned and deterministic.
 
 Implemented foundations include:
 
@@ -43,7 +55,7 @@ Implemented foundations include:
 
 Task 12's staged voice runtime is implemented and locally verified: explicit push-to-talk transcription, exact-caption provider speech, browser-speech fallback, editable captions, mute/stop controls, strict media correlation, and bounded cleanup are present. Provider behavior is covered through injected gateways and browser network fixtures; a live API-key run is still required before claiming provider-level OpenAI media verification.
 
-Phase 4 teacher alignment/accessibility and the Phase 5 grounded visual pass are present in the working tree. The world remains explicitly schematic and non-evidentiary even though its materials, lighting, figures, motion, and props are more grounded. The browser still offers the complete non-spatial route, reduced reading, reduced motion, keyboard operation, authored media fallbacks, and deterministic no-key completion. Live-provider, formal screen-reader/cross-route equivalence, physical Chromebook, deployment, unfamiliar-user playtesting, and submission gates remain separate.
+Phase 4 teacher alignment/accessibility and the Phase 5 grounded visual pass are implemented. The world remains explicitly schematic and non-evidentiary even though its materials, lighting, figures, motion, and props are more grounded. The browser offers the complete non-spatial route, reduced reading, reduced motion, keyboard operation, authored media fallbacks, and deterministic no-key completion. Automated axe-core checks and cross-route state, reading-mode, and keyboard-focus equivalence pass. Live-provider, formal screen-reader, physical Chromebook, deployment, unfamiliar-user playtesting, and final submission gates remain separate.
 
 Vercel is the deployment target. No live Vercel deployment or production API credential validation has been completed. The current in-memory limiter is process-local; production still requires durable distributed edge protection such as WAF/BotID or an equivalent control.
 
@@ -59,9 +71,16 @@ npm install
 npm run dev
 ```
 
+For provider-backed character, feedback, transcription, and speech checks, create `.env.local` from the documented server-only template and fill the required secrets:
+
+```bash
+cp .env.example .env.local
+npm run dev
+```
+
 Open `http://localhost:3000`.
 
-Optional server-side model configuration:
+Server-side model configuration:
 
 ```bash
 OPENAI_API_KEY=your_key_here
@@ -104,7 +123,17 @@ interaction, compressed transfer, a 10-second warm-up, and a 60-second frame and
 stall sample. A physical 4 GB integrated-graphics Chromebook check is still
 required before 3D can be declared the default classroom route.
 
-The automated suites validate contracts, authorization, moderation adapters, failure handling, source closure, independent-lineage rules, teacher-alignment authority, UI integration, and the full deterministic browser path. They do not substitute for a live `OPENAI_API_KEY` smoke test, the physical Chromebook gate, remaining screen-reader-oriented/cross-route checks, or a full final-suite rerun.
+The automated suites validate contracts, authorization, moderation adapters, failure handling, source closure, independent-lineage rules, teacher-alignment authority, automatic accessibility rules, cross-route state and keyboard-focus equivalence, UI integration, and the full deterministic browser path. They do not substitute for a live `OPENAI_API_KEY` smoke test, formal screen-reader review, the physical Chromebook gate, or unfamiliar-user playtesting.
+
+Release-closure baseline `9f71cb0` passed lint, typecheck, the production build, 84 Vitest files with 554 tests, and all 33 Playwright tests. The 4x-CPU classroom proxy passed at 36 FPS median, 35 FPS p10, 3,980.5 ms to the first interactive archive, and a nonblank canvas with measured player movement. Automated accessibility checks do not substitute for formal screen-reader review.
+
+Generate the eight submission screenshots from a fresh production build and a real deterministic case session:
+
+```bash
+npm run capture:screenshots
+```
+
+The captures are written to `docs/assets/screenshots/`. Without a configured live-provider smoke flag, generated-character and Case Brief captures visibly use the authored no-key fallback. Recapture those provider-dependent frames only after a successful live smoke test.
 
 ## Product Thesis
 

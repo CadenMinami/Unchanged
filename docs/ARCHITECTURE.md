@@ -205,7 +205,7 @@ All Playwright routes use a dedicated `127.0.0.1:3100` production server, never 
 
 The automated proxy is a regression gate, not evidence of physical-device performance. A current ChromeOS browser on a 4 GB integrated-graphics Chromebook in the N4500 class or a documented equivalent must still pass before the spatial route can become the default classroom mode.
 
-After the Louis station, safe-point recovery, and context-loss lifecycle correction were integrated, the production proxy reported 1,525,007 compressed bytes, 3,759 ms to the first canonical interaction, 52 median FPS, 50 10th-percentile FPS, a 47.5 ms maximum post-load renderer stall, a nonblank canvas, and 2.45 world units of measured movement. Portrait browser coverage separately requires a nonblank 390 x 844 canvas and non-overlapping top controls.
+An earlier pre-grounded checkpoint reported 1,525,007 compressed bytes, 3,759 ms to the first canonical interaction, 52 median FPS, and 50 10th-percentile FPS. After the grounded assets and release-closure fixes, baseline `9f71cb0` passed with 4,171,778 compressed bytes, 3,980.5 ms to interaction, 36 median FPS, 35 10th-percentile FPS, a 43.2 ms maximum renderer stall, a nonblank canvas, and 1.485 world units of measured movement. A later isolated post-capture rerun also passed, but at 31 median FPS and 30 10th-percentile FPS. The variation and narrow median margin reinforce that the physical Chromebook check remains mandatory. Portrait browser coverage separately requires a nonblank 390 x 844 canvas and non-overlapping top controls.
 
 ### Movement And Focus Authority
 

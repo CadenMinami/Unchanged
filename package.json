@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test --workers=4",
-    "test:performance": "HISTORY_UNBROKEN_PERFORMANCE=1 playwright test tests/e2e/world-performance.spec.ts --workers=1"
+    "test:performance": "HISTORY_UNBROKEN_PERFORMANCE=1 playwright test tests/e2e/world-performance.spec.ts --workers=1",
+    "capture:screenshots": "playwright test --config=playwright.capture.config.ts"
   },
   "dependencies": {
     "@react-three/drei": "10.7.7",
