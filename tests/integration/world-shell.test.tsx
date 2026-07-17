@@ -26,7 +26,9 @@ let reportNearbyInteraction:
   | ((request: WorldInteractionRequest | null) => void)
   | undefined;
 let reportContextLost: (() => void) | undefined;
+let reportControllerReady: (() => void) | undefined;
 let runtimeInitialPosition: [number, number, number] | undefined;
+let sceneShouldThrow = false;
 
 const ambientAudioMocks = vi.hoisted(() => {
   const defaultSoundscape = {
@@ -53,14 +55,17 @@ vi.mock("@/components/world/scene-runtime", () => ({
   SceneRuntime: (props: {
     initialPosition?: [number, number, number];
     onContextLost: () => void;
+    onControllerReady?: () => void;
     onPerformanceSample?: (timestampMs: number, fps: number) => void;
     onPlayerPositionChange?: (position: [number, number, number]) => void;
     onNearbyInteractionChange?: (
       request: WorldInteractionRequest | null,
     ) => void;
   }) => {
+    if (sceneShouldThrow) throw new Error("Scene render failed");
     runtimeInitialPosition = props.initialPosition;
     reportContextLost = props.onContextLost;
+    reportControllerReady = props.onControllerReady;
     reportWorldFrame = props.onPerformanceSample;
     reportNearbyInteraction = props.onNearbyInteractionChange;
     reportWorldPosition = props.onPlayerPositionChange;
@@ -98,10 +103,12 @@ describe("world runtime shell", () => {
       }
     ).__historyUnbrokenWorldPerformance;
     reportContextLost = undefined;
+    reportControllerReady = undefined;
     reportWorldFrame = undefined;
     reportNearbyInteraction = undefined;
     reportWorldPosition = undefined;
     runtimeInitialPosition = undefined;
+    sceneShouldThrow = false;
   });
 
   afterEach(() => {
@@ -119,10 +126,19 @@ describe("world runtime shell", () => {
     expect(screen.queryByTestId("scene-runtime")).toBeNull();
   });
 
-  it("renders the scene behind an accessible ready status when WebGL is available", () => {
+  it("announces readiness only after the movement controller is available", () => {
     renderShell(() => true);
 
     expect(screen.getByTestId("scene-runtime")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /preparing varennes reconstruction/i,
+    );
+    expect(screen.getByRole("status")).not.toHaveTextContent(
+      /reconstruction ready/i,
+    );
+
+    act(() => reportControllerReady?.());
+
     expect(screen.getByRole("status")).toHaveTextContent(/reconstruction ready/i);
     expect(
       screen.getByRole("link", { name: /use non-spatial investigation/i }),
@@ -141,6 +157,25 @@ describe("world runtime shell", () => {
     ).toHaveTextContent(
       /the archive remains still around the open case materials.*authored dramatization; not testimony or evidence/i,
     );
+  });
+
+  it("clears an announced ready state when the scene error boundary activates", async () => {
+    const user = userEvent.setup();
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    renderShell(() => true);
+    act(() => reportControllerReady?.());
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /reconstruction ready/i,
+    );
+
+    sceneShouldThrow = true;
+    await user.click(screen.getByRole("button", { name: "Guidance guided" }));
+
+    expect(screen.getByTestId("world-runtime-fallback")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /preparing varennes reconstruction/i,
+    );
+    consoleError.mockRestore();
   });
 
   it("checks WebGL capability once across ordinary shell rerenders", async () => {
@@ -659,6 +694,10 @@ describe("world runtime shell", () => {
 
     renderShell(() => true);
     expect(runtimeInitialPosition).toEqual([0, 1.2, 0]);
+    act(() => reportControllerReady?.());
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /reconstruction ready/i,
+    );
     act(() =>
       reportNearbyInteraction?.({
         interactableId: e3.interactableId,
@@ -682,6 +721,9 @@ describe("world runtime shell", () => {
     );
 
     expect(runtimeInitialPosition).toEqual([24, 1.2, 0]);
+    expect(screen.getByRole("status")).toHaveTextContent(
+      /preparing varennes reconstruction/i,
+    );
     expect(
       screen.queryByRole("button", { name: /inspect drouet account table/i }),
     ).toBeNull();

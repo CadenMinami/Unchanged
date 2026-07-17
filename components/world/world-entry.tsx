@@ -3,6 +3,8 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
+import { InvestigationModeLink } from "@/components/investigation-mode/investigation-mode-link";
+
 import styles from "./world-entry.module.css";
 
 function WorldLoadingShell() {
@@ -23,9 +25,13 @@ function WorldLoadingShell() {
           <h1>Preparing the Varennes reconstruction.</h1>
           <span>Loading the interactive district and reviewed evidence stations.</span>
         </div>
-        <Link className={styles.nonSpatialLink} href="/play/investigate">
+        <InvestigationModeLink
+          className={styles.nonSpatialLink}
+          href="/play/investigate"
+          mode="non_spatial"
+        >
           Use non-spatial investigation
-        </Link>
+        </InvestigationModeLink>
       </section>
     </main>
   );

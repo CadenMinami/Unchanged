@@ -5,7 +5,7 @@ export const MAX_AUDIO_BYTES = 2_000_000;
 export const MAX_AUDIO_DURATION_MS = 20_000;
 export const MAX_TRANSCRIPT_CHARACTERS = 600;
 export const MAX_SPEECH_CAPTION_CHARACTERS = 1_600;
-export const MAX_SPEECH_AUDIO_BYTES = 12_000_000;
+export const MAX_SPEECH_AUDIO_BYTES = 3_000_000;
 export const SPEECH_AUTHORIZATION_TTL_SECONDS = 120;
 
 const idSchema = z

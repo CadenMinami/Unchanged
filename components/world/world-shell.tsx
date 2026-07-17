@@ -1,11 +1,11 @@
 "use client";
 
 import { AlertTriangle, RefreshCw } from "lucide-react";
-import Link from "next/link";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 
 import { useCaseSession } from "@/components/case-session/case-session-provider";
 import { useOptionalCourseAlignment } from "@/components/course-alignment/course-alignment-provider";
+import { InvestigationModeLink } from "@/components/investigation-mode/investigation-mode-link";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { isInvestigationComplete } from "@/lib/case-engine/selectors";
 import {
@@ -184,7 +184,9 @@ function WorldUnavailable({ compact = false, onRetry, reason }: WorldUnavailable
           <RefreshCw aria-hidden="true" />
           Retry 3D reconstruction
         </button>
-        <Link href="/play/investigate">Use non-spatial investigation</Link>
+        <InvestigationModeLink href="/play/investigate" mode="non_spatial">
+          Use non-spatial investigation
+        </InvestigationModeLink>
       </div>
     </Tag>
   );
@@ -197,6 +199,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
   const [webglAvailable, setWebglAvailable] = useState(capabilityCheck);
   const [runtimeKey, setRuntimeKey] = useState(0);
   const [runtimeIssue, setRuntimeIssue] = useState<string | null>(null);
+  const [sceneReady, setSceneReady] = useState(false);
   const [graphicsTier, setGraphicsTier] = useState<GraphicsTier>(initialGraphicsTier);
   const [offerNonSpatial, setOfferNonSpatial] = useState(false);
   const [ambientSound, dispatchAmbientSound] = useReducer(
@@ -257,6 +260,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
   );
 
   const retry = useCallback(() => {
+    setSceneReady(false);
     setWebglAvailable(capabilityCheck());
     setCapabilityAttempt((attempt) => attempt + 1);
     setRuntimeIssue(null);
@@ -526,6 +530,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
         result.safeSpawn.position[1] + 1.2,
         result.safeSpawn.position[2],
       ]);
+      setSceneReady(false);
       setNearbyInteraction(null);
       setRuntimeKey((key) => key + 1);
       setJournalOpen(false);
@@ -638,6 +643,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
     <main className={styles.world} data-testid="world-canvas-shell">
       <div className={styles.canvasFrame} data-testid="world-canvas">
         <WorldErrorBoundary
+          onError={() => setSceneReady(false)}
           renderFallback={(boundaryRetry) => (
             <WorldUnavailable
               compact
@@ -656,9 +662,11 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
             key={runtimeKey}
             locomotionEnabled={canUseLocomotion(worldMode)}
             reducedMotion={courseAlignment?.preferences.motionMode === "reduced"}
-            onContextLost={() =>
+            onContextLost={() => {
+              setSceneReady(false);
               setRuntimeIssue("The graphics context was interrupted.")
-            }
+            }}
+            onControllerReady={() => setSceneReady(true)}
             onNearbyInteractionChange={setNearbyInteraction}
             onPlayerPositionChange={recordPlayerPosition}
             onPerformanceSample={recordFrame}
@@ -688,6 +696,7 @@ export function WorldShell({ capabilityCheck = supportsWebGL }: WorldShellProps)
         onOpenJournal={openJournal}
         onOpenCaseboard={openCaseboard}
         offerNonSpatial={offerNonSpatial}
+        ready={sceneReady}
         worldMode={worldMode.mode}
       />
       {telemetryEnabled ? (

@@ -1,16 +1,22 @@
 "use client";
 
-import { KeyboardControls, type KeyboardControlsEntry } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import {
+  KeyboardControls,
+  type KeyboardControlsEntry,
+  useKeyboardControls,
+} from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
 import { Ecctrl, type EcctrlHandle, type MovementInput } from "ecctrl";
 import type { RefObject } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { FollowCamera } from "./follow-camera";
 import { InvestigatorModel } from "./investigator-model";
 import type { FigureMotion } from "./period-figure";
 
 type ControlName = "forward" | "backward" | "leftward" | "rightward" | "run";
+
+export type InvestigatorControlState = Record<ControlName, boolean>;
 
 const keyboardMap: KeyboardControlsEntry<ControlName>[] = [
   { name: "forward", keys: ["ArrowUp", "KeyW"] },
@@ -29,6 +35,22 @@ const stoppedMovement: MovementInput = {
   jump: false,
 };
 
+export function resolveInvestigatorMovement(
+  state: InvestigatorControlState,
+  enabled: boolean,
+): MovementInput {
+  if (!enabled) return stoppedMovement;
+
+  return {
+    forward: state.forward,
+    backward: state.backward,
+    leftward: state.leftward,
+    rightward: state.rightward,
+    run: state.run,
+    jump: false,
+  };
+}
+
 export function resolveInvestigatorMotion(
   moving: boolean,
   runActive: boolean,
@@ -38,29 +60,75 @@ export function resolveInvestigatorMotion(
   return runActive ? "run" : "walk";
 }
 
+export function shouldStopHorizontalVelocity(wasMoving: boolean, moving: boolean) {
+  return wasMoving && !moving;
+}
+
 interface InvestigatorControllerProps {
   controllerRef: RefObject<EcctrlHandle | null>;
   enabled: boolean;
   initialPosition: [number, number, number];
+  onControllerReady: () => void;
   onPositionChange?: (position: [number, number, number]) => void;
   reducedMotion?: boolean;
 }
 
-export function InvestigatorController({
+function stopHorizontalVelocity(controller: EcctrlHandle) {
+  const body = controller.body;
+  if (!body) return;
+
+  const velocity = body.linvel();
+  body.setLinvel({ x: 0, y: velocity.y, z: 0 }, true);
+}
+
+function InvestigatorControllerRuntime({
   controllerRef,
   enabled,
   initialPosition,
+  onControllerReady,
   onPositionChange,
   reducedMotion = false,
 }: InvestigatorControllerProps) {
+  const [subscribeControls, getControls] = useKeyboardControls<ControlName>();
+  const invalidate = useThree((state) => state.invalidate);
   const lastPositionSampleAt = useRef(Number.NEGATIVE_INFINITY);
+  const controllerReadyRef = useRef(false);
   const movingRef = useRef(false);
   const [motion, setMotion] = useState<FigureMotion>("idle");
 
+  const applyControls = useCallback(
+    (controller: EcctrlHandle, state: InvestigatorControlState, active: boolean) => {
+      const movement = resolveInvestigatorMovement(state, active);
+      const moving = Boolean(
+        active &&
+          (movement.forward ||
+            movement.backward ||
+            movement.leftward ||
+            movement.rightward),
+      );
+      const wasMoving = movingRef.current;
+      movingRef.current = moving;
+      controller.setMovement(movement);
+      if (shouldStopHorizontalVelocity(wasMoving, moving)) {
+        stopHorizontalVelocity(controller);
+      }
+    },
+    [],
+  );
+
   useFrame(({ clock }) => {
+    const controller = controllerRef.current;
+    if (!controllerReadyRef.current && controller?.body) {
+      applyControls(controller, getControls(), enabled);
+      controllerReadyRef.current = true;
+      onControllerReady();
+    } else if (!controllerReadyRef.current) {
+      invalidate();
+    }
+
     const nextMotion = resolveInvestigatorMotion(
       movingRef.current,
-      controllerRef.current?.runActive ?? false,
+      controller?.runActive ?? false,
       enabled,
     );
     if (nextMotion !== motion) setMotion(nextMotion);
@@ -68,51 +136,29 @@ export function InvestigatorController({
     if (!onPositionChange || clock.elapsedTime - lastPositionSampleAt.current < 0.1) {
       return;
     }
-    const body = controllerRef.current?.body;
+    const body = controller?.body;
     if (!body) return;
     const position = body.translation();
     lastPositionSampleAt.current = clock.elapsedTime;
     onPositionChange([position.x, position.y, position.z]);
   });
 
-  useEffect(() => {
-    if (enabled || !controllerRef.current) return;
+  useLayoutEffect(() => {
+    const controller = controllerRef.current;
+    if (controller) applyControls(controller, getControls(), enabled);
+  }, [applyControls, controllerRef, enabled, getControls]);
 
-    controllerRef.current.setMovement(stoppedMovement);
-    const velocity = controllerRef.current.body.linvel();
-    controllerRef.current.body.setLinvel(
-      { x: 0, y: velocity.y, z: 0 },
-      true,
-    );
-    setMotion("idle");
-  }, [controllerRef, enabled]);
+  useEffect(
+    () =>
+      subscribeControls((state) => {
+        const controller = controllerRef.current;
+        if (controller) applyControls(controller, state, enabled);
+      }),
+    [applyControls, controllerRef, enabled, subscribeControls],
+  );
 
   return (
-    <KeyboardControls
-      map={keyboardMap}
-      onChange={(_name, _pressed, state) => {
-        const moving =
-          state.forward || state.backward || state.leftward || state.rightward;
-        movingRef.current = moving;
-        const controller = controllerRef.current;
-        controller?.setMovement(
-          enabled
-            ? {
-                forward: state.forward,
-                backward: state.backward,
-                leftward: state.leftward,
-                rightward: state.rightward,
-                run: state.run,
-                jump: false,
-              }
-            : stoppedMovement,
-        );
-        if (enabled && !moving && controller) {
-          const velocity = controller.body.linvel();
-          controller.body.setLinvel({ x: 0, y: velocity.y, z: 0 }, true);
-        }
-      }}
-    >
+    <>
       <Ecctrl
         applyCounterJumpImp={false}
         applyCounterMass={false}
@@ -133,6 +179,14 @@ export function InvestigatorController({
         <InvestigatorModel motion={motion} reducedMotion={reducedMotion} />
       </Ecctrl>
       <FollowCamera controllerRef={controllerRef} enabled={enabled} reducedMotion={reducedMotion} />
+    </>
+  );
+}
+
+export function InvestigatorController(props: InvestigatorControllerProps) {
+  return (
+    <KeyboardControls map={keyboardMap}>
+      <InvestigatorControllerRuntime {...props} />
     </KeyboardControls>
   );
 }

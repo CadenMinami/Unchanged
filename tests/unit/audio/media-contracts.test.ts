@@ -146,8 +146,9 @@ describe("media contracts", () => {
     ).toBe(false);
   });
 
-  it("caps successful provider speech metadata at twelve decimal megabytes", () => {
-    expect(MAX_SPEECH_AUDIO_BYTES).toBe(12_000_000);
+  it("keeps the binary speech response below the deployment response ceiling", () => {
+    expect(MAX_SPEECH_AUDIO_BYTES).toBe(3_000_000);
+    expect(MAX_SPEECH_AUDIO_BYTES).toBeLessThan(4_500_000);
     expect(
       authorizedSpeechResponseSchema.safeParse({
         ...authorizedSpeechResponse,

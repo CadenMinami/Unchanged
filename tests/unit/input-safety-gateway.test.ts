@@ -21,9 +21,12 @@ describe("OpenAIInputSafetyGateway", () => {
     const result = await gateway.check("unsafe test input");
 
     expect(result).toEqual({ flagged: true, categories: ["violence"] });
-    expect(create).toHaveBeenCalledWith({
-      model: "omni-moderation-latest",
-      input: "unsafe test input",
-    });
+    expect(create).toHaveBeenCalledWith(
+      {
+        model: "omni-moderation-latest",
+        input: "unsafe test input",
+      },
+      { timeout: 10_000 },
+    );
   });
 });

@@ -1578,3 +1578,37 @@ The final production run reported:
 - Physical Chromebook performance, live-provider smoke testing, formal screen-reader and cross-route equivalence review, deployment, unfamiliar-user playtesting, final screenshots, and demo production remain open.
 - The classroom proxy passes but has less frame-rate margin than the graybox; do not add more always-rendered geometry before physical-device verification.
 - No commit, push, deployment, purchase, publication, or live paid provider call occurred during this checkpoint.
+
+## 2026-07-16 / Release-Closure Audit Integration
+
+### Intent
+
+- Close documented release gaps without weakening historical provenance or claiming production verification that has not occurred.
+
+### Work present in the current tree
+
+- Added automatic axe-core Playwright audits for WCAG A/AA coverage across the primer, route selection, spatial HUD, evidence dialog, and direct archive.
+- Added cross-route browser coverage for reduced-reading state, inspected-evidence progress, keyboard focus restoration, and persisted spatial/non-spatial route choice.
+- Expanded teacher-alignment browser coverage for instruction-like/malicious packet text and a 64,001-byte file rejected before any alignment request.
+- Added global security headers and a restrictive CSP with intentional WebAssembly and GLTF `blob:` fetch support, pinned all AI routes to the Node.js runtime with a 40-second maximum duration, added a 10-second moderation timeout, and capped the binary speech response at 3 MB, below the 4.5 MB function payload limit.
+- Pinned the deployment runtime to Node.js 22.x and npm 10.5.1 or newer so Vercel does not silently map the broad engine range to Node 24.
+- Confirmed Vercel as the deployment target while leaving live deployment and production API credentials unverified.
+- Kept the in-memory limiter explicitly process-local; production still needs durable edge/WAF/BotID protection or an equivalent distributed control.
+
+### Dependency audit boundary
+
+- A fresh `npm audit --json` reports two moderate PostCSS-related entries through the latest stable Next.js release checked, 16.2.10.
+- The audit's force-fix path proposes an unsafe downgrade to Next.js 9.3.3. No force downgrade was applied; the upstream stable fix remains unavailable at this checkpoint.
+
+### Verification boundary and open work
+
+- The first integrated browser rerun exposed a demand-rendering readiness stall in 2 of 33 tests. The controller now invalidates demand-rendered frames until its rigid body exists; both formerly failing desktop/mobile checks then passed in a focused production run.
+- A production-console regression exposed 38 CSP errors from blocked same-document GLTF texture blobs. Production `connect-src` now permits `blob:` while development alone retains WebSocket sources; the same production regression passes without CSP/texture errors.
+- Replaced the world HUD's unconditional ready message with an explicit controller/body readiness handshake. Held movement state is reconciled when the physics body becomes usable, and fast travel resets the readiness state before remounting the scene.
+- The first callback-ref implementation exposed that the controller handle can exist before its internal rigid body. The final implementation observes the proven object ref from the render loop and announces readiness only after the body exists.
+- A final live development-browser pass exposed a second initialization edge: the JavaScript rigid-body handle could exist before Rapier's Rust body accepted `linvel()`. Horizontal velocity cancellation now runs only on an actual moving-to-stopped transition, so startup no longer probes the incomplete physics body. The same pass confirmed a clean error console and moved the player from `[0, 1.10, 0]` to approximately `[-1.11, 1.10, -1.42]` with held keyboard input.
+- Focused controller unit/integration tests pass 24/24. The previously flaky civic traversal passes 5/5 repeated production-browser runs with the old animation-frame delay removed.
+- The final integrated gate passes lint, typecheck, 84 Vitest files with 554 tests, the production build, and all 33 Playwright tests.
+- The final 4x-CPU classroom proxy passes with 4,171,778 initial compressed bytes, 3,980.5 ms to the first interactive archive, 36 FPS median, 35 FPS p10, a 43.2 ms maximum post-load stall, a nonblank canvas, and 1.485 units of measured player movement.
+- Formal screen-reader review, physical Chromebook verification, live-provider testing, live Vercel deployment, production credential validation, unfamiliar-user playtesting, and final submission checks remain open.
+- No push, deployment, publication, purchase, or live paid provider call is claimed for this checkpoint.

@@ -26,8 +26,9 @@ Implemented foundations include:
 - ID-only model plans whose visible historical language is rendered from authored server policy
 - evidence-reaction prerequisites that prevent a character from reacting to evidence the student did not present
 - provenance- and lineage-aware formative Case Brief feedback
-- input moderation, bounded request schemas, in-memory route rate limiting, request cancellation, and authored no-key/provider fallbacks
-- versioned presentation-only transcription and speech contracts with exact-caption HMAC authorization
+- strict response security headers and CSP with explicit WebAssembly and GLTF blob-texture support; all AI routes use the Node.js runtime with a 40-second maximum duration
+- input moderation with a 10-second timeout, bounded request schemas, in-memory route rate limiting, request cancellation, and authored no-key/provider fallbacks
+- versioned presentation-only transcription and speech contracts with exact-caption HMAC authorization and a 3 MB binary response ceiling below the deployment payload limit
 - course alignment `1.1.0` with a reviewed sample, pasted text, and bounded TXT/Markdown ingestion
 - teacher review and explicit approval before an alignment profile can affect student-facing support
 - a four-step authored hint ladder with standard, reduced-reading, and approved class-term variants
@@ -44,12 +45,14 @@ Task 12's staged voice runtime is implemented and locally verified: explicit pus
 
 Phase 4 teacher alignment/accessibility and the Phase 5 grounded visual pass are present in the working tree. The world remains explicitly schematic and non-evidentiary even though its materials, lighting, figures, motion, and props are more grounded. The browser still offers the complete non-spatial route, reduced reading, reduced motion, keyboard operation, authored media fallbacks, and deterministic no-key completion. Live-provider, formal screen-reader/cross-route equivalence, physical Chromebook, deployment, unfamiliar-user playtesting, and submission gates remain separate.
 
+Vercel is the deployment target. No live Vercel deployment or production API credential validation has been completed. The current in-memory limiter is process-local; production still requires durable distributed edge protection such as WAF/BotID or an equivalent control.
+
 ## Local Setup
 
 Requirements:
 
-- Node.js 20.9 or newer
-- npm 10 or newer
+- Node.js 22.x
+- npm 10.5.1 or newer
 
 ```bash
 npm install
@@ -148,7 +151,7 @@ The current implementation uses:
 - Authored case data in JSON
 - Deterministic case-state logic
 - separate local browser persistence for deterministic case state and the learning-session support/reporting envelope
-- Vercel deployment
+- Vercel deployment target; live deployment and credentials remain unverified
 
 The model never writes visible historical prose, directly changes application state, or affects repair eligibility. It selects reviewed IDs, exact student-text spans, and, for course alignment, exact terms tied to server-created packet segment IDs. The server validates those selections and renders or retains only authorized authored text and short class-material references. The teacher report is deterministic; no report-narration model is used.
 

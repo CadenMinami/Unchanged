@@ -4,6 +4,8 @@ import { Map, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
 import type { RefObject } from "react";
 
+import { InvestigationModeLink } from "@/components/investigation-mode/investigation-mode-link";
+
 import { PerformanceNotice, QualityBadge } from "./quality-notice";
 import styles from "./world-shell.module.css";
 
@@ -17,6 +19,7 @@ interface WorldHudProps {
   handoffLabel: string;
   handoffOpensCaseboard: boolean;
   offerNonSpatial: boolean;
+  ready: boolean;
   worldMode: string;
   interactionButtonRef: RefObject<HTMLButtonElement | null>;
   journalButtonRef: RefObject<HTMLButtonElement | null>;
@@ -40,6 +43,7 @@ export function WorldHud({
   handoffLabel,
   handoffOpensCaseboard,
   offerNonSpatial,
+  ready,
   worldMode,
   interactionButtonRef,
   journalButtonRef,
@@ -57,13 +61,28 @@ export function WorldHud({
       <header className={styles.masthead}>
         <Link href="/">History Unbroken</Link>
         <span>VARENNES / SCHEMATIC RECONSTRUCTION</span>
-        <Link href="/play/investigate">Use non-spatial investigation</Link>
+        <InvestigationModeLink href="/play/investigate" mode="non_spatial">
+          Use non-spatial investigation
+        </InvestigationModeLink>
       </header>
 
-      <section className={styles.status} role="status" aria-live="polite">
+      <section
+        aria-busy={!ready}
+        aria-live="polite"
+        className={styles.status}
+        role="status"
+      >
         <p>Spatial archive / {worldMode}</p>
-        <strong>Varennes reconstruction ready</strong>
-        <span>Move with W A S D or arrow keys. Shift toggles a faster pace.</span>
+        <strong>
+          {ready
+            ? "Varennes reconstruction ready"
+            : "Preparing Varennes reconstruction"}
+        </strong>
+        <span>
+          {ready
+            ? "Move with W A S D or arrow keys. Shift toggles a faster pace."
+            : "Loading the movement controller and authored district."}
+        </span>
       </section>
       <div className={styles.caseFileControl}>
         {handoffOpensCaseboard ? (

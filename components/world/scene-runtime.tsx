@@ -68,6 +68,7 @@ interface SceneRuntimeProps {
   graphicsProfile: GraphicsProfile;
   initialPosition: [number, number, number];
   locomotionEnabled: boolean;
+  onControllerReady: () => void;
   onNearbyInteractionChange: (request: WorldInteractionRequest | null) => void;
   onPlayerPositionChange?: (position: [number, number, number]) => void;
   onContextLost: () => void;
@@ -80,6 +81,7 @@ export function SceneRuntime({
   graphicsProfile,
   initialPosition,
   locomotionEnabled,
+  onControllerReady,
   onNearbyInteractionChange,
   onPlayerPositionChange,
   onContextLost,
@@ -147,6 +149,7 @@ export function SceneRuntime({
             controllerRef={controllerRef}
             enabled={locomotionEnabled}
             initialPosition={initialPosition}
+            onControllerReady={onControllerReady}
             onPositionChange={onPlayerPositionChange}
             reducedMotion={reducedMotion}
           />

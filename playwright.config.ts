@@ -1,6 +1,21 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const e2ePort = 3100;
+interface PlaywrightPortSourceEnv {
+  HISTORY_UNBROKEN_E2E_PORT?: string;
+}
+
+export function resolvePlaywrightPort(
+  environment: Readonly<PlaywrightPortSourceEnv>,
+): number {
+  const candidate = Number(environment.HISTORY_UNBROKEN_E2E_PORT);
+  return Number.isInteger(candidate) && candidate >= 1_024 && candidate <= 65_535
+    ? candidate
+    : 3_100;
+}
+
+const e2ePort = resolvePlaywrightPort({
+  HISTORY_UNBROKEN_E2E_PORT: process.env.HISTORY_UNBROKEN_E2E_PORT,
+});
 const e2eBaseUrl = `http://127.0.0.1:${e2ePort}`;
 const requiresFreshProductionServer =
   process.env.HISTORY_UNBROKEN_PERFORMANCE === "1";

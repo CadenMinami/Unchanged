@@ -1,19 +1,10 @@
 "use client";
 
 import { ArrowRight, Box, Files, ShieldCheck } from "lucide-react";
-import Link from "next/link";
 
-import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
-import { persistInvestigationMode } from "@/lib/world/spatial-session";
-import type { InvestigationMode } from "@/schemas/spatial-session";
+import { InvestigationModeLink } from "@/components/investigation-mode/investigation-mode-link";
 
 import styles from "./investigation-mode-selector.module.css";
-
-const manifest = loadVarennesSceneManifest();
-
-function rememberMode(mode: InvestigationMode) {
-  persistInvestigationMode(window.localStorage, manifest, mode);
-}
 
 export function InvestigationModeSelector() {
   return (
@@ -31,10 +22,10 @@ export function InvestigationModeSelector() {
             <h3>Spatial reconstruction</h3>
             <p>Move through a compact schematic district and open reviewed records in focused overlays.</p>
           </div>
-          <Link href="/play/world" onClick={() => rememberMode("spatial")}>
+          <InvestigationModeLink href="/play/world" mode="spatial">
             Enter 3D reconstruction
             <ArrowRight aria-hidden="true" />
-          </Link>
+          </InvestigationModeLink>
         </article>
 
         <article>
@@ -44,10 +35,10 @@ export function InvestigationModeSelector() {
             <h3>Archive workspace</h3>
             <p>Use the complete document-first investigation without loading or navigating a 3D scene.</p>
           </div>
-          <Link href="/play/investigate" onClick={() => rememberMode("non_spatial")}>
+          <InvestigationModeLink href="/play/investigate" mode="non_spatial">
             Use non-spatial investigation
             <ArrowRight aria-hidden="true" />
-          </Link>
+          </InvestigationModeLink>
         </article>
       </div>
 

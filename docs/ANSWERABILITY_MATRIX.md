@@ -42,7 +42,7 @@ The game must provide:
 | The case record does not establish that the flight alone made later outcomes inevitable | E7 continuity record and debrief | claim-limit selector and faded downstream nodes | Anti-inevitability claim limit, not a scored causal inference |
 | A valid answer must reject an alternative | Hypothesis composer | selected alternative | Alternatives criterion |
 | Evidence must be pinned, not merely named | Hypothesis composer | evidence pins | Claim/evidence fit |
-| Teacher packet is not ground truth | Future teacher setup and source labels | Planned packet review | Historical authority; not implemented yet |
+| Teacher packet is class material, not historical ground truth | Teacher setup and class-material/source labels | Pending review, explicit approval, historical-boundary review, and labeled class-material connections | Alignment only; cannot create required conclusions or change evidence, scoring, or repair |
 
 ## Required Discovery Paths
 

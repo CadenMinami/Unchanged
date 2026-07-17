@@ -1,7 +1,8 @@
 "use client";
 
 import { Gauge } from "lucide-react";
-import Link from "next/link";
+
+import { InvestigationModeLink } from "@/components/investigation-mode/investigation-mode-link";
 
 import styles from "./world-shell.module.css";
 
@@ -23,7 +24,9 @@ export function PerformanceNotice() {
     <aside className={styles.performanceOffer} role="status">
       <strong>This device is struggling with the 3D reconstruction.</strong>
       <span>Your evidence and repair requirements stay the same.</span>
-      <Link href="/play/investigate">Switch to non-spatial investigation</Link>
+      <InvestigationModeLink href="/play/investigate" mode="non_spatial">
+        Switch to non-spatial investigation
+      </InvestigationModeLink>
     </aside>
   );
 }

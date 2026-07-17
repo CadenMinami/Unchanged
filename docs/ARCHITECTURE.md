@@ -15,8 +15,11 @@ Build a deterministic historical game system that uses GPT-5.6 for flexible lang
 - structured model outputs
 - authored case data in JSON
 - local browser persistence
-- Vercel deployment
+- Node.js 22.x and npm 10.5.1 or newer
+- Vercel deployment target
 - React Three Fiber and Three.js for the client-only spatial presentation
+
+No live Vercel deployment, production environment/API credential validation, or live-provider smoke test has been completed. Deployment readiness remains unverified.
 
 ## System Flow
 
@@ -104,7 +107,7 @@ Course alignment `1.1.0` is a separate `alignment_only` contract. It cannot carr
 - Speech authorization uses an exact UTF-8 caption SHA-256 and HMAC-SHA256 over byte-length-prefixed fields. Speech request parsing and verification perform no trim or Unicode normalization.
 - The optional browser `SpeechSynthesis` fallback is used when provider speech is unavailable and does not consume provider audio.
 - `/api/ai/transcribe` rate-limits before consuming the bounded multipart body, validates independently inspected MIME/duration/channel metadata, and uses `gpt-4o-transcribe`.
-- `/api/ai/speech` rate-limits before consuming JSON, verifies the exact caption ticket, uses `gpt-4o-mini-tts` by default, and caps generated WAV output at 12 MB.
+- `/api/ai/speech` rate-limits before consuming JSON, verifies the exact caption ticket, uses `gpt-4o-mini-tts` by default, and caps the binary WAV response at 3 MB, below the 4.5 MB function payload limit.
 - App-owned mutable audio buffers are cleared on success and failure. Immutable platform `File` objects are not retained and follow the platform lifecycle.
 
 ## MVP State Authority
@@ -129,7 +132,7 @@ Teacher alignment and accessibility/reporting data use a second local envelope a
 
 The server remains authoritative for OpenAI calls, course-file processing, secret handling, and model-output validation. Model output never dispatches case commands directly.
 
-Spatial preferences use a separate versioned envelope bound to case and scene-manifest versions. Camera mode, last safe spawn, discovered zones, guidance, and graphics tier do not belong in `CaseState` and cannot affect educational eligibility.
+Spatial preferences use a separate versioned envelope bound to case and scene-manifest versions. The chosen spatial/non-spatial route, camera mode, last safe spawn, discovered zones, guidance, and graphics tier do not belong in `CaseState` and cannot affect educational eligibility. Route-entry and fallback links persist the chosen investigation mode before navigation.
 
 The scene manifest is parsed with strict Zod schemas and then cross-validated against the canonical case package, model policy, reconstruction checkpoints, and ambient-line companion. Unknown evidence, fact, source, station, checkpoint, zone, or spawn IDs fail closed. A 3D object is an authored entry point to a canonical record, never a new evidence artifact.
 
@@ -314,7 +317,9 @@ Responsibilities:
 
 Responsibilities:
 
-- `omni-moderation-latest` checks before generation when a provider key is configured
+- global response security headers, including a restrictive CSP with intentional `wasm-unsafe-eval` and same-document `blob:` fetch support for the WebAssembly and GLTF-dependent spatial runtime
+- Node.js runtime and a 40-second maximum duration on every `/api/ai/*` route, leaving headroom beyond the bounded provider retry envelope
+- `omni-moderation-latest` checks with a 10-second timeout before generation when a provider key is configured
 - authored no-fact safety refusals and no-score safety feedback
 - bounded request schemas: 600-character character questions and 2,400-character Case Briefs
 - per-endpoint in-memory rate limiting at 20 requests per 60 seconds per forwarded client key
@@ -489,7 +494,7 @@ Failure handling:
 - show an explicit authored-fallback or unavailable state
 - never strand player on a blank screen
 
-The current limiter is process-local and intended for the hackathon MVP, not a distributed production abuse-control system. The complete no-key browser path has been exercised. A live GPT-5.6 API-key smoke test remains outstanding.
+The current limiter is process-local and intended for the hackathon MVP, not a distributed production abuse-control system. Production still requires durable edge/WAF/BotID protection or an equivalent distributed control. The complete no-key browser path has been exercised. A live GPT-5.6 API-key smoke test remains outstanding.
 
 ## Testing Strategy
 
@@ -540,4 +545,4 @@ End-to-end tests:
 - refresh/resume
 - keyboard-only path
 
-Current Phase 4 evidence includes focused unit, integration, and historical-integrity coverage for schema closure, exact segment/term authorization, sample and no-key processing, instruction-like text, unsupported types and body limits, teacher approval, separate persistence, authored hint selection, and deterministic reporting. `tests/e2e/phase4-classroom.spec.ts` passes three focused browser tests: sample review/approval persists only the learning-session profile and leaves canonical case state unchanged while exposing four E3/E4/E5/E7 class-material connections; the 320 x 700 world HUD keeps Journal, route HUD, and top links inside the viewport without overlap; and all six historical-record controls retain distinct accessible names. Manual browser QA also found no overflow on `/teacher` at desktop or 390 x 844, a clean `/teacher/report`, and no application console errors; only existing Three/dependency deprecation warnings appeared. Existing full-case coverage exercises reduced-motion repair without a shortcut. The fresh integrated no-key gate passes warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and all 19 Playwright tests. Screen-reader-oriented, cross-route accessibility-equivalence, live-provider, and physical-Chromebook checks remain outstanding.
+Current evidence includes focused unit, integration, and historical-integrity coverage for schema closure, exact segment/term authorization, sample and no-key processing, instruction-like text, unsupported types and body limits, teacher approval, separate persistence, authored hint selection, deterministic reporting, controller readiness, response security policy, and deployment boundaries. The final local release-closure gate passes lint, typecheck, 84 Vitest files with 554 tests, the production build, and all 33 Playwright tests, including automatic axe-core audits, cross-route state/keyboard equivalence, CSP texture loading, and malicious/oversize teacher-packet cases. The 4x-CPU classroom proxy also passes at 36 FPS median and 35 FPS p10. Formal screen-reader review, live-provider testing, physical-Chromebook verification, and deployment remain outstanding.

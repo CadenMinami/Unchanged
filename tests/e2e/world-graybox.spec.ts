@@ -4,6 +4,17 @@ import sharp from "sharp";
 test.use({ viewport: { width: 1280, height: 720 } });
 
 test("renders a nonblank grounded Varennes reconstruction inside the client-only world route", async ({ page }, testInfo) => {
+  const sceneConsoleErrors: string[] = [];
+  page.on("console", (message) => {
+    if (
+      message.type() === "error" &&
+      /content security policy|couldn't load texture|refused to connect|blob:/i.test(
+        message.text(),
+      )
+    ) {
+      sceneConsoleErrors.push(message.text());
+    }
+  });
   await page.addInitScript(() => {
     window.sessionStorage.setItem("history-unbroken:world-test-mode", "1");
   });
@@ -41,6 +52,7 @@ test("renders a nonblank grounded Varennes reconstruction inside the client-only
     colors.add(`${pixels[index]}:${pixels[index + 1]}:${pixels[index + 2]}`);
   }
   expect(colors.size).toBeGreaterThan(20);
+  expect(sceneConsoleErrors).toEqual([]);
 
   await expect(
     page.getByRole("link", { name: /use non-spatial investigation/i }),
@@ -171,12 +183,6 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
   await expect(page.getByRole("status")).toContainText(/reconstruction ready/i);
   const canvas = page.getByTestId("world-canvas").locator("canvas");
   await expect(canvas).toBeVisible();
-  await page.evaluate(
-    () =>
-      new Promise<void>((resolve) => {
-        window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
-      }),
-  );
   const prompt = page.getByRole("button", { name: /inspect drouet account table/i });
   await expect(prompt).toBeVisible();
   await prompt.click();
@@ -274,12 +280,6 @@ test("discovers the route by walking and fast travels without changing case auth
 
   const canvas = page.getByTestId("world-canvas").locator("canvas");
   await expect(canvas).toBeVisible();
-  await page.evaluate(
-    () =>
-      new Promise<void>((resolve) => {
-        window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
-      }),
-  );
 
   const caseRevisionBefore = await page.evaluate(() => {
     const saved = JSON.parse(
