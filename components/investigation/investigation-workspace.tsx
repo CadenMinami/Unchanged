@@ -48,6 +48,27 @@ const comparisonActions: Record<
   },
 };
 
+const nextRecordRationale: Record<string, string> = {
+  E6A:
+    "This is one possible false message. Test whether it explains why Drouet did not pursue the carriage.",
+  E6B:
+    "This is the route-message theory. Test whether it fits the surviving route and timing records.",
+  E6C:
+    "This theory says Varennes could not act. Test it against the civic-response record.",
+  FO1:
+    "This fictional observation tells you what changed in the fractured branch. It is a clue, not proof.",
+  FO2:
+    "This fictional observation helps test whether Drouet was sent down the wrong road.",
+  FO3:
+    "This fictional observation helps test whether Varennes had time to receive a warning.",
+  E3:
+    "Drouet's report is the historical account that can confirm or challenge the branch clue.",
+  E4:
+    "The timing board shows whether Drouet could realistically reach Varennes in time.",
+  E5:
+    "The civic record explains why a warning mattered: local people still had to act on it.",
+};
+
 function formatSourceType(sourceType: string): string {
   if (sourceType === "primary") return "Primary record";
   if (sourceType === "secondary") return "Historical scholarship";
@@ -168,8 +189,9 @@ export function InvestigationWorkspace() {
           <p className={styles.eyebrow}>Act II / Open investigation</p>
           <h1 id="investigation-heading">Find the false route message.</h1>
           <p>
-            Start with the highlighted record. Inspect evidence, record each finding, then build
-            your explanation on the caseboard.
+            In the historical record, a warning reached Varennes and local people stopped the
+            carriage. In this fictional branch, that warning failed. Find what changed, prove it
+            with sources, then explain why it mattered.
           </p>
         </div>
         <div className={styles.nextAction} aria-live="polite">
@@ -177,6 +199,7 @@ export function InvestigationWorkspace() {
           {nextRecord ? (
             <>
               <strong>Inspect {nextRecord.title}</strong>
+              <p className={styles.nextActionReason}>{nextRecordRationale[nextRecord.id]}</p>
               <button onClick={() => inspect(nextRecord.id)} type="button">
                 Inspect record
                 <ArrowRight aria-hidden="true" />
@@ -185,12 +208,12 @@ export function InvestigationWorkspace() {
           ) : nextFinding ? (
             <>
               <strong>Record the {nextFinding.label.toLowerCase()}.</strong>
-              <span>Use Case progress below.</span>
+              <span>Every required record has now been checked. Turn that evidence into a finding in Case progress below.</span>
             </>
           ) : (
             <>
               <strong>All findings are ready.</strong>
-              <span>Open the causal caseboard below.</span>
+              <span>Open the causal caseboard to explain how the false message changed the outcome.</span>
             </>
           )}
         </div>
