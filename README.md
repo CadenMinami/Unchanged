@@ -30,7 +30,7 @@ The complete case remains playable without an API key through clearly labeled au
 
 Requirements:
 
-- Node.js 22.x
+- Node.js 22.18 or newer, below Node.js 23
 - npm 10.5.1 or newer
 
 ```bash
@@ -60,6 +60,30 @@ OPENAI_SPEECH_MODEL=gpt-4o-mini-tts
 
 The model variables already default to the values shown. Never expose these secrets through a `NEXT_PUBLIC_` variable.
 
+Generate a stable production speech secret locally, then place the output only
+in the Vercel Production environment:
+
+```bash
+openssl rand -base64 48 | tr -d '\n'
+```
+
+For Vercel Preview deployments, leave all four provider variables unset so the
+reviewable deterministic fallback remains the default. Enable production
+provider variables only after configuring shared rate limiting or equivalent
+edge abuse protection; the repository's in-memory limiter is intentionally
+process-local. Vercel applies a changed environment variable to subsequent
+deployments, so redeploy after updating a secret.
+
+### Optional Paid Live Smoke
+
+The dedicated live smoke is opt-in, makes paid OpenAI requests, and has not yet been run in this repository session. Set `OPENAI_API_KEY` in your local shell or secret manager, then run:
+
+```bash
+HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE=1 OPENAI_API_KEY="$OPENAI_API_KEY" npm run test:live:openai
+```
+
+Do not paste credentials into chat, commit them, or store them in repository files. The isolated launcher validates the opt-in and key without printing them, builds with provider credentials, model settings, and speech secrets explicitly blanked so Next.js cannot reload them from local environment files, then starts the test runtime with the live key, pinned `gpt-5.6` and `gpt-4o-mini-tts` models, and a fresh ephemeral speech-ticket secret.
+
 ## Verification
 
 Run the repository checks:
@@ -78,6 +102,28 @@ PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers npx playwright install chromium
 PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers npm run test:e2e
 ```
 
+Run every no-key local release gate, including the performance proxy and
+reproducible screenshots:
+
+```bash
+npm run verify:release
+```
+
+For the remaining credential, deployment, device, human-review, video, and
+submission work, use the [submission checklist](docs/SUBMISSION_CHECKLIST.md).
+
+After Vercel creates an immutable HTTPS deployment URL, run the credential-free
+fallback regression against that exact URL:
+
+```bash
+HISTORY_UNBROKEN_DEPLOYED_URL="https://your-deployment.vercel.app" npm run test:deployed
+```
+
+This runner never starts a local server and blocks any `/api/ai/*` request. It
+checks `/api/health`, completes the deterministic non-spatial case, and opens
+spatial E3 evidence. Use [the release-evidence template](docs/RELEASE_EVIDENCE_TEMPLATE.md)
+to record its result and every human-owned release check.
+
 ## Architecture
 
 The application uses Next.js, TypeScript, React Three Fiber, authored JSON case data, Zod-validated AI contracts, local browser persistence, Vitest, and Playwright.
@@ -95,14 +141,19 @@ The spatial world is a schematic, non-evidentiary reconstruction. Visual assets 
 
 The repository contains one complete local case covering the Flight to Varennes. Spatial and non-spatial routes, no-key completion, teacher alignment, accessibility preferences, voice controls, printable reporting, and automated checks are implemented.
 
+The latest local verification baseline includes 111 Vitest files with 910 tests, 53 ordinary production Playwright flows, reproducible submission captures, and the constrained Classroom performance proxy. Those automated results do not replace physical-device, screen-reader, live-provider, deployed, or classroom-user verification.
+
 Before a production classroom release, the project still needs:
 
-- Live provider testing with production credentials
+- Successful execution of the isolated live-provider smoke with a local credential
 - Public deployment and regression testing
 - Formal screen-reader and physical Chromebook checks
 - Unfamiliar-user classroom playtesting
+- Final demo video, `/feedback` Session ID, and submission confirmation
 
 The current API rate limiter is process-local. A multi-instance deployment requires shared rate limiting and stronger edge protection.
+
+`npm audit` currently reports two moderate PostCSS advisories through Next.js 16.2.10. No safe stable update is available at this checkpoint, and npm's forced Next.js 9 downgrade is incompatible with this application; the risk is explicitly deferred for the hackathon MVP rather than represented as remediated.
 
 ## Documentation
 
@@ -111,6 +162,8 @@ The current API rate limiter is process-local. A multi-instance deployment requi
 - [Historical source ledger](docs/HISTORICAL_SOURCES.md)
 - [AI contracts](docs/AI_CONTRACTS.md)
 - [Build log](docs/BUILD_LOG.md)
+- [Submission checklist](docs/SUBMISSION_CHECKLIST.md)
+- [Release evidence template](docs/RELEASE_EVIDENCE_TEMPLATE.md)
 
 ## License
 

@@ -1,16 +1,21 @@
 "use client";
 
-import { Map, Volume2, VolumeX } from "lucide-react";
+import { Map, Settings, Volume2, VolumeX } from "lucide-react";
 import Link from "next/link";
 import type { RefObject } from "react";
 
 import { InvestigationModeLink } from "@/components/investigation-mode/investigation-mode-link";
 
+import type { CameraInputSnapshot } from "./camera/camera-input-boundary";
 import { PerformanceNotice, QualityBadge } from "./quality-notice";
 import styles from "./world-shell.module.css";
 
 interface WorldHudProps {
   ambientCaption: string;
+  cameraInputSnapshot: CameraInputSnapshot;
+  cameraPointerLockIntroduced: boolean;
+  cameraSettingsOpen: boolean;
+  cameraSettingsButtonRef: RefObject<HTMLButtonElement | null>;
   currentZoneIndex: number;
   currentZoneLabel: string;
   ambientMuted: boolean;
@@ -19,6 +24,11 @@ interface WorldHudProps {
   handoffLabel: string;
   handoffOpensCaseboard: boolean;
   offerNonSpatial: boolean;
+  pendingAction: Readonly<{
+    acceptedAt: number;
+    kind: string;
+    requestId: number;
+  }> | null;
   ready: boolean;
   worldMode: string;
   interactionButtonRef: RefObject<HTMLButtonElement | null>;
@@ -29,12 +39,36 @@ interface WorldHudProps {
   onInteract: () => void;
   onAmbientMuteChange: () => void;
   onGuidanceSettingChange: (setting: "off" | "subtle" | "guided") => void;
+  onOpenCameraSettings: () => void;
   onOpenJournal: () => void;
   onOpenCaseboard: () => void;
 }
 
+function cameraStatusLine(
+  ready: boolean,
+  snapshot: CameraInputSnapshot,
+  pointerLockIntroduced: boolean,
+): string | null {
+  if (!ready) return "Loading the movement controller and authored district.";
+  if (snapshot.pointerLockActive) {
+    return "Camera captured / Escape to release.";
+  }
+  if (!snapshot.pointerLockSupported) {
+    return "Right-drag to look / Keyboard remains available.";
+  }
+  if (snapshot.captureDenied) {
+    return "Capture blocked / Right-drag fallback.";
+  }
+  if (!pointerLockIntroduced) return "Click world to capture camera.";
+  return null;
+}
+
 export function WorldHud({
   ambientCaption,
+  cameraInputSnapshot,
+  cameraPointerLockIntroduced,
+  cameraSettingsOpen,
+  cameraSettingsButtonRef,
   currentZoneIndex,
   currentZoneLabel,
   ambientMuted,
@@ -43,6 +77,7 @@ export function WorldHud({
   handoffLabel,
   handoffOpensCaseboard,
   offerNonSpatial,
+  pendingAction,
   ready,
   worldMode,
   interactionButtonRef,
@@ -53,15 +88,36 @@ export function WorldHud({
   onInteract,
   onAmbientMuteChange,
   onGuidanceSettingChange,
+  onOpenCameraSettings,
   onOpenJournal,
   onOpenCaseboard,
 }: WorldHudProps) {
+  const cameraStatus = cameraStatusLine(
+    ready,
+    cameraInputSnapshot,
+    cameraPointerLockIntroduced,
+  );
+
   return (
     <>
-      <header className={styles.masthead}>
-        <Link href="/">History Unbroken</Link>
+      <header
+        className={styles.masthead}
+        data-camera-release-pending={cameraInputSnapshot.releasePending}
+        data-pending-accepted-at={pendingAction?.acceptedAt}
+        data-pending-action={pendingAction?.kind}
+        data-pending-request-id={pendingAction?.requestId}
+        data-testid="world-hud"
+      >
+        <Link data-world-route-source="brand_link" href="/">
+          History Unbroken
+        </Link>
         <span>VARENNES / SCHEMATIC RECONSTRUCTION</span>
-        <InvestigationModeLink href="/play/investigate" mode="non_spatial">
+        <InvestigationModeLink
+          data-world-mode-after-release="non_spatial"
+          data-world-route-source="non_spatial_link"
+          href="/play/investigate"
+          mode="non_spatial"
+        >
           Use non-spatial investigation
         </InvestigationModeLink>
       </header>
@@ -70,6 +126,8 @@ export function WorldHud({
         aria-busy={!ready}
         aria-live="polite"
         className={styles.status}
+        data-testid="world-status"
+        hidden={cameraSettingsOpen}
         role="status"
       >
         <p>Spatial archive / {worldMode}</p>
@@ -78,16 +136,18 @@ export function WorldHud({
             ? "Varennes reconstruction ready"
             : "Preparing Varennes reconstruction"}
         </strong>
-        <span>
-          {ready
-            ? "Move with W A S D or arrow keys. Shift toggles a faster pace."
-            : "Loading the movement controller and authored district."}
-        </span>
+        {cameraStatus ? (
+          <span className={styles.statusLine}>{cameraStatus}</span>
+        ) : null}
+        <small className={styles.mobileDisclosure}>
+          Authored dramatization; not testimony or evidence.
+        </small>
       </section>
       <div className={styles.caseFileControl}>
         {handoffOpensCaseboard ? (
           <button
             className={styles.caseFileLink}
+            disabled={pendingAction !== null}
             onClick={onOpenCaseboard}
             ref={reasoningButtonRef}
             type="button"
@@ -95,7 +155,13 @@ export function WorldHud({
             {handoffLabel}
           </button>
         ) : (
-          <Link className={styles.caseFileLink} href={handoffHref}>
+          <Link
+            className={styles.caseFileLink}
+            data-world-route-source={
+              handoffHref === "/play" ? "briefing_link" : "case_handoff_link"
+            }
+            href={handoffHref}
+          >
             {handoffLabel}
           </Link>
         )}
@@ -104,6 +170,7 @@ export function WorldHud({
       <button
         aria-label="Open route journal"
         className={styles.journalControl}
+        disabled={pendingAction !== null}
         onClick={onOpenJournal}
         ref={journalButtonRef}
         title="Route journal"
@@ -147,6 +214,7 @@ export function WorldHud({
             <button
               aria-label={`Guidance ${setting}`}
               aria-pressed={guidanceSetting === setting}
+              disabled={pendingAction !== null}
               key={setting}
               onClick={() => onGuidanceSettingChange(setting)}
               type="button"
@@ -170,11 +238,24 @@ export function WorldHud({
           aria-label={ambientMuted ? "Enable ambient sound" : "Mute ambient sound"}
           aria-pressed={!ambientMuted}
           className={styles.soundControl}
+          disabled={pendingAction !== null}
           onClick={onAmbientMuteChange}
           title={ambientMuted ? "Enable ambient sound" : "Mute ambient sound"}
           type="button"
         >
           {ambientMuted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
+        </button>
+        <button
+          aria-label="Open camera settings"
+          className={styles.soundControl}
+          data-pointer-lock-active={cameraInputSnapshot.pointerLockActive}
+          disabled={pendingAction !== null}
+          onClick={onOpenCameraSettings}
+          ref={cameraSettingsButtonRef}
+          title="Camera settings"
+          type="button"
+        >
+          <Settings aria-hidden="true" />
         </button>
         <QualityBadge tier={graphicsTier} />
       </div>
@@ -182,6 +263,7 @@ export function WorldHud({
       {nearbyInteractionLabel ? (
         <button
           className={styles.interactionPrompt}
+          disabled={pendingAction !== null}
           onClick={onInteract}
           ref={interactionButtonRef}
           type="button"

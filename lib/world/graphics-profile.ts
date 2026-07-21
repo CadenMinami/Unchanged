@@ -2,6 +2,8 @@ export const GRAPHICS_TIERS = ["high", "balanced", "classroom"] as const;
 
 export type GraphicsTier = (typeof GRAPHICS_TIERS)[number];
 export type TextureTier = "high" | "medium" | "low";
+export type CharacterDetail = "rigged" | "fallback";
+export type EnvironmentDensity = "high" | "medium" | "low";
 
 export type GraphicsProfile = Readonly<{
   tier: GraphicsTier;
@@ -17,6 +19,14 @@ export type GraphicsProfile = Readonly<{
   postProcessingAllowed: boolean;
   ambientCount: number;
   textureTier: TextureTier;
+  characterDetail: CharacterDetail;
+  environmentDensity: EnvironmentDensity;
+  contactShadows: boolean;
+  effects: Readonly<{
+    bloom: boolean;
+    bloomStrength: number;
+    multisampling: number;
+  }>;
 }>;
 
 export type GraphicsCapabilities = Readonly<{
@@ -33,6 +43,10 @@ export const GRAPHICS_PROFILES = {
     postProcessingAllowed: true,
     ambientCount: 16,
     textureTier: "high",
+    characterDetail: "fallback",
+    environmentDensity: "high",
+    contactShadows: true,
+    effects: { bloom: true, bloomStrength: 0.22, multisampling: 2 },
   },
   balanced: {
     tier: "balanced",
@@ -42,15 +56,23 @@ export const GRAPHICS_PROFILES = {
     postProcessingAllowed: true,
     ambientCount: 8,
     textureTier: "medium",
+    characterDetail: "fallback",
+    environmentDensity: "medium",
+    contactShadows: true,
+    effects: { bloom: true, bloomStrength: 0.12, multisampling: 0 },
   },
   classroom: {
     tier: "classroom",
-    dpr: 1,
+    dpr: 0.5,
     shadows: { enabled: false, mapSize: 0 },
     fog: { near: 24, far: 90 },
     postProcessingAllowed: false,
     ambientCount: 3,
     textureTier: "low",
+    characterDetail: "fallback",
+    environmentDensity: "low",
+    contactShadows: false,
+    effects: { bloom: false, bloomStrength: 0, multisampling: 0 },
   },
 } as const satisfies Record<GraphicsTier, GraphicsProfile>;
 

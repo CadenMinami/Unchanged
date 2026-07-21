@@ -24,6 +24,12 @@ function provenanceLabel(provenance: string): string {
   return "Cited historical reconstruction";
 }
 
+function evidenceSurfaceLabel(provenance: string): string {
+  return provenance === "verified_historical_record"
+    ? "Archive record"
+    : "Evidence item";
+}
+
 export function FocusOverlayHost({
   evidenceId,
   invokerRef,
@@ -97,7 +103,9 @@ export function FocusOverlayHost({
         </header>
         <div className={styles.body}>
           <div className={styles.record}>
-            <p className={styles.eyebrow}>Archive record</p>
+            <p className={styles.eyebrow}>
+              {evidenceSurfaceLabel(evidence.provenance)}
+            </p>
             <h2 id="world-evidence-heading">{evidence.title}</h2>
             <blockquote>{evidence.studentExcerpt}</blockquote>
             {reducedReading ? (

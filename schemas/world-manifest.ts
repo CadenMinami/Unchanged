@@ -7,8 +7,9 @@ import {
   repairStepIds,
 } from "./reconstruction";
 
-export const SCENE_MANIFEST_VERSION = "1.2.0" as const;
+export const SCENE_MANIFEST_VERSION = "1.3.0" as const;
 export const AMBIENT_LINES_VERSION = "1.0.0" as const;
+export const WORLD_ASSET_LEDGER_VERSION = "1.0.0" as const;
 export const SCHEMATIC_PLACEMENT_LABEL =
   "SCHEMATIC RECONSTRUCTION - NOT TO SCALE" as const;
 
@@ -59,6 +60,14 @@ export const canonicalTargetTypeSchema = z.enum([
 
 const canonicalIdSchema = z.string().min(1).max(100);
 const semverSchema = z.string().regex(/^\d+\.\d+\.\d+$/);
+const assetReferenceSchema = z
+  .object({
+    assetId: z.string().regex(/^ASSET-[A-Z0-9]+(?:-[A-Z0-9]+)*$/),
+    assetLedgerVersion: z.literal(WORLD_ASSET_LEDGER_VERSION),
+    licenseReference: z.literal("asset_ledger"),
+  })
+  .strict();
+const dynamicContentSchema = z.enum(["generic_ambient_resident"]);
 const placementLimitationsSchema = z
   .object({
     location: z.string().min(1),
@@ -89,6 +98,8 @@ const zoneSchema = z
     zoneId: worldZoneIdSchema,
     label: z.string().min(1),
     ...schematicPlacementFields,
+    assetReferences: z.array(assetReferenceSchema).min(1),
+    dynamicContentAllowlist: z.array(dynamicContentSchema),
     safeSpawns: z.array(safeSpawnSchema).min(1),
     ambientLineIds: z.array(canonicalIdSchema),
     fastTravelUnlock: z.enum(["first_valid_visit", "never"]),
@@ -147,6 +158,7 @@ const interactableSchema = z
       "fictional_counterfactual",
     ]),
     countsAsHistoricalEvidence: z.literal(false),
+    assetReferences: z.array(assetReferenceSchema).min(1),
     ...schematicPlacementFields,
   })
   .strict();
@@ -293,6 +305,22 @@ export const sceneManifestSchema = z
         code: "custom",
         path: ["interactables"],
         message: "Interactable IDs must be unique.",
+      });
+    }
+
+    for (const [collectionName, owners] of [
+      ["zones", manifest.zones],
+      ["interactables", manifest.interactables],
+    ] as const) {
+      owners.forEach((owner, ownerIndex) => {
+        const assetIds = owner.assetReferences.map((reference) => reference.assetId);
+        if (new Set(assetIds).size !== assetIds.length) {
+          context.addIssue({
+            code: "custom",
+            path: [collectionName, ownerIndex, "assetReferences"],
+            message: "Asset references must be unique for each manifest owner.",
+          });
+        }
       });
     }
   });

@@ -55,14 +55,21 @@ const journalRequest = {
 
 function Harness() {
   const { state } = useCaseSession();
-  const interact = useWorldInteractionAdapter();
+  const { prepareWorldInteraction, commitPreparedWorldInteraction } =
+    useWorldInteractionAdapter();
   const [result, setResult] = useState("");
 
   return (
     <div>
       <button
         onClick={() => {
-          const outcome = interact(e3Request);
+          const preparation = prepareWorldInteraction(e3Request);
+          if (preparation.status === "rejected") {
+            setResult(`rejected:${preparation.reason}`);
+            return;
+          }
+
+          const outcome = commitPreparedWorldInteraction(preparation.prepared);
           setResult(
             outcome.status === "opened" && outcome.target.targetType === "evidence"
               ? `${outcome.target.evidenceId}:${outcome.reducerResult?.status ?? "already-inspected"}`
@@ -80,7 +87,7 @@ function Harness() {
 }
 
 describe("world interaction adapter", () => {
-  it("opens canonical E3 and records inspection only through the case reducer", async () => {
+  it("opens canonical E3 and records inspection only through commit", async () => {
     const user = userEvent.setup();
     const initialState = {
       ...createInitialCaseState(casePackage),
@@ -107,16 +114,16 @@ describe("world interaction adapter", () => {
     };
 
     function RejectedHarness() {
-      const interact = useWorldInteractionAdapter();
+      const { prepareWorldInteraction } = useWorldInteractionAdapter();
       const [result, setResult] = useState("");
       return (
         <button
           onClick={() => {
-            const outcome = interact({
+            const outcome = prepareWorldInteraction({
               ...e3Request,
               canonicalTarget: { targetType: "evidence", evidenceId: "E4" },
             });
-            setResult(outcome.status === "rejected" ? outcome.reason : "opened");
+            setResult(outcome.status === "rejected" ? outcome.reason : "prepared");
           }}
         >
           Tampered request {result}
@@ -130,7 +137,9 @@ describe("world interaction adapter", () => {
       </CaseSessionProvider>,
     );
     await user.click(screen.getByRole("button", { name: /tampered request/i }));
-    expect(screen.getByRole("button", { name: /canonical_target_mismatch/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /canonical_target_mismatch/i }),
+    ).toBeInTheDocument();
   });
 
   it("opens an authorized station without issuing a case command", async () => {
@@ -142,13 +151,19 @@ describe("world interaction adapter", () => {
 
     function StationHarness() {
       const { state } = useCaseSession();
-      const interact = useWorldInteractionAdapter();
+      const { prepareWorldInteraction, commitPreparedWorldInteraction } =
+        useWorldInteractionAdapter();
       const [result, setResult] = useState("");
       return (
         <div>
           <button
             onClick={() => {
-              const outcome = interact(drouetRequest);
+              const preparation = prepareWorldInteraction(drouetRequest);
+              if (preparation.status === "rejected") {
+                setResult("rejected");
+                return;
+              }
+              const outcome = commitPreparedWorldInteraction(preparation.prepared);
               setResult(
                 outcome.status === "opened" && outcome.target.targetType === "station"
                   ? outcome.target.stationId
@@ -184,13 +199,19 @@ describe("world interaction adapter", () => {
 
     function JournalHarness() {
       const { state } = useCaseSession();
-      const interact = useWorldInteractionAdapter();
+      const { prepareWorldInteraction, commitPreparedWorldInteraction } =
+        useWorldInteractionAdapter();
       const [result, setResult] = useState("");
       return (
         <div>
           <button
             onClick={() => {
-              const outcome = interact(journalRequest);
+              const preparation = prepareWorldInteraction(journalRequest);
+              if (preparation.status === "rejected") {
+                setResult("rejected");
+                return;
+              }
+              const outcome = commitPreparedWorldInteraction(preparation.prepared);
               setResult(
                 outcome.status === "opened" &&
                   outcome.target.targetType === "case_surface"

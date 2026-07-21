@@ -1,7 +1,7 @@
 import { mkdir, readdir, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const outputDirectory = path.join(
   process.cwd(),
@@ -65,22 +65,21 @@ async function capture(page: Page, filename: string): Promise<void> {
   });
 }
 
-async function moveUntilVisible(
-  page: Page,
-  target: Locator,
-  keys: readonly string[],
-): Promise<void> {
-  for (const key of keys) await page.keyboard.down(key);
-  try {
-    await expect(target).toBeVisible({ timeout: 18_000 });
-  } finally {
-    for (const key of [...keys].reverse()) await page.keyboard.up(key);
-  }
-}
-
 test("captures the complete submission storyboard from the real case flow", async ({
   page,
 }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window.navigator, "deviceMemory", {
+      configurable: true,
+      value: 16,
+    });
+    Object.defineProperty(window.navigator, "hardwareConcurrency", {
+      configurable: true,
+      value: 12,
+    });
+    // Keep the reproducible screenshot flow at the authored High profile.
+    window.sessionStorage.setItem("history-unbroken:world-test-mode", "1");
+  });
   await mkdir(outputDirectory, { recursive: true });
   for (const entry of await readdir(outputDirectory)) {
     if (entry.endsWith(".png")) {
@@ -115,6 +114,7 @@ test("captures the complete submission storyboard from the real case flow", asyn
     /reconstruction ready/i,
     { timeout: 15_000 },
   );
+  await expect(page.getByLabel("Graphics quality: high")).toBeVisible();
   await capture(page, "00-grounded-world.png");
 
   const e3Prompt = page.getByRole("button", {
@@ -131,7 +131,30 @@ test("captures the complete submission storyboard from the real case flow", asyn
   const drouetPrompt = page.getByRole("button", {
     name: /inspect drouet station/i,
   });
-  await moveUntilVisible(page, drouetPrompt, ["ShiftLeft", "KeyS", "KeyD"]);
+  const currentLocation = page.getByRole("complementary", {
+    name: /current reconstruction location/i,
+  });
+  await page.keyboard.down("KeyW");
+  try {
+    await expect(currentLocation).toContainText(/post-road square/i, {
+      timeout: 18_000,
+    });
+  } finally {
+    await page.keyboard.up("KeyW");
+  }
+  await page.getByRole("button", { name: /open route journal/i }).click();
+  const journal = page.getByRole("dialog", { name: /case journal/i });
+  await expect(journal).toBeVisible();
+  await journal
+    .getByRole("button", {
+      name: /return to post-road square safe point/i,
+    })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    /reconstruction ready/i,
+    { timeout: 15_000 },
+  );
+  await expect(drouetPrompt).toBeVisible({ timeout: 10_000 });
   await drouetPrompt.click();
   const conversation = page.getByRole("dialog", {
     name: /conversation with drouet station/i,

@@ -108,7 +108,7 @@ test("completes the real-entry E3-to-Drouet-to-E1-to-Louis world case path", asy
     page,
     telemetry,
     "Drouet traversal",
-    ["ShiftLeft", "KeyS", "KeyD"],
+    ["ShiftLeft", "KeyW"],
     () => expect(drouetPrompt).toBeVisible({ timeout: 15_000 }),
   );
   await drouetPrompt.click();
@@ -140,7 +140,7 @@ test("completes the real-entry E3-to-Drouet-to-E1-to-Louis world case path", asy
     page,
     telemetry,
     "Civic discovery traversal",
-    ["ShiftLeft", "KeyS", "KeyD"],
+    ["ShiftLeft", "KeyW"],
     () =>
       expect(location).toContainText(/royal lodging and civic area/i, {
         timeout: 22_000,
@@ -184,7 +184,7 @@ test("completes the real-entry E3-to-Drouet-to-E1-to-Louis world case path", asy
     page,
     telemetry,
     "Louis traversal",
-    ["ShiftLeft", "KeyD"],
+    ["ShiftLeft", "KeyW"],
     () => expect(louisPrompt).toBeVisible({ timeout: 12_000 }),
   );
   await louisPrompt.click();

@@ -9,8 +9,9 @@ import type {
   SceneManifest,
   WorldZoneId,
 } from "@/schemas/world-manifest";
+import type { GraphicsProfile } from "@/lib/world/graphics-profile";
 
-import { PeriodFigure } from "../character/period-figure";
+import { PeriodCharacter } from "../character/period-character";
 
 export type AmbientResidentPlacement = Readonly<{
   residentId: string;
@@ -23,6 +24,31 @@ export type AmbientResidentPlacement = Readonly<{
   speed: number;
 }>;
 
+export type AmbientResidentTransform = Readonly<{
+  position: readonly [number, number, number];
+  rotationY: number;
+}>;
+
+export function resolveAmbientResidentTransform(
+  placement: AmbientResidentPlacement,
+  elapsed: number,
+  reducedMotion: boolean,
+): AmbientResidentTransform {
+  if (reducedMotion) {
+    return { position: placement.basePosition, rotationY: 0 };
+  }
+
+  const angle = elapsed * placement.speed + placement.phase;
+  return {
+    position: [
+      placement.basePosition[0] + Math.cos(angle) * placement.pathRadius,
+      placement.basePosition[1],
+      placement.basePosition[2] + Math.sin(angle) * placement.pathRadius,
+    ],
+    rotationY: -angle + Math.PI / 2,
+  };
+}
+
 export function buildAmbientResidentPlacements(
   manifest: SceneManifest,
   ambientLines: AmbientLines,
@@ -34,6 +60,9 @@ export function buildAmbientResidentPlacements(
     ambientLines.lines.map((line) => [line.ambientLineId, line]),
   );
   const zoneEntries = manifest.zones.flatMap((zone, zoneIndex) => {
+    if (!zone.dynamicContentAllowlist.includes("generic_ambient_resident")) {
+      return [];
+    }
     const ambientLineId = zone.ambientLineIds[0];
     const line = linesById.get(ambientLineId);
     const safeSpawn = zone.safeSpawns[0];
@@ -66,12 +95,16 @@ interface AmbientResidentsProps {
   ambientLines: AmbientLines;
   count: number;
   manifest: SceneManifest;
+  profile: GraphicsProfile;
+  reducedMotion?: boolean;
 }
 
 export function AmbientResidents({
   ambientLines,
   count,
   manifest,
+  profile,
+  reducedMotion = false,
 }: AmbientResidentsProps) {
   const placements = buildAmbientResidentPlacements(
     manifest,
@@ -85,13 +118,13 @@ export function AmbientResidents({
     placements.forEach((placement, index) => {
       const resident = residentRefs.current[index];
       if (!resident) return;
-      const angle = elapsed * placement.speed + placement.phase;
-      resident.position.set(
-        placement.basePosition[0] + Math.cos(angle) * placement.pathRadius,
-        placement.basePosition[1],
-        placement.basePosition[2] + Math.sin(angle) * placement.pathRadius,
+      const transform = resolveAmbientResidentTransform(
+        placement,
+        elapsed,
+        reducedMotion,
       );
-      resident.rotation.y = -angle + Math.PI / 2;
+      resident.position.set(...transform.position);
+      resident.rotation.y = transform.rotationY;
     });
   });
 
@@ -105,7 +138,7 @@ export function AmbientResidents({
             residentRefs.current[index] = resident;
           }}
         >
-          <PeriodFigure
+          <PeriodCharacter
             motion="walk"
             palette={{
               skin: index % 3 === 0 ? "#8d6852" : "#ae8569",
@@ -117,6 +150,8 @@ export function AmbientResidents({
               hair: index % 2 === 0 ? "#40342c" : "#594539",
               hat: "#34312c",
             }}
+            profile={profile}
+            reducedMotion={reducedMotion}
             scale={0.78 + (index % 3) * 0.04}
           />
         </group>

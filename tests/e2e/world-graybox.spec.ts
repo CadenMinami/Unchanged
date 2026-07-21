@@ -1,9 +1,128 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import sharp from "sharp";
+
+import { CAMERA_CONFIG } from "../../lib/world/camera-config";
 
 test.use({ viewport: { width: 1280, height: 720 } });
 
+const CAMERA_FORWARD_POSITIVE_X_YAW = Math.PI / 2;
+const CAMERA_YAW_TOLERANCE = 0.02;
+
+interface CameraOrientationTelemetry {
+  cameraYaw: number;
+  sampleId: number;
+  yaw: number;
+}
+
+async function expectAllZoneDiagnostics(page: Page): Promise<void> {
+  const shell = page.getByTestId("world-canvas-shell");
+  await expect(shell).toHaveAttribute("data-world-zones-ready", "true");
+  const serialized = await shell.getAttribute("data-world-zone-readiness");
+  const zones = JSON.parse(serialized ?? "null") as Record<
+    string,
+    { assetStatus: string; interactableReady: boolean }
+  >;
+
+  expect(Object.keys(zones)).toEqual([
+    "archive-antechamber",
+    "post-road-square",
+    "royal-lodging-civic-area",
+    "bridge-approach",
+  ]);
+  expect(
+    Object.values(zones).every(
+      ({ assetStatus, interactableReady }) =>
+        assetStatus !== "pending" && interactableReady,
+    ),
+  ).toBe(true);
+}
+
+async function installUnsupportedPointerLock(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    Object.defineProperty(HTMLCanvasElement.prototype, "requestPointerLock", {
+      configurable: true,
+      value: undefined,
+    });
+  });
+}
+
+async function readCameraOrientation(
+  canvas: Locator,
+): Promise<CameraOrientationTelemetry> {
+  const serialized = await canvas.getAttribute("data-camera-telemetry");
+  const telemetry = JSON.parse(serialized ?? "null") as unknown;
+  if (
+    typeof telemetry !== "object" ||
+    telemetry === null ||
+    !("cameraYaw" in telemetry) ||
+    !("sampleId" in telemetry) ||
+    !("yaw" in telemetry) ||
+    typeof telemetry.cameraYaw !== "number" ||
+    typeof telemetry.sampleId !== "number" ||
+    typeof telemetry.yaw !== "number"
+  ) {
+    throw new Error(`Invalid camera telemetry: ${serialized ?? "missing"}`);
+  }
+  return telemetry as CameraOrientationTelemetry;
+}
+
+function angularDistance(first: number, second: number): number {
+  return Math.abs(
+    Math.atan2(Math.sin(first - second), Math.cos(first - second)),
+  );
+}
+
+async function setUnsupportedCameraYaw(
+  canvas: Locator,
+  targetYaw: number,
+): Promise<void> {
+  await expect(canvas).toHaveAttribute("data-camera-telemetry", /"cameraYaw":/);
+  const before = await readCameraOrientation(canvas);
+  const movementX =
+    (targetYaw - before.yaw) / CAMERA_CONFIG.yaw.radiansPerPixel;
+
+  await canvas.dispatchEvent("pointerdown", {
+    button: 2,
+    buttons: 2,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: "mouse",
+  });
+  await canvas.evaluate((element, deltaX) => {
+    const event = new PointerEvent("pointermove", {
+      bubbles: true,
+      buttons: 2,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: "mouse",
+    });
+    Object.defineProperty(event, "movementX", { value: deltaX });
+    element.dispatchEvent(event);
+  }, movementX);
+  await canvas.dispatchEvent("pointerup", {
+    button: 2,
+    buttons: 0,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: "mouse",
+  });
+
+  await expect
+    .poll(async () => {
+      const current = await readCameraOrientation(canvas);
+      if (current.sampleId <= before.sampleId) return Number.POSITIVE_INFINITY;
+      return Math.max(
+        angularDistance(current.yaw, targetYaw),
+        angularDistance(current.cameraYaw, targetYaw),
+      );
+    })
+    .toBeLessThanOrEqual(CAMERA_YAW_TOLERANCE);
+}
+
 test("renders a nonblank grounded Varennes reconstruction inside the client-only world route", async ({ page }, testInfo) => {
+  // This is the only test that waits for the renderer, captures a full canvas,
+  // and decodes it while the full suite runs four browser workers in parallel.
+  test.setTimeout(60_000);
   const sceneConsoleErrors: string[] = [];
   page.on("console", (message) => {
     if (
@@ -23,6 +142,7 @@ test("renders a nonblank grounded Varennes reconstruction inside the client-only
   await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
     timeout: 15_000,
   });
+  await expectAllZoneDiagnostics(page);
   await expect(
     page.getByRole("complementary", {
       name: /ambient reconstruction caption/i,
@@ -68,6 +188,7 @@ test("keeps the authored world usable when optional downloaded assets fail", asy
   await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
     timeout: 15_000,
   });
+  await expectAllZoneDiagnostics(page);
   await expect(page.getByTestId("world-canvas").locator("canvas")).toBeVisible();
   await expect(
     page.getByRole("button", { name: /inspect drouet account table/i }),
@@ -77,11 +198,54 @@ test("keeps the authored world usable when optional downloaded assets fail", asy
   ).toHaveCount(0);
 });
 
+test("keeps Classroom facades and characters off optional rich asset requests", async ({
+  page,
+}) => {
+  const optionalRichRequests: string[] = [];
+  page.on("request", (request) => {
+    const url = request.url();
+    if (
+      /\/world\/textures\/(?:painted-plaster-wall|stone-wall|wood-planks|clay-roof-tiles|rust-coarse-01)\//i.test(
+        url,
+      ) ||
+      /\/world\/models\/(?:characters?|people|drouet|louis|sauce|barnave|investigator)[^/]*\/.*\.(?:glb|gltf)(?:\?|$)/i.test(
+        url,
+      )
+    ) {
+      optionalRichRequests.push(url);
+    }
+  });
+  await page.addInitScript(() => {
+    Object.defineProperty(window.navigator, "deviceMemory", {
+      configurable: true,
+      value: 4,
+    });
+    Object.defineProperty(window.navigator, "hardwareConcurrency", {
+      configurable: true,
+      value: 4,
+    });
+  });
+
+  await page.goto("/play/world");
+
+  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
+    timeout: 15_000,
+  });
+  await expectAllZoneDiagnostics(page);
+  await expect(
+    page.getByLabel(/graphics quality: classroom/i),
+  ).toBeVisible();
+  await page.waitForTimeout(500);
+  expect(optionalRichRequests).toEqual([]);
+});
+
 test("keyboard movement changes the rendered world frame", async ({ page }) => {
   await page.setViewportSize({ width: 1366, height: 768 });
   await page.goto("/play/world");
 
-  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i);
+  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
+    timeout: 15_000,
+  });
   const canvas = page.getByTestId("world-canvas").locator("canvas");
   await expect(canvas).toBeVisible();
 
@@ -108,6 +272,7 @@ test("keyboard movement changes the rendered world frame", async ({ page }) => {
 test("keeps the portrait world visible without overlapping top controls", async ({
   page,
 }) => {
+  await installUnsupportedPointerLock(page);
   await page.addInitScript(() => {
     Object.defineProperty(window.navigator, "deviceMemory", {
       configurable: true,
@@ -117,40 +282,126 @@ test("keeps the portrait world visible without overlapping top controls", async 
       configurable: true,
       value: 4,
     });
+    window.sessionStorage.setItem("history-unbroken:world-telemetry", "1");
   });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/play/world");
 
-  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
+  const status = page.getByRole("status");
+  await expect(status).toContainText(/reconstruction ready/i, {
     timeout: 15_000,
   });
+  await expect(status).toContainText(
+    /right-drag to look.*keyboard remains available/i,
+  );
   const canvas = page.getByTestId("world-canvas").locator("canvas");
   const prompt = page.getByRole("button", {
     name: /inspect drouet account table/i,
   });
   const quality = page.locator('[aria-label^="Graphics quality:"]');
   const sound = page.getByRole("button", { name: /enable ambient sound/i });
+  const settings = page.getByRole("button", {
+    name: /open camera settings/i,
+  });
+  const journal = page.getByRole("button", { name: /open route journal/i });
+  const route = page.getByRole("navigation", {
+    name: /reconstruction route/i,
+  });
   await expect(prompt).toBeVisible();
   await expect(quality).toBeVisible();
   await expect(sound).toBeVisible();
+  await expect(settings).toBeVisible();
+  await expect(journal).toBeVisible();
+  await expect(route).toBeVisible();
   await expect(
     page.getByRole("complementary", {
       name: /ambient reconstruction caption/i,
     }),
   ).toHaveCount(0);
+  await setUnsupportedCameraYaw(canvas, CAMERA_FORWARD_POSITIVE_X_YAW);
 
+  const controls = [
+    ["capture status", status],
+    ["sound", sound],
+    ["settings", settings],
+    ["graphics", quality],
+    ["journal", journal],
+    ["route", route],
+    ["interaction", prompt],
+  ] as const;
+  const controlBounds = await Promise.all(
+    controls.map(async ([name, locator]) => {
+      const bounds = await locator.boundingBox();
+      expect(bounds, `${name} must have layout bounds`).not.toBeNull();
+      return [name, bounds!] as const;
+    }),
+  );
+  for (let left = 0; left < controlBounds.length; left += 1) {
+    for (let right = left + 1; right < controlBounds.length; right += 1) {
+      const [leftName, leftBounds] = controlBounds[left]!;
+      const [rightName, rightBounds] = controlBounds[right]!;
+      const overlap =
+        leftBounds.x < rightBounds.x + rightBounds.width &&
+        leftBounds.x + leftBounds.width > rightBounds.x &&
+        leftBounds.y < rightBounds.y + rightBounds.height &&
+        leftBounds.y + leftBounds.height > rightBounds.y;
+      expect(overlap, `${leftName} overlaps ${rightName}`).toBe(false);
+    }
+  }
+
+  await settings.click();
+  const cameraSettings = page.getByRole("dialog", {
+    name: /camera settings/i,
+  });
+  const closeSettings = page.getByRole("button", {
+    name: /close camera settings/i,
+  });
+  const sensitivity = page.getByRole("slider", { name: /look sensitivity/i });
+  const invertY = page.getByRole("checkbox", {
+    name: /invert vertical look/i,
+  });
+  await expect(cameraSettings).toBeVisible();
+  await expect(prompt).toBeVisible();
+  await expect(closeSettings).toBeFocused();
+  const settingsBounds = await cameraSettings.boundingBox();
   const promptBounds = await prompt.boundingBox();
-  const qualityBounds = await quality.boundingBox();
-  const soundBounds = await sound.boundingBox();
+  expect(settingsBounds).not.toBeNull();
   expect(promptBounds).not.toBeNull();
-  expect(qualityBounds).not.toBeNull();
-  expect(soundBounds).not.toBeNull();
-  expect(promptBounds!.y).toBeGreaterThanOrEqual(
-    qualityBounds!.y + qualityBounds!.height + 12,
+  expect(settingsBounds!.y).toBeGreaterThanOrEqual(
+    promptBounds!.y + promptBounds!.height,
   );
-  expect(soundBounds!.x + soundBounds!.width + 8).toBeLessThanOrEqual(
-    qualityBounds!.x,
-  );
+
+  await page.keyboard.press("Tab");
+  await expect(sensitivity).toBeFocused();
+  const sensitivityBefore = await sensitivity.inputValue();
+  await page.keyboard.press("ArrowRight");
+  expect(await sensitivity.inputValue()).not.toBe(sensitivityBefore);
+  await page.keyboard.press("Tab");
+  await expect(invertY).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(invertY).toBeChecked();
+  await page.keyboard.press("Escape");
+  await expect(cameraSettings).toHaveCount(0);
+  await expect(settings).toBeFocused();
+  expect(await page.evaluate(() => document.pointerLockElement)).toBeNull();
+
+  const telemetry = page.getByTestId("world-player-position");
+  await expect(telemetry).toHaveAttribute("data-position", /^\[-?\d/);
+  const positionBefore = JSON.parse(
+    (await telemetry.getAttribute("data-position")) ?? "[]",
+  ) as number[];
+  await page.keyboard.down("KeyW");
+  await page.waitForTimeout(600);
+  await page.keyboard.up("KeyW");
+  await expect.poll(async () => {
+    const positionAfter = JSON.parse(
+      (await telemetry.getAttribute("data-position")) ?? "[]",
+    ) as number[];
+    return Math.hypot(
+      positionAfter[0] - positionBefore[0],
+      positionAfter[2] - positionBefore[2],
+    );
+  }).toBeGreaterThan(0.1);
 
   await page.waitForTimeout(1_200);
   const screenshot = await canvas.screenshot();
@@ -168,6 +419,7 @@ test("keeps the portrait world visible without overlapping top controls", async 
 });
 
 test("opens the canonical E3 record from the nearby archive table", async ({ page }) => {
+  await installUnsupportedPointerLock(page);
   await page.addInitScript(() => {
     window.sessionStorage.setItem("history-unbroken:world-telemetry", "1");
   });
@@ -180,7 +432,9 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
   await page.getByRole("button", { name: "Confirm case mission" }).click();
   await page.getByRole("link", { name: "Enter 3D reconstruction" }).click();
 
-  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i);
+  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
+    timeout: 15_000,
+  });
   const canvas = page.getByTestId("world-canvas").locator("canvas");
   await expect(canvas).toBeVisible();
   const prompt = page.getByRole("button", { name: /inspect drouet account table/i });
@@ -220,11 +474,11 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
   await page.getByRole("button", { name: /close evidence/i }).click();
   await expect(page.getByRole("status")).toContainText(/exploring/i);
   await expect(prompt).toBeFocused();
+  await setUnsupportedCameraYaw(canvas, CAMERA_FORWARD_POSITIVE_X_YAW);
 
   const drouetPrompt = page.getByRole("button", { name: /inspect drouet station/i });
   await page.keyboard.down("ShiftLeft");
-  await page.keyboard.down("KeyS");
-  await page.keyboard.down("KeyD");
+  await page.keyboard.down("KeyW");
   try {
     try {
       await expect(drouetPrompt).toBeVisible({ timeout: 12_000 });
@@ -236,8 +490,7 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
       );
     }
   } finally {
-    await page.keyboard.up("KeyD");
-    await page.keyboard.up("KeyS");
+    await page.keyboard.up("KeyW");
     await page.keyboard.up("ShiftLeft");
   }
   await drouetPrompt.click();
@@ -272,6 +525,7 @@ test("opens the canonical E3 record from the nearby archive table", async ({ pag
 test("discovers the route by walking and fast travels without changing case authority", async ({
   page,
 }) => {
+  await installUnsupportedPointerLock(page);
   await page.addInitScript(() => {
     window.sessionStorage.setItem("history-unbroken:world-telemetry", "1");
   });
@@ -292,9 +546,9 @@ test("discovers the route by walking and fast travels without changing case auth
     name: /current reconstruction location/i,
   });
   const telemetry = page.getByTestId("world-player-position");
+  await setUnsupportedCameraYaw(canvas, CAMERA_FORWARD_POSITIVE_X_YAW);
   await page.keyboard.down("ShiftLeft");
-  await page.keyboard.down("KeyS");
-  await page.keyboard.down("KeyD");
+  await page.keyboard.down("KeyW");
   try {
     try {
       await expect(location).toContainText(/royal lodging and civic area/i, {
@@ -307,8 +561,7 @@ test("discovers the route by walking and fast travels without changing case auth
       );
     }
   } finally {
-    await page.keyboard.up("KeyD");
-    await page.keyboard.up("KeyS");
+    await page.keyboard.up("KeyW");
     await page.keyboard.up("ShiftLeft");
   }
 
@@ -422,9 +675,17 @@ test("hands a prevalidated persisted case from the world to the authoritative ca
   await expect(page.getByRole("dialog", { name: /causal caseboard/i })).toBeVisible();
   await expect(page.getByText("Repair ready", { exact: true })).toBeVisible();
 
-  await page.getByRole("link", { name: /review timeline repair/i }).click();
+  const repairLink = page.getByRole("link", {
+    name: /review timeline repair/i,
+  });
+  await expect(repairLink).toHaveAttribute(
+    "data-world-phase-after-release",
+    "repair",
+  );
+  await repairLink.click();
 
   await expect(page).toHaveURL(/\/play\/repair$/);
+  await expect(page.getByText(/repair locked/i)).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: /restore the link\. preserve the uncertainty/i }),
   ).toBeVisible();

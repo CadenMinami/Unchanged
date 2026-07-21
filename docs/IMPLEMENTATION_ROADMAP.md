@@ -2,7 +2,7 @@
 
 ## Current Rule
 
-Phases 0-4 are complete for the current case. The Phase 3 GPT-5.6 source-bounded layer and Task 12 staged voice runtime are implemented and locally tested; live API-key smoke tests remain before provider-level verification can be claimed. Phase 4 teacher alignment/accessibility is implemented with bounded authority and deterministic reporting. Phase 5's grounded visual pass is implemented with scene manifest `1.2.0`, asset ledger `1.0.0`, exact runtime hashes, project-authored license records, optional-asset fallbacks, articulated figures, late-evening environment treatment, and muted-by-default procedural ambience. Automated cross-route accessibility equivalence and axe-core checks pass. The eight required submission screens can be regenerated from one production Playwright flow. Remaining Phase 5 work is external release closure: formal screen-reader and physical Chromebook verification, live-provider smoke, public deployment regression, unfamiliar-user playtesting, final video production, repository publication, `/feedback`, and submission.
+Phases 0-4 are complete for the current case. The Phase 3 GPT-5.6 source-bounded layer and Task 12 staged voice runtime are implemented and locally tested; isolated opt-in live-smoke infrastructure is complete, but no live API-key run has occurred. Phase 4 teacher alignment/accessibility is implemented with bounded authority and deterministic reporting. Phase 5's grounded visual implementation uses scene manifest `1.3.0`, asset ledger `1.0.0`, exact runtime hashes, project-authored license records, profile-gated optional PBR/HDRI presentation, deterministic fallbacks, procedural figures with no historical-likeness claim, zone readiness reporting, and muted-by-default procedural ambience. Automated cross-route accessibility equivalence and axe-core checks pass. Production-browser coverage includes valid TXT/Markdown uploads, class-aligned hints, a complete keyboard-only novice case, high-profile visual capture, and fallback capture. The latest local Classroom proxy rerun passes its automated archive and warm-traversal gates; it remains a regression proxy rather than physical Chromebook evidence. The repository is public and the eight required submission screens can be regenerated from one production Playwright flow. Remaining release work is formal screen-reader and physical Chromebook verification, live-provider smoke execution, public deployment regression and production credentials, unfamiliar-user playtesting, final video production, `/feedback`, and submission.
 
 ## Phase 0: Historical Verification And Wireframes
 
@@ -105,7 +105,9 @@ Implemented:
 - tests proving model output cannot change repair eligibility
 - `omni-moderation-latest` input checks and authored safety refusals
 - schema bounds, rate limiting, abort propagation, one transient retry, and typed failure handling
+- pre-consumption character-turn and Case Brief JSON limits with no-store 413 responses
 - validation/no-key/provider fallback and source-bounded model eval corpus
+- isolated paid live-smoke infrastructure with the four provider credential/model/secret values explicitly blanked in ordinary and screenshot build/runtime environments; provider execution remains open
 
 Exit condition:
 
@@ -114,7 +116,7 @@ Exit condition:
 
 ## Phase 4: Teacher Alignment And Accessibility
 
-Status: feature implementation and integrated local no-key verification complete. Release-closure baseline `9f71cb0` passes warning-free lint, typecheck, 84 Vitest files with 554 tests, the production build, and all 33 Playwright tests, including automatic accessibility and cross-route equivalence coverage.
+Status: feature implementation and integrated local no-key verification complete. The latest verified local baseline passes 111 Vitest files with 910 tests, typecheck, warning-free lint, the production build, and all 53 ordinary production Playwright tests, including automatic accessibility, cross-route equivalence, complete keyboard-only case, valid TXT/Markdown upload, and aligned-hint coverage.
 
 Goal: demonstrate classroom fit.
 
@@ -140,13 +142,13 @@ Exit condition:
 
 - sample packet visibly changes vocabulary, hints, and reporting without changing solution
 
-Contract/component evidence supports the authority, ingestion, approval, persistence, hint, and report behavior. Browser evidence supports sample review/approval, separate learning-session persistence, an unchanged canonical investigation, E3/E4/E5/E7 class-material connections, six distinct historical-record control names, 320 x 700 world-HUD fit, desktop/390 x 844 teacher-layout fit, clean report rendering, automatic axe-core audits, and cross-route reading/state/keyboard-focus equivalence. Formal screen-reader review, live-provider smoke tests, and the physical-device gate remain project-level release work.
+Contract/component evidence supports the authority, ingestion, approval, persistence, hint, and report behavior. Browser evidence supports sample review/approval, valid TXT/Markdown uploads, separate learning-session persistence, an unchanged canonical investigation, aligned hints, E3/E4/E5/E7 class-material connections, six distinct historical-record control names, 320 x 700 world-HUD fit, desktop/390 x 844 teacher-layout fit, clean report rendering, automatic axe-core audits, cross-route reading/state/keyboard-focus equivalence, and a complete keyboard-only novice case. Formal screen-reader review, live-provider smoke tests, and the physical-device gate remain project-level release work.
 
 ## Phase 5: Polish, Testing, Deployment, Demo
 
 Goal: submission-ready package.
 
-Status: grounded visual implementation, local provenance closure, automated release regression, and reproducible screenshot capture are complete. Credential-, deployment-, hardware-, human-review-, video-, and submission-dependent gates remain open.
+Status: grounded visual implementation, local provenance closure, automated accessibility regression, reproducible screenshot capture, and the automated Classroom proxy gate are complete. Credential-, deployment-, hardware-, human-review-, video-, and submission-dependent gates remain open. The proxy is not a substitute for physical-device testing.
 
 Build/test:
 
@@ -186,7 +188,7 @@ Exit condition:
 - implement the Phase 4 teacher alignment/accessibility feature scope
 - run focused Phase 4 unit, integration, and historical-authority checks
 - pass the three focused Phase 4 Playwright tests and targeted desktop/mobile browser QA
-- run the full integrated no-key suite: lint, typecheck, 509 Vitest tests, production build, and 19 Playwright tests
+- run the full integrated no-key suite: 89 Vitest files with 582 tests, typecheck, warning-free lint, production build, and 35 ordinary production Playwright tests
 - synchronize product, architecture, contract, roadmap, README, and build-log documentation
 
 ### July 17
@@ -272,13 +274,14 @@ Exit condition:
 - early wrong answer then revision
 - reduced-reading mode - covered across route selection and cross-route persistence
 - teacher sample review/approval into unchanged aligned investigation - covered in focused Playwright
-- pasted malicious text and oversized Markdown rejection - covered in browser; valid TXT and Markdown upload acceptance remains open
+- pasted malicious text, oversized Markdown rejection, and valid TXT/Markdown upload acceptance - covered in browser
 - aligned E3/E4/E5/E7 evidence connections and report rendering - covered in focused browser verification
-- aligned hint path - dedicated browser acceptance remains open
+- aligned hint path - covered in browser
 - 320 x 700 world HUD and six distinct record-control names - covered in focused Playwright
 - API failure path
 - refresh/resume
-- keyboard route handoff, modal focus trap, and focus restoration - covered; a complete keyboard-only case journey remains open
+- keyboard route handoff, modal focus trap, focus restoration, and a complete keyboard-only novice case - covered in browser
+- Classroom performance proxy - latest local production rerun passes transfer, interaction, nonblank-canvas, movement, archive, and warm-traversal thresholds under the constrained automated profile; physical Chromebook verification remains required
 
 ## Definition Of Done
 
@@ -315,20 +318,27 @@ Technical:
 - progress survives refresh
 - live GPT-5.6 and moderation paths are smoke-tested with a configured key
 
-The overall definition of done is not yet met. The local final suite, automated accessibility equivalence, and screenshot artifact gates are complete. Formal screen-reader review, live-provider smoke testing, physical Chromebook verification, public deployment, unfamiliar-user playtesting, final video production, repository publication, `/feedback`, and submission remain open.
+The overall definition of done is not yet met. Automated accessibility equivalence, screenshot artifacts, the public-repository gate, and the automated Classroom proxy are complete. Formal screen-reader review, live-provider smoke execution, physical Chromebook verification, public deployment and production credentials, unfamiliar-user playtesting, final video production, `/feedback`, and submission remain open.
 
 Submission:
 
+- [x] `npm run verify:release` runs the complete local gate sequence and explicitly blanks provider credentials for every application-serving build and browser gate
 - [x] README documents the implemented product and local verification boundary
 - [x] Planning, historical, architecture, AI-contract, roadmap, demo, and build-log documents exist
 - [x] Eight reproducible local screenshot artifacts exist under `docs/assets/screenshots/`
+- [x] Fresh single-worker Classroom proxy performance run passes archive and warm-traversal thresholds; this remains a browser proxy, not physical Chromebook evidence
 - [ ] Successful live GPT-5.6, moderation, transcription, and speech smoke evidence recorded
 - [ ] Formal screen-reader review recorded
 - [ ] Physical Chromebook result recorded
 - [ ] Unfamiliar-user playtest notes recorded
 - [ ] Production Vercel URL and deployed regression result recorded
-- [ ] Public repository contains the exact submitted commit
-- [ ] Two moderate PostCSS advisories explicitly accepted or superseded by a safe stable update
+- [x] Repository is public; exact submitted commit still requires final recording at submission freeze
+- [x] Two moderate PostCSS advisories through Next.js 16.2.10 explicitly accepted/deferred for the hackathon MVP: no safe stable update is available, and npm's forced Next.js 9 downgrade is incompatible. CSP and bounded input/provider controls reduce application exposure but do not remediate the dependency advisories; monitor for an upstream stable fix.
 - [ ] Public demo video URL recorded and duration confirmed under three minutes
 - [ ] `/feedback` Session ID saved
 - [ ] Submission confirmation and timestamp recorded before the deadline buffer
+
+Use `docs/SUBMISSION_CHECKLIST.md` for the ordered external handoff. It names
+the evidence required for each item rather than allowing a local automated pass
+to stand in for a live provider, deployed product, physical device, or human
+review.

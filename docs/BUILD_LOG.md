@@ -1295,7 +1295,7 @@ The final production run reported:
 ### Quality-review closure
 
 - A fresh code-quality review found that ordinary Playwright runs could inherit an ambient `OPENAI_API_KEY` and accidentally become paid, nondeterministic provider tests.
-- The production-test web server now forces an empty provider key by default. Live-key smoke behavior requires the explicit `HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE=1` opt-in.
+- At this checkpoint, the production-test web server forced an empty provider key by default and still used `HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE=1` as its live-key opt-in. Release closure later moved all live execution to the separate credential-isolated launcher; ordinary Playwright now remains no-key regardless of that flag.
 - Added a focused configuration contract for default key stripping and explicit smoke opt-in.
 - Added shell-level coverage proving that active WebGL context loss enters the graphics fallback, can retry, and preserves inspected case progress.
 - The specification reviewer and the post-fix code-quality reviewer both approved Task 10 with no remaining findings.
@@ -1394,7 +1394,7 @@ The final production run reported:
 - Added explicit push-to-talk recording with a 20-second, decimal 2 MB, mono-audio boundary and browser MIME negotiation limited to provider-supported WebM, MP4, and WAV paths.
 - Added a bounded streaming multipart parser, independent server-side media inspection, MIME/duration/channel checks, and request rate limiting before body consumption.
 - Added `/api/ai/transcribe` and `/api/ai/speech` Node routes with strict media `1.0.0` response contracts, classified failure behavior, retries only for transient provider errors, and no-key fallbacks.
-- Added exact-caption provider speech behind the existing short-lived HMAC authorization, private logical-to-provider voice mapping, a 12 MB generated-WAV cap, and strict response-header correlation.
+- Added exact-caption provider speech behind the existing short-lived HMAC authorization, private logical-to-provider voice mapping, and strict response-header correlation. The 12 MB checkpoint value originally recorded here was superseded during release closure by the active decimal `3,000,000`-byte (3 MB) generated-WAV cap.
 - Added explicit play, stop/skip, and mute controls; visible synthetic-voice disclosure; deterministic browser-speech fallback; and stale response rejection.
 - Made transcripts editable before submission and ensured newer typed text supersedes an in-flight transcription instead of being overwritten by a late result.
 - Cleared every app-owned mutable media buffer after use, cancelled aborted readers, retained no raw audio or generated audio in application persistence, and kept captions, transcripts, and audio bytes out of operational logs.
@@ -1625,7 +1625,7 @@ The final production run reported:
 - Added a dedicated production Playwright capture configuration and `npm run capture:screenshots` command.
 - Added one deterministic capture journey that starts at teacher setup, approves the reviewed sample, advances through the novice primer and fracture, presents E3 to Drouet, switches to the non-spatial archive, completes the comparison and causal board, submits the Case Brief, runs the repair, and opens the teacher report.
 - Generated all eight storyboard artifacts under `docs/assets/screenshots/`: fracture opening, teacher setup, evidence-aware character exchange, source comparison, causal board, hypothesis feedback, repair sequence, and teacher report.
-- Kept the default capture provider-free. Provider-dependent screens visibly retain their authored fallback labels; they must be recaptured after a successful live smoke before being presented as live GPT-5.6 output.
+- Kept capture provider-free. Provider-dependent screens visibly retain their authored fallback labels and cannot be presented as live GPT-5.6 output. Final review later clarified that capture is always no-key and has no live-recapture mode.
 - Added high-signal screenshots and the release-closure baseline to the README.
 - Added a server-only `.env.example` for the supported OpenAI and exact-caption speech variables; no test-only flag or secret value is included.
 - Synchronized the roadmap, architecture, and demo script with the completed automatic accessibility, cross-route equivalence, screenshot, and performance gates.
@@ -1638,3 +1638,214 @@ The final production run reported:
 - Release-closure baseline `9f71cb0` remains the latest fully integrated local test record: lint, typecheck, production build, 84 Vitest files with 554 tests, 33 Playwright tests, and the 4x-CPU classroom proxy all passed.
 - A post-capture isolated classroom proxy rerun passed at 4,171,780 compressed bytes, 4,110.2 ms to interaction, 31 FPS median, 30 FPS p10, a 75.9 ms maximum renderer stall, a nonblank canvas, and 1.504 units of movement. A separate run performed concurrently with other Chromium/build work fell below the gate and is not treated as valid isolated evidence. The reduced margin makes the physical Chromebook gate more important.
 - `OPENAI_API_KEY` and `VERCEL_TOKEN` are not present, the Vercel CLI is not installed, and local `main` currently reports `origin/main` as gone. No live provider call, deployment, push, publication, or paid action occurred.
+
+## 2026-07-16 / Request-Boundary And Live-Smoke Hardening
+
+### Intent and decisions
+
+- Close release-critical request and provider-verification gaps without changing historical authority, deterministic repair, or ordinary no-key test behavior.
+- Keep live OpenAI verification explicitly paid and opt-in. Ordinary and screenshot Playwright build/runtime environments must explicitly blank `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENAI_SPEECH_MODEL`, and `SPEECH_AUTHORIZATION_SECRET` even when values exist in the parent shell.
+- Build without provider credentials, model overrides, or speech secrets. Supply the live key only to the runtime, pin `gpt-5.6` and `gpt-4o-mini-tts`, and generate a fresh ephemeral speech-ticket secret of at least 32 bytes.
+
+### What Codex proposed and implemented
+
+- Added 8,192-byte character-turn and 32,768-byte Case Brief feedback JSON limits. Both routes rate-limit before body consumption, provider-gateway resolution, or moderation, and return no-store HTTP 413 responses for declared or streamed oversize payloads.
+- Added focused bounded-body regressions, including preservation of the oversize classification when best-effort stream cancellation rejects.
+- Added `npm run test:live:openai` through a separate Playwright configuration and server launcher. The smoke exercises real transcription, a source-bounded Drouet turn with E3 inspected and presented, then exact-caption WAV speech with parsed audio metadata.
+- Kept the prior 12 MB speech checkpoint statement only as chronology and marked it superseded by the active decimal `3,000,000`-byte (3 MB) cap.
+- Recorded the dependency decision: `npm audit` reports two moderate PostCSS advisories through Next.js 16.2.10. No safe stable update is available, and npm's proposed forced downgrade to Next.js 9 is incompatible. The risk is accepted/deferred for the hackathon MVP, with the existing CSP, bounded request/provider boundaries, and monitoring; those controls do not remediate the advisories.
+
+### Reviews and verification boundary
+
+- Route-hardening focused verification passed 18 tests. The earlier full run after that task passed 85 Vitest files and 565 tests.
+- Route hardening passed specification review and code-quality re-review after the stream-cancellation regression was added.
+- Completed the isolated live-smoke configuration, credential-safe server launcher, API-level smoke flow, focused tests, and Playwright discovery verification. No successful live-provider result is claimed because no key is configured.
+- A security re-review found that leaving build-time provider values unset allowed Next.js to reload them from `.env.local`. The launcher now supplies explicit empty values during `next build`, with an `@next/env` regression proving local sentinels stay blocked.
+- Raised the supported Node.js floor to `>=22.18.0 <23` for native TypeScript launcher execution and added lifecycle tests covering build failure, signal handling, delayed secret generation, runtime-only credentials, model pinning, secret zeroization, and command arguments.
+- Added production-browser acceptance for valid TXT/Markdown course-packet uploads, class-aligned hint wording and telemetry, and a complete keyboard-only novice case from the home screen through debrief.
+- Fresh verification passed 89 Vitest files with 582 tests, typecheck, warning-free lint, the production build, and all 35 production Playwright tests.
+- The isolated 4x-CPU classroom proxy passed with 4,171,804 initial compressed bytes, 3,972.8 ms to interaction, 36 FPS median, 34 FPS p10, a 50.6 ms maximum post-load stall, a nonblank canvas, and 1.490 units of measured movement.
+- Final review found and fixed provider-environment isolation gaps in ordinary Vitest runs and ordinary/screenshot Playwright. Those no-key paths now explicitly blank `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENAI_SPEECH_MODEL`, and `SPEECH_AUTHORIZATION_SECRET` for their build and runtime environments.
+- Final review removed invalid documentation that suggested `HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE=1 npm run capture:screenshots` could recapture live output. Screenshot capture is intentionally always no-key, fallback frames cannot be described as live GPT-5.6 output, and no separate credential-isolated live capture launcher exists.
+- Added browser proof that an oversize upload issues zero alignment requests before the alignment-service boundary.
+- The repository is now public. Deployment, production credentials, formal screen-reader review, physical Chromebook verification, unfamiliar-user playtesting, final video, `/feedback`, and submission remain open.
+- No live call, deployment, commit, or push occurred in this documentation checkpoint.
+
+## 2026-07-19 / Source-Safe Final-Zone Correction
+
+### Historical boundary
+
+- Classified the final-zone environment as `RECONSTRUCTION_ONLY`: F-S4-005 supports broad approach, halt, onward-passage, and beyond-passage relay topology, not a site plan or object placement.
+- Recorded that S2 and S3 are not fully independent because Drouet authored S2 and signed S3's municipal record. Their overlap does not resolve their disagreement about obstruction actors.
+- Removed the bridge platform, deck, rails, posts, water proxy, perpendicular crossing surface, and final-zone barrel cluster. The final-zone component now contains only the grouped two-mesh E5 dossier stand.
+- Reconciled the zone label, ambient caption, appearance limitation, and non-evidentiary asset ledger without changing case or scene versions.
+- Preserved the continuous main road, safe spawn `[72, 0, 0]`, E5 offset, floor collider and navigation bounds, `BRIDGE_*` exports, E5 interaction, canonical evidence, and repair state.
+
+### TDD record
+
+- RED: the new final-zone historical-integrity file ran five tests; four failed on the unsupported runtime composition and unreconciled wording, while the compatibility-preservation test passed.
+- GREEN: the final-zone historical-integrity file passed all five tests. The focused historical-integrity directory passed 6 files and 53 tests; asset-ledger, scene-manifest, and zone-candidate coverage passed 3 files and 25 tests; world-shell integration passed 1 file and 59 tests.
+- TypeScript typecheck exited 0. Targeted ESLint over the changed TypeScript and TSX files exited 0 with no warnings after removing the unused AST-helper parameter.
+- Chromium acceptance passed 1 test in 13.6 seconds through the supported spatial-session restore path. It verified the authored `[72, 0, 0]` spawn, exact label and caption, nonblank canvas pixels, visible E5 prompt, horizontal drift below `0.02`, and vertical settling below `0.1`.
+- Browser diagnosis did not claim E5 dialog opening: the existing camera-release transaction displayed `Unable to release camera input` when the prompt was clicked. No camera, scene-runtime, traversal, or interaction-adapter code was changed to absorb that unrelated debt.
+
+## 2026-07-19 / Third-Person Camera And Grounded-Realism Integration
+
+### Intent and user direction
+
+- Replace fixed-direction movement with view-relative third-person controls while preserving a bounded 10–20 minute investigation in which travel supports, rather than replaces, evidence reasoning.
+- Move the presentation toward grounded historical realism through period-readable silhouettes, restrained PBR surfaces, and profile-driven visual budgets. Do not claim photorealism or exact portrait/site reconstruction.
+
+### Implemented and verified slices
+
+- Added mouse pointer-lock look with a right-drag fallback, camera-relative WASD movement, persisted sensitivity/invert-Y preferences, lifecycle suspension, stale-input clearing, and an explicit release handshake before opening overlays or leaving the route.
+- Added camera obstruction recovery and capped demand-frame damping so idle wall-clock time cannot produce a one-frame collision jump.
+- Split world interactions into prepare and commit phases. Pointer release now occurs before deterministic evidence mutation, and duplicate pointer-lock exits during a pending release are suppressed.
+- Routed the investigator, Drouet, Louis, and ambient residents through the profile-aware period-character boundary. Source-limited dossier roles remain generic, and reduced motion removes nonessential figure movement.
+- Shared procedural body geometries and cached palette materials across period figures so increasing ambient population does not recreate equivalent GPU resources per resident.
+- Added profile-gated Poly Haven CC0 plaster, stone, timber, and roof materials with bounded UV repetition. Classroom returns through the low-texture branch before optional PBR requests.
+- Wrapped optional rich facade materials in local Suspense/error fallback so a failed texture cannot prevent scene readiness or evidence access.
+- Extracted profile-driven world lighting with cool fill, restrained warm lantern keys, profile-owned shadow budgets, and a Classroom branch that mounts no point lights or contact shadows.
+- Added deterministic, presentation-only environmental dressing with shared procedural resources. High, Balanced, and Classroom select 16, 11, and 6 items; reduced motion removes smoke and swaying vegetation before those components mount.
+- Extended the source-safe final-zone boundary across the entire district by removing a generic facade and presentation light that extended into the topology-only E5 area. Dressing, facades, and lantern keys are now numerically constrained before that exclusion.
+- Corrected the camera browser fixture to enter the world in the authoritative `investigation` phase. The reducer continues to reject evidence inspection during the primer.
+
+### Verification boundary
+
+- Focused camera configuration, preference, rig, controller, interaction-adapter, input-boundary, and world-shell coverage passes 8 files and 178 tests.
+- Focused shared-character resource, period-character, and investigator-controller coverage passes 3 files and 24 tests; TypeScript and targeted lint pass.
+- Fresh production Chromium verifies one pointer-lock release, E3 opening, frozen movement under the evidence dialog, persisted inspection, and focus restoration.
+- Fresh production Chromium also verifies optional-world-asset failure fallback and that Classroom requests neither rich facade textures nor excluded character likeness assets.
+- The complete camera acceptance file passes 11/11 in a fresh production build, including lifecycle suspension, route teardown acknowledgement, collision recovery, portrait composition, and camera-relative keyboard movement.
+- The isolated Classroom proxy passes under 4x CPU slowdown and throttled network: 4,186,234 compressed bytes, 3,686.1 ms to interaction, 43 FPS median, 41 FPS p10, a 56.3 ms maximum stall, a nonblank canvas, and 2.05 measured world units of movement.
+- After environmental dressing, the isolated Classroom proxy again passes at 43 FPS median and 41 FPS p10, with approximately 4.0 seconds to interaction.
+- The full nonbrowser suite, complete ordinary browser suite, final visual captures, physical Chromebook, and historical visual audit remain open for this integration checkpoint.
+
+## 2026-07-20 / Grounded-Realism Release Documentation Reconciliation
+
+### Intent
+
+- Reconcile release documentation with the current local grounded-realism implementation without converting presentation assets, proxy measurements, or unexecuted infrastructure into stronger historical or release claims.
+
+### Confirmed local implementation boundary
+
+- Advanced documentation to the active scene manifest `1.3.0` while retaining asset ledger `1.0.0` and the non-evidentiary schematic-reconstruction boundary.
+- Confirmed that the investigator, Drouet, Louis, civic figures, and ambient residents all resolve through the shared repository-authored procedural figure path. No accepted rigged character asset is mounted, and no historical portrait or likeness is claimed.
+- Confirmed that the ledgered CC0 plaster, stone, timber, and roof PBR families plus the Qwantani dusk HDRI establish technical origin and reuse rights only. High and Balanced may use the rich path; Classroom selects the procedural low-texture path before rich texture requests and omits the HDRI, point lights, contact shadows, and bloom.
+- Confirmed that optional assets cannot block the canonical route: each of the four zones reports resolved `loaded` or `fallback` asset state separately from canonical-interaction readiness. Those diagnostics are for runtime verification and have no case-state authority.
+
+### Fresh proxy measurement
+
+- Ran `npm run test:performance -- --project=chromium` as a fresh single-worker production build with the ordinary Playwright environment's provider credential/model/speech-secret values blanked. The command exited `1`; no live-provider path was exercised.
+- Archive measurement: 4,218,081 compressed bytes, 4,839.2 ms to first canonical interaction, nonblank canvas, and 1.521 measured world units. It failed the 30 median / 24 p10 FPS and 250 ms maximum-stall thresholds at 11 median FPS, 9 p10 FPS, and 275 ms.
+- Cold district measurement: 4,218,081 compressed bytes and all four zones reported resolved assets plus canonical interaction readiness. Warm traversal covered 68.767 world units and met the 30 median-FPS and 250 ms stall thresholds at 31 FPS and 243.3 ms, but failed the 24 FPS p10 threshold at 12 FPS.
+- This is a throttled Chromium proxy measurement, not physical Chromebook evidence. It supersedes no historical build-log entry; it does mean the current performance gate cannot be described as passing.
+
+### Remaining release risks
+
+- Determine and correct the proxy performance failure through a separately owned runtime task before describing the spatial route as classroom-ready; a clean isolated rerun and physical Chromebook traversal are both still required.
+- The isolated live OpenAI smoke infrastructure exists but has not been run with an authorized key. Live provider success remains unverified.
+- Deployment, production credentials and deployed regression, formal screen-reader review, unfamiliar-user playtesting, final video, `/feedback`, and submission remain open.
+- This reconciliation changed documentation only. No production-code or test files were changed, and no deployment, paid provider call, commit, or push occurred.
+
+## 2026-07-20 / Release-Closure Runtime And Verification Pass
+
+### Intent
+
+- Close the remaining local quality gaps in the spatial route while preserving the historical boundary: grounded, stylized presentation is allowed; photorealistic historical likenesses and claimed historical geography are not.
+
+### What Codex proposed and implemented
+
+- Restored principal-figure visibility by retaining shared geometry while giving each rich-profile figure an owned material instance.
+- Added a lightweight static classroom figure path, reduced Classroom DPR to the half-resolution profile, and kept named roles source-limited rather than portrait claims.
+- Hardened optional HDRI loading with a local error and suspense fallback to the deterministic Classroom lighting path.
+- Extended the navigation floor to cover the authored exploration corridor, preventing a camera-relative traversal from leaving the physical floor.
+- Reworked direct mouse-look so visual aim updates immediately while normal third-person follow remains damped.
+- Raised the pointer-release acknowledgement budget to 1,000 ms at the input boundary and 1,500 ms at the world-shell transaction boundary after testing the real overlay interaction path.
+- Corrected close-camera framing to target the visible investigator torso instead of the controller origin, then regenerated the high-profile grounded-world capture.
+- Updated the reproducible capture flow to exercise real travel discovery and the Route Journal safe-point return before capturing the Drouet interaction.
+
+### What the user decided
+
+- Keep the world as a hybrid: travel supports a 10-20 minute investigation, but evidence reasoning remains the primary experience.
+- Use camera-relative WASD, cursor-controlled third-person look, voiced responsive principal characters, static ambient residents, and a grounded historical style with some PBR realism rather than a Roblox-like presentation.
+
+### Verification recorded
+
+- `npm test` passed 108 files and 895 tests.
+- `npm run test:e2e` passed 53 ordinary production-browser tests.
+- `npm run test:performance -- --reporter=line` passed the constrained Classroom proxy archive gate at 4,218,670 compressed bytes, 4,004.7 ms to interaction, 34 median FPS, 32 p10 FPS, and a 59.4 ms maximum post-load stall. The full-district warm traversal passed at 120 median FPS, 38 p10 FPS, and a 35.5 ms maximum stall.
+- Focused high, balanced, and classroom visual captures passed, including a forced optional-world-asset failure fallback.
+- The fresh production submission-storyboard capture passed and regenerated the eight required screenshots plus the grounded-world overview.
+- Historical-integrity tests for the world manifest, asset ledger, final-zone boundary, and scene manifest passed.
+
+### Remaining release boundary
+
+- These are local automated results. They do not establish physical Chromebook performance, formal screen-reader compatibility, a live GPT-5.6/moderation/transcription/speech call, deployed regression, human historical-expert review, unfamiliar-user playtesting, a public video, `/feedback`, or submission completion.
+- The visual world is grounded and PBR-enhanced but intentionally schematic. It must not be described as photorealistic, a verified reconstruction of Varennes, or a likeness of named historical figures.
+
+## 2026-07-20 / Repeatable Submission Handoff
+
+### What Codex implemented
+
+- Added `npm run verify:release`, a sequential release command covering tests, type checking, linting, production build, ordinary browser flows, the Classroom proxy, and screenshot capture. It preserves the parent environment for static/unit gates that test configuration isolation, then explicitly blanks provider credentials for every build and browser gate.
+- Added `docs/SUBMISSION_CHECKLIST.md`, separating repeatable local evidence from live-provider, deployment, device, accessibility, historical-expert, unfamiliar-user, video, `/feedback`, and submission-account work.
+
+### Why this matters
+
+- The deterministic fallback package can now be rerun as one explicit command without accidentally injecting provider credentials or misrepresenting local fallback coverage as a live GPT-5.6 result.
+- The handoff checklist makes the remaining external work visible and evidence-based rather than leaving it as an ambiguous "final polish" phase.
+
+### Fresh verification
+
+- `npm run verify:release` passed in full: 109 Vitest files and 897 tests, TypeScript, ESLint, production build, 53 ordinary production Playwright tests, both constrained Classroom proxy checks, and all four screenshot-capture flows.
+- The runner first exposed two test-boundary defects: unit configuration tests needed their inherited environment to exercise sentinel isolation, while the Louis world flow needed the same 15-second initialization budget already used by comparable rendered-world tests. Both were corrected before the final successful run.
+
+## 2026-07-20 / Finalization And Release-Handoff Hardening
+
+### Intent
+
+- Close every remaining repository-controlled release gap and leave external
+  credential, deployment, device, accessibility, human-review, video, and
+  submission work as explicit evidence tasks rather than implied completion.
+
+### What Codex implemented
+
+- Added a no-provider `/api/health` route that returns the active case ID and
+  versions plus a validated Vercel commit identifier when available. It does
+  not check provider availability or expose secrets.
+- Added `npm run test:deployed`, a one-worker public-origin runner that accepts
+  only an HTTPS origin, starts no local server, blocks every `/api/ai/*`
+  request, checks health, completes the deterministic non-spatial case, and
+  opens spatial E3 evidence.
+- Added a no-secret GitHub Actions baseline for tests, type checking, linting,
+  and production builds on pull requests, `main`, and manual dispatch.
+- Added `docs/RELEASE_EVIDENCE_TEMPLATE.md` and updated the README, checklist,
+  architecture, and environment example with a safe Production/Preview secret
+  boundary, immutable deployment regression command, and evidence fields.
+- Incorporated an independent historical-integrity audit: active E2 is now
+  consistently described as a travel-preparation dossier, the product spec no
+  longer says generated dialogue drives progression, and reconstructed world
+  evidence now uses the neutral `Evidence item` label instead of `Archive
+  record`.
+
+### What remains external
+
+- No OpenAI key is configured, so the paid live-provider smoke remains
+  unexecuted.
+- No Vercel token or authenticated CLI is available in this environment, so no
+  deployment or deployed regression was run.
+- Physical Chromebook, formal screen-reader, unfamiliar-user, and qualified
+  history-educator checks still require real devices and people.
+- Commit/push, public video, `/feedback`, and the Build Week submission are
+  account-owned actions and remain unclaimed.
+
+### Focused verification
+
+- The new deployment-config, package, health-route, and world-provenance tests
+  passed.
+- TypeScript and warning-free ESLint passed after the changes.
+- A fresh `npm run verify:release` passed in full: 111 Vitest files with 910
+  tests, TypeScript, ESLint, the production build, all 53 ordinary production
+  Playwright flows, both constrained Classroom proxy checks, and all four
+  screenshot-capture flows.

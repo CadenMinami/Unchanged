@@ -11,14 +11,23 @@ const manifest = loadVarennesSceneManifest();
 
 type InvestigationModeLinkProps = ComponentProps<typeof Link> & {
   mode: InvestigationMode;
+  onActivationRequest?: (event: MouseEvent<HTMLAnchorElement>) => void;
 };
 
 export function InvestigationModeLink({
   mode,
+  onActivationRequest,
   onClick,
   ...props
 }: InvestigationModeLinkProps) {
   function rememberMode(event: MouseEvent<HTMLAnchorElement>) {
+    if (onActivationRequest) {
+      onActivationRequest(event);
+      if (event.defaultPrevented) {
+        onClick?.(event);
+        return;
+      }
+    }
     try {
       persistInvestigationMode(window.localStorage, manifest, mode);
     } catch {

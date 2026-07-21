@@ -8,12 +8,6 @@ npm run capture:screenshots
 
 The capture flow uses the reviewed sample packet and completes the same reducer-owned investigation, caseboard, repair, and reporting path used by the browser tests. It does not seed a privileged case state.
 
-By default, `OPENAI_API_KEY` is removed from the capture server environment. Generated-character and Case Brief frames therefore show the product's labeled authored fallback. After live-provider smoke testing succeeds, those frames may be recaptured with:
+The capture launcher is intentionally always no-key. Its build and runtime explicitly blank the provider credential, model overrides, and speech-authorization secret; `HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE` does not enable live calls through `npm run capture:screenshots`. Generated-character and Case Brief frames therefore show the product's labeled authored fallback and must not be described as live GPT-5.6 output.
 
-```bash
-HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE=1 \
-OPENAI_API_KEY=your_key_here \
-npm run capture:screenshots
-```
-
-Do not describe fallback captures as live GPT-5.6 output.
+If live-provider images are later required, a separate credential-isolated capture launcher must be designed and reviewed. No such launcher exists now.

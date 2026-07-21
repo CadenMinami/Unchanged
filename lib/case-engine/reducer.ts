@@ -109,6 +109,9 @@ export function reduceCase(
         ...casePackage.branchObservations.map((item) => item.id),
       ]);
       if (!validIds.has(command.itemId)) return reject(state, "unknown-item");
+      if (state.inspectedItemIds.includes(command.itemId)) {
+        return { state, status: "duplicate" };
+      }
       return applyCommand(state, command.commandId, {
         inspectedItemIds: addUnique(state.inspectedItemIds, command.itemId),
       });

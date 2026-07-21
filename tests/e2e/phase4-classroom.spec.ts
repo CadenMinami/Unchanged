@@ -3,6 +3,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 const CASE_STATE_STORAGE_KEY = "history-unbroken:varennes:state";
 const LEARNING_SESSION_STORAGE_KEY =
   "history-unbroken:varennes:learning-session";
+const COURSE_PACKET_TEXT =
+  "Compare sources and explain why route information and local action worked together.";
 
 const countableRecords = [
   { id: "E1", title: "Louis XVI's Declaration" },
@@ -110,6 +112,27 @@ test("teacher approval carries sample connections into an unchanged canonical in
     page.getByRole("heading", { name: "Find the broken link." }),
   ).toBeVisible();
 
+  await page.getByRole("button", { name: "Request hint" }).click();
+  const hint = page.getByRole("status");
+  await expect(hint.getByText("Hint 1 / 4", { exact: true })).toBeVisible();
+  await expect(
+    hint.getByText("Class-aligned wording", { exact: true }),
+  ).toBeVisible();
+  await expect(hint.locator("p")).toContainText('"source."');
+  await expect
+    .poll(() =>
+      page.evaluate((storageKey) => {
+        const saved = window.localStorage.getItem(storageKey);
+        if (!saved) return false;
+        const learningEnvelope = JSON.parse(saved);
+        return learningEnvelope.session.observableEvents.some(
+          (event: { type: string; subjectId: string }) =>
+            event.type === "hint_viewed" && event.subjectId === "HINT-ROUTE-01",
+        );
+      }, LEARNING_SESSION_STORAGE_KEY),
+    )
+    .toBe(true);
+
   const classConnections = page.getByRole("complementary", {
     name: "Class material connection",
   });
@@ -167,6 +190,14 @@ test("teacher approval carries sample connections into an unchanged canonical in
     mutatesCaseState: false,
     reviewStatus: "teacher_approved",
   });
+  expect(persisted.learningEnvelope?.session.observableEvents).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        type: "hint_viewed",
+        subjectId: "HINT-ROUTE-01",
+      }),
+    ]),
+  );
 });
 
 test("world HUD controls and top links fit without overlap at 320 by 700", async ({
@@ -277,11 +308,76 @@ test("reviews pasted class material while surfacing conflicts and ignored instru
   await expect(page.getByRole("link", { name: "Launch student case" })).toHaveCount(0);
 });
 
+test("accepts valid TXT and Markdown course packet file uploads", async ({ page }) => {
+  const packetFiles = [
+    { name: "lesson.txt", mimeType: "text/plain" },
+    { name: "lesson.md", mimeType: "text/markdown" },
+  ] as const;
+
+  for (const packetFile of packetFiles) {
+    await page.goto("/teacher");
+    await page.getByRole("tab", { name: "Upload file" }).click();
+    await page.getByLabel("Course packet file").setInputFiles({
+      buffer: Buffer.from(COURSE_PACKET_TEXT, "utf8"),
+      mimeType: packetFile.mimeType,
+      name: packetFile.name,
+    });
+
+    const alignmentResponse = page.waitForResponse(
+      (response) =>
+        response.url().endsWith("/api/ai/course-alignment") &&
+        response.request().method() === "POST",
+    );
+    await page.getByRole("button", { name: "Analyze uploaded file" }).click();
+    const response = await alignmentResponse;
+    expect(response.status()).toBe(200);
+
+    const postedBody = response.request().postDataJSON();
+    expect(postedBody.source).toEqual({
+      kind: "file",
+      title: packetFile.name,
+      filename: packetFile.name,
+      mimeType: packetFile.mimeType,
+      text: COURSE_PACKET_TEXT,
+    });
+
+    const payload = await response.json();
+    expect(payload).toMatchObject({
+      profile: {
+        packet: {
+          processor: "deterministic_fallback",
+          sourceKind: "uploaded_file",
+          title: packetFile.name,
+        },
+        conceptMappings: expect.arrayContaining([
+          expect.objectContaining({ packetTerm: "route information" }),
+        ]),
+      },
+    });
+
+    const review = page.getByRole("region", { name: "Alignment review" });
+    await expect(
+      review.getByRole("heading", { name: packetFile.name, exact: true }),
+    ).toBeVisible();
+    await expect(
+      review.getByRole("heading", { name: "Packet connections" }),
+    ).toBeVisible();
+    await expect(review.getByText("route information", { exact: true })).toBeVisible();
+  }
+});
+
 test("rejects an oversized course file before sending it to the alignment service", async ({
   page,
 }) => {
   await page.goto("/teacher");
   await page.getByRole("tab", { name: "Upload file" }).click();
+
+  const alignmentRequestMethods: string[] = [];
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === "/api/ai/course-alignment") {
+      alignmentRequestMethods.push(request.method());
+    }
+  });
 
   await page.getByLabel("Course packet file").setInputFiles({
     buffer: Buffer.alloc(64_001, "a"),
@@ -297,4 +393,7 @@ test("rejects an oversized course file before sending it to the alignment servic
   await expect(
     page.getByRole("button", { name: "Analyze uploaded file" }),
   ).toBeDisabled();
+
+  await page.waitForTimeout(250);
+  expect(alignmentRequestMethods).toHaveLength(0);
 });

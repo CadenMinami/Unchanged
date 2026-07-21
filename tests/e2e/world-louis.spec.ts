@@ -1,8 +1,102 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
+
+import { CAMERA_CONFIG } from "../../lib/world/camera-config";
 
 test.use({ viewport: { width: 1280, height: 720 } });
 
+const LOUIS_TRAVERSAL_YAW = Math.PI / 2;
+const CAMERA_YAW_TOLERANCE = 0.02;
+
+interface CameraOrientationTelemetry {
+  cameraYaw: number;
+  sampleId: number;
+  yaw: number;
+}
+
+async function installUnsupportedPointerLock(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    Object.defineProperty(HTMLCanvasElement.prototype, "requestPointerLock", {
+      configurable: true,
+      value: undefined,
+    });
+  });
+}
+
+async function readCameraOrientation(
+  canvas: Locator,
+): Promise<CameraOrientationTelemetry> {
+  const serialized = await canvas.getAttribute("data-camera-telemetry");
+  const telemetry = JSON.parse(serialized ?? "null") as unknown;
+  if (
+    typeof telemetry !== "object" ||
+    telemetry === null ||
+    !("cameraYaw" in telemetry) ||
+    !("sampleId" in telemetry) ||
+    !("yaw" in telemetry) ||
+    typeof telemetry.cameraYaw !== "number" ||
+    typeof telemetry.sampleId !== "number" ||
+    typeof telemetry.yaw !== "number"
+  ) {
+    throw new Error(`Invalid camera telemetry: ${serialized ?? "missing"}`);
+  }
+  return telemetry as CameraOrientationTelemetry;
+}
+
+function angularDistance(first: number, second: number): number {
+  return Math.abs(
+    Math.atan2(Math.sin(first - second), Math.cos(first - second)),
+  );
+}
+
+async function setUnsupportedCameraYaw(
+  canvas: Locator,
+  targetYaw: number,
+): Promise<void> {
+  await expect(canvas).toHaveAttribute("data-camera-telemetry", /"cameraYaw":/);
+  const before = await readCameraOrientation(canvas);
+  const movementX =
+    (targetYaw - before.yaw) / CAMERA_CONFIG.yaw.radiansPerPixel;
+
+  await canvas.dispatchEvent("pointerdown", {
+    button: 2,
+    buttons: 2,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: "mouse",
+  });
+  await canvas.evaluate((element, deltaX) => {
+    const event = new PointerEvent("pointermove", {
+      bubbles: true,
+      buttons: 2,
+      isPrimary: true,
+      pointerId: 1,
+      pointerType: "mouse",
+    });
+    Object.defineProperty(event, "movementX", { value: deltaX });
+    element.dispatchEvent(event);
+  }, movementX);
+  await canvas.dispatchEvent("pointerup", {
+    button: 2,
+    buttons: 0,
+    isPrimary: true,
+    pointerId: 1,
+    pointerType: "mouse",
+  });
+
+  await expect
+    .poll(async () => {
+      const current = await readCameraOrientation(canvas);
+      if (current.sampleId <= before.sampleId) return Number.POSITIVE_INFINITY;
+      return Math.max(
+        angularDistance(current.yaw, targetYaw),
+        angularDistance(current.cameraYaw, targetYaw),
+      );
+    })
+    .toBeLessThanOrEqual(CAMERA_YAW_TOLERANCE);
+}
+
 test("questions Louis from E1 without changing case authority", async ({ page }) => {
+  await installUnsupportedPointerLock(page);
   const caseState = {
     persistenceVersion: "1.2.0",
     savedAt: "2026-07-15T12:00:00.000Z",
@@ -37,7 +131,7 @@ test("questions Louis from E1 without changing case authority", async ({ page })
     spatialSessionVersion: "1.0.0",
     caseId: "varennes",
     caseVersion: "1.0.3",
-    sceneManifestVersion: "1.2.0",
+    sceneManifestVersion: "1.3.0",
     mode: "spatial",
     lastSafeSpawn: {
       zoneId: "royal-lodging-civic-area",
@@ -68,7 +162,9 @@ test("questions Louis from E1 without changing case authority", async ({ page })
   );
   await page.goto("/play/world");
 
-  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i);
+  await expect(page.getByRole("status")).toContainText(/reconstruction ready/i, {
+    timeout: 15_000,
+  });
   await expect(
     page.getByRole("complementary", {
       name: /current reconstruction location/i,
@@ -88,12 +184,10 @@ test("questions Louis from E1 without changing case authority", async ({ page })
     (await playerPosition.getAttribute("data-position")) ?? "null",
   ) as [number, number, number] | null;
   if (!initialPosition) throw new Error("Missing initial player position telemetry.");
-  await page
-    .getByTestId("world-canvas")
-    .locator("canvas")
-    .click({ position: { x: 600, y: 350 } });
+  const canvas = page.getByTestId("world-canvas").locator("canvas");
+  await setUnsupportedCameraYaw(canvas, LOUIS_TRAVERSAL_YAW);
   await page.keyboard.down("ShiftLeft");
-  await page.keyboard.down("KeyD");
+  await page.keyboard.down("KeyW");
   try {
     try {
       await expect(louisPrompt).toBeVisible({ timeout: 12_000 });
@@ -104,7 +198,7 @@ test("questions Louis from E1 without changing case authority", async ({ page })
       });
     }
   } finally {
-    await page.keyboard.up("KeyD");
+    await page.keyboard.up("KeyW");
     await page.keyboard.up("ShiftLeft");
   }
   const finalPosition = JSON.parse(

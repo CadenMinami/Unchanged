@@ -51,11 +51,17 @@ For the MVP, student evidence uses project-authored text excerpts, close transla
 
 ## Visual Reconstruction Boundary
 
-The playable district is a low-confidence schematic teaching environment, not a surveyed reconstruction of Varennes in June 1791. Building facades, paving, furniture, barrels, lanterns, water, lighting, clothing colors, figure appearance, and object placement make no scored historical claim. They cannot corroborate testimony, open evidence by their appearance alone, or satisfy a hypothesis gate.
+The playable district is a low-confidence schematic teaching environment, not a surveyed reconstruction of Varennes in June 1791. Building facades, paving, furniture, barrels, lanterns, lighting, clothing colors, figure appearance, and object placement make no scored historical claim. They cannot corroborate testimony, open evidence by their appearance alone, or satisfy a hypothesis gate.
 
 The versioned asset ledger at `data/cases/varennes/world/asset-ledger.json` records every shipped world file and every repository-authored procedural presentation system. It distinguishes creator and rights provenance from historical provenance, pins exact runtime-file hashes, and repeats location, ownership, scale, and appearance limitations for each use. Downloaded assets point to source and license URLs plus a project-authored local verification record; copied website pages are not redistributed as license proof. Imported CC0 assets remain `RECONSTRUCTION`; a permissive copyright license does not make an asset historically authentic.
 
-The bridge approach remains especially constrained: the visual path may show a chokepoint and authored obstruction interface, but it must not depict the bridge itself or one prop as independently arresting the carriage. Exact actor attribution remains contested as documented under S2 and S3.
+The investigator, Drouet, Louis, civic figures, and ambient residents are currently repository-authored procedural figures. Their period-readable silhouettes and palette choices are `RECONSTRUCTION`/`DRAMATIZATION` presentation only: no source in this ledger authorizes a facial portrait, bodily likeness, or exact clothing claim for a depicted person. A future rigged or scanned character asset would require a separate historical and rights review before any likeness claim could be made.
+
+The ledgered CC0 PBR plaster, stone, timber, and roof texture families, plus the Qwantani dusk HDRI, establish only their technical origin and reuse rights. High and Balanced profiles may use them as optional presentation; Classroom uses a procedural low-texture, no-HDRI, no-effects path. Neither branch documents the material, lighting, weather, architecture, or visual condition of Varennes in June 1791.
+
+### Source-Safe Final-Zone Visual Boundary
+
+F-S4-005 supports only broad topology: an approach and halt before onward bridge passage, with a planned relay beyond the bridge. It does not support a site plan or object placement. S2 and S3 are not fully independent because Drouet authored S2 and signed S3's municipal record; they overlap on reported obstruction but disagree about the actors. The final zone therefore depicts no span, deck, rail, arch, water, barrier form, vehicle position, or physical-arrest tableau.
 
 ## Source Ledger
 
@@ -461,7 +467,7 @@ Forbidden uses:
 | Evidence ID | Source IDs | Status |
 |---|---|---|
 | E1 Louis declaration | S1 | Verified as Louis's stated explanation; E1 cannot independently corroborate E2 |
-| E2 travel dossier | S8, S9, S10, with route context from S4 | Verified for the narrow intentional-participation gate using L8 and L9; S10 is optional corroboration. E2 remains deterministic archive evidence and is not available to Louis's generated station. |
+| E2 travel-preparation dossier | S8, S9 | Verified for the narrow intentional-participation gate using L8 and L9. S10 and S4 remain outside E2's active fact/source closure. E2 remains deterministic evidence and is not available to Louis's generated station. |
 | E3 Drouet account | S2 | Verified as attributed participant testimony; it does not independently prove every event it describes. The E3 Drouet reaction is limited to F-S2-002/S2. |
 | E4 route/timing board | S2, S4 | Verified for broad sequence and schematic geography; it cannot corroborate S2 where derived from it. The E4 reaction requires E4 to be presented and stays inside E4's fact/source closure. |
 | E5 Varennes civic response | S2, S3, S4 | Verified for the municipal core used by the gate; Valory and exact layout are optional and excluded from scoring. The E5 reaction requires E5 to be presented and stays inside E5's fact/source closure. |

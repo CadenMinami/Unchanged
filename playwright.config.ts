@@ -20,19 +20,20 @@ const e2eBaseUrl = `http://127.0.0.1:${e2ePort}`;
 const requiresFreshProductionServer =
   process.env.HISTORY_UNBROKEN_PERFORMANCE === "1";
 
-interface PlaywrightWebServerSourceEnv {
-  HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE?: string;
-  OPENAI_API_KEY?: string;
+interface PlaywrightWebServerEnvironment {
+  [variableName: string]: string;
+  OPENAI_API_KEY: string;
+  OPENAI_MODEL: string;
+  OPENAI_SPEECH_MODEL: string;
+  SPEECH_AUTHORIZATION_SECRET: string;
 }
 
-export function resolvePlaywrightWebServerEnv(
-  environment: Readonly<PlaywrightWebServerSourceEnv>,
-): { OPENAI_API_KEY: string } {
+export function resolvePlaywrightWebServerEnv(): PlaywrightWebServerEnvironment {
   return {
-    OPENAI_API_KEY:
-      environment.HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE === "1"
-        ? environment.OPENAI_API_KEY ?? ""
-        : "",
+    OPENAI_API_KEY: "",
+    OPENAI_MODEL: "",
+    OPENAI_SPEECH_MODEL: "",
+    SPEECH_AUTHORIZATION_SECRET: "",
   };
 }
 
@@ -53,11 +54,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run build && npm run start -- --hostname 127.0.0.1 --port ${e2ePort}`,
-    env: resolvePlaywrightWebServerEnv({
-      HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE:
-        process.env.HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE,
-      OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-    }),
+    env: resolvePlaywrightWebServerEnv(),
     url: e2eBaseUrl,
     timeout: 120_000,
     reuseExistingServer: false,

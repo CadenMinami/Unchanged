@@ -158,6 +158,31 @@ describe("case reducer", () => {
     expect(stale.state).toEqual(first.state);
   });
 
+  it("treats an already-inspected item as a semantic duplicate", () => {
+    const initial = {
+      ...createInitialCaseState(casePackage),
+      phase: "investigation" as const,
+    };
+    const first = reduceCase(casePackage, initial, {
+      type: "inspect_item",
+      commandId: "inspect-e1-first",
+      expectedRevision: 0,
+      itemId: "E1",
+    });
+
+    const repeated = reduceCase(casePackage, first.state, {
+      type: "inspect_item",
+      commandId: "inspect-e1-again",
+      expectedRevision: first.state.revision,
+      itemId: "E1",
+    });
+
+    expect(repeated).toEqual({ status: "duplicate", state: first.state });
+    expect(repeated.state).toBe(first.state);
+    expect(repeated.state.revision).toBe(1);
+    expect(repeated.state.completedCommandIds).toEqual(["inspect-e1-first"]);
+  });
+
   it("connects a causal edge only after both endpoint nodes are placed", () => {
     const initial = { ...createInitialCaseState(casePackage), phase: "case_brief" as const };
     const blocked = reduceCase(casePackage, initial, {

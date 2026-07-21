@@ -1,8 +1,10 @@
 "use client";
 
 import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
+import type { GraphicsProfile } from "@/lib/world/graphics-profile";
 import type { SceneManifest } from "@/schemas/world-manifest";
 
+import { ArchiveHeroEnvironment } from "../environment/archive-hero-environment";
 import { Interactable } from "../interactions/interactable";
 import type { ProximityCandidate } from "../interactions/proximity-registry";
 
@@ -98,20 +100,19 @@ export const ARCHIVE_CANDIDATES = [
   ARCHIVE_JOURNAL_CANDIDATE,
 ] as const satisfies readonly ProximityCandidate[];
 
-export function ArchiveZone() {
+export function ArchiveZone({ profile }: { profile: GraphicsProfile }) {
   return (
     <group>
-      <mesh
-        receiveShadow
-        position={[archiveSpawn[0] + 1.4, 0.035, archiveSpawn[2] - 1.2]}
-        scale={[5.6, 0.07, 4.8]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="#747a79" roughness={0.98} />
-      </mesh>
-      <Interactable position={e3Position} />
-      <Interactable position={e2Position} />
-      <Interactable position={assemblyPosition} />
+      <ArchiveHeroEnvironment
+        castShadow={profile.shadows.enabled}
+        density={profile.environmentDensity}
+      />
+      <Interactable assetId="archive-e3-table" position={e3Position} />
+      <Interactable assetId="archive-e2-table" position={e2Position} />
+      <Interactable
+        assetId="archive-assembly-table"
+        position={assemblyPosition}
+      />
       <group position={journalPosition}>
         <mesh castShadow position={[0, 0.58, 0]} scale={[0.85, 0.58, 0.62]}>
           <boxGeometry />

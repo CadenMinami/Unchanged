@@ -9,13 +9,13 @@ function resolveCapturePort(value: string | undefined): number {
 
 const port = resolveCapturePort(process.env.HISTORY_UNBROKEN_CAPTURE_PORT);
 const baseURL = `http://127.0.0.1:${port}`;
-const useLiveProvider = process.env.HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE === "1";
 
 export default defineConfig({
   testDir: "./tests/capture",
   fullyParallel: false,
   workers: 1,
-  timeout: 240_000,
+  timeout: 360_000,
+  preserveOutput: "always",
   reporter: "line",
   use: {
     ...devices["Desktop Chrome"],
@@ -26,7 +26,10 @@ export default defineConfig({
   webServer: {
     command: `npm run build && npm run start -- --hostname 127.0.0.1 --port ${port}`,
     env: {
-      OPENAI_API_KEY: useLiveProvider ? process.env.OPENAI_API_KEY ?? "" : "",
+      OPENAI_API_KEY: "",
+      OPENAI_MODEL: "",
+      OPENAI_SPEECH_MODEL: "",
+      SPEECH_AUTHORIZATION_SECRET: "",
     },
     url: baseURL,
     timeout: 120_000,

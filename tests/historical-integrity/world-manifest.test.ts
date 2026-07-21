@@ -4,8 +4,10 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import {
   loadVarennesAssetLedger,
+  validateAssetLedgerReferences,
   VARRENNES_PROCEDURAL_ASSET_SOURCE_PATHS,
 } from "@/lib/world/asset-ledger";
 import {
@@ -17,6 +19,36 @@ import { SCHEMATIC_PLACEMENT_LABEL } from "@/schemas/world-manifest";
 const manifest = loadVarennesSceneManifest();
 const ambientLines = loadVarennesAmbientLines();
 const assetLedger = loadVarennesAssetLedger();
+const casePackage = loadVarennesCase();
+
+const AMBIENT_STOP_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "as",
+  "at",
+  "before",
+  "beyond",
+  "for",
+  "in",
+  "is",
+  "not",
+  "of",
+  "or",
+  "the",
+  "to",
+  "with",
+]);
+
+function historicalTerms(text: string): Set<string> {
+  return new Set(
+    text
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .split(/\s+/)
+      .filter((term) => term.length > 3 && !AMBIENT_STOP_WORDS.has(term)),
+  );
+}
 
 describe("world manifest historical integrity", () => {
   it("tracks every visual or audio asset in a strict non-evidentiary ledger", () => {
@@ -173,14 +205,17 @@ describe("world manifest historical integrity", () => {
     expect(JSON.stringify(stationIds)).not.toMatch(/Barnave/i);
   });
 
-  it("keeps the bridge approach schematic and rejects a literal bridge-arrest claim", () => {
+  it("keeps the final-zone topology schematic without depicting a physical site plan", () => {
     const bridge = manifest.zones.find((zone) => zone.zoneId === "bridge-approach");
     if (!bridge) throw new Error("Missing bridge approach.");
 
     const limitations = JSON.stringify(bridge.limitations).toLowerCase();
+    expect(bridge.label).toBe("Final reconstruction boundary");
     expect(limitations).toContain("not to scale");
-    expect(limitations).toContain("does not depict the bridge as physically arresting");
-    expect(limitations).toContain("exact actor");
+    expect(bridge.limitations.appearance).toBe(
+      "No span, deck, rail, arch, water, barrier form, vehicle position, or physical-arrest tableau is depicted.",
+    );
+    expect(limitations).toContain("contested attribution");
   });
 
   it("keeps ambient remarks dramatized, non-evidentiary, and progression-neutral", () => {
@@ -192,5 +227,99 @@ describe("world manifest historical integrity", () => {
       expect(line.factIds).toEqual([]);
       expect(line.sourceIds).toEqual([]);
     }
+  });
+
+  it("keeps unsourced ambient prose semantically separate from sourced facts", () => {
+    for (const line of ambientLines.lines) {
+      const ambientTerms = historicalTerms(line.text);
+      for (const fact of casePackage.facts) {
+        if (fact.sourceIds.length === 0) continue;
+        const overlap = [...historicalTerms(fact.claim)].filter((term) =>
+          ambientTerms.has(term),
+        );
+        expect(
+          overlap.length,
+          `${line.ambientLineId} duplicates sourced terms from ${fact.id}: ${overlap.join(", ")}`,
+        ).toBeLessThan(4);
+      }
+    }
+  });
+
+  it("separates dramatized cast figures from reconstructed station props", () => {
+    const cast = assetLedger.assets.find(
+      (asset) => asset.assetId === "ASSET-CHAR-PROCEDURAL-CAST",
+    );
+    const stations = assetLedger.assets.find(
+      (asset) => asset.assetId === "ASSET-PROP-PROCEDURAL-STATIONS",
+    );
+
+    expect(cast).toMatchObject({
+      category: "character",
+      epistemicClassification: "dramatization",
+      countsAsHistoricalEvidence: false,
+    });
+    expect(stations).toMatchObject({
+      category: "prop",
+      epistemicClassification: "reconstruction",
+      countsAsHistoricalEvidence: false,
+    });
+
+    for (const characterId of ["CHAR-DROUET", "CHAR-LOUIS"]) {
+      const interactable = manifest.interactables.find(
+        (candidate) =>
+          candidate.canonicalTarget.targetType === "station" &&
+          candidate.canonicalTarget.stationId === characterId,
+      ) as (typeof manifest.interactables)[number] & {
+        assetReferences?: Array<{ assetId: string }>;
+      };
+      expect(interactable?.assetReferences?.map(({ assetId }) => assetId)).toContain(
+        "ASSET-CHAR-PROCEDURAL-CAST",
+      );
+    }
+  });
+
+  it("resolves every versioned manifest asset reference through its ledger license", () => {
+    const references = [...manifest.zones, ...manifest.interactables].flatMap(
+      (owner) =>
+        (
+          owner as typeof owner & {
+            assetReferences?: Array<{
+              assetId: string;
+              assetLedgerVersion: string;
+              licenseReference: string;
+            }>;
+          }
+        ).assetReferences ?? [],
+    );
+    const ledgerById = new Map(
+      assetLedger.assets.map((asset) => [asset.assetId, asset]),
+    );
+
+    expect(references.length).toBeGreaterThan(0);
+    for (const reference of references) {
+      expect(reference.assetLedgerVersion).toBe(assetLedger.assetLedgerVersion);
+      expect(reference.licenseReference).toBe("asset_ledger");
+      expect(ledgerById.get(reference.assetId)?.license).toBeDefined();
+    }
+
+    const invalidManifest = structuredClone(manifest) as typeof manifest & {
+      zones: Array<
+        (typeof manifest.zones)[number] & {
+          assetReferences: Array<{
+            assetId: string;
+            assetLedgerVersion: string;
+            licenseReference: "asset_ledger";
+          }>;
+        }
+      >;
+    };
+    invalidManifest.zones[0]!.assetReferences[0]!.assetId = "ASSET-UNKNOWN";
+    const validateWithManifest = validateAssetLedgerReferences as unknown as (
+      ledger: typeof assetLedger,
+      candidateManifest: typeof manifest,
+    ) => void;
+    expect(() => validateWithManifest(assetLedger, invalidManifest)).toThrow(
+      /ASSET-UNKNOWN/i,
+    );
   });
 });

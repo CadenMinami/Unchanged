@@ -15,10 +15,12 @@
 .masthead a:last-child { justify-self: end; color: #f0d69c; font-family: var(--font-mono), monospace; font-size: .66rem; }
 .masthead span, .status p, .location p, .location > span, .quality span, .eyebrow { margin: 0; font-family: var(--font-mono), monospace; font-size: .65rem; text-transform: uppercase; }
 .masthead span { color: #d9ddd8; }
-.status { position: absolute; z-index: 2; left: clamp(18px, 4vw, 48px); bottom: clamp(24px, 6vw, 66px); max-width: 470px; padding: 18px 20px 62px; border-left: 4px solid #d7ac56; background: rgb(24 29 27 / 86%); backdrop-filter: blur(8px); }
+.status { position: absolute; z-index: 2; left: clamp(18px, 4vw, 48px); bottom: clamp(24px, 6vw, 66px); max-width: 420px; padding: 14px 18px 50px; border-left: 3px solid #d7ac56; background: rgb(24 29 27 / 88%); backdrop-filter: blur(8px); }
 .status p, .location p { color: #bbcfbe; }
-.status strong { display: block; margin: 8px 0 5px; font-family: var(--font-serif), serif; font-size: 2rem; font-weight: 500; }
+.status strong { display: block; margin: 5px 0 4px; font-family: var(--font-serif), serif; font-size: 1.45rem; font-weight: 500; }
 .status span { color: #d5dad6; font-size: .77rem; line-height: 1.45; }
+.statusLine { display: block; }
+.mobileDisclosure { display: none; }
 .caseFileControl { position: absolute; z-index: 3; left: calc(clamp(18px, 4vw, 48px) + 24px); bottom: calc(clamp(24px, 6vw, 66px) + 18px); }
 .caseFileLink { width: fit-content; padding: 0; display: inline-flex; color: #f0d69c; font-family: var(--font-mono), monospace; font-size: .7rem; font-weight: 700; text-align: left; text-decoration: underline; text-underline-offset: 4px; text-transform: uppercase; border: 0; background: transparent; cursor: pointer; }
 .caseFileLink:focus-visible { outline: 2px solid #d7ac56; outline-offset: 4px; }
@@ -67,5 +69,5 @@
 .unavailable button svg { width: 17px; }
 .unavailable a { color: var(--archive-blue); text-underline-offset: 4px; }
 .unavailable button:focus-visible, .unavailable a:focus-visible { outline: 2px solid var(--archive-blue); outline-offset: 4px; }
-@media (max-width: 720px) { .masthead { grid-template-columns: 1fr auto; } .masthead span { display: none; } .status { right: 18px; bottom: 24px; padding: 14px 16px 54px; } .status strong { font-size: 1.4rem; } .status span { display: none; } .location, .ambientCaption { display: none; } .journalControl { top: 132px; } .routeCompass { top: 132px; right: 18px; left: auto; width: min(220px, calc(100vw - 112px)); transform: none; } .interactionPrompt { top: 266px; right: 18px; bottom: auto; left: 18px; justify-content: center; } .unavailable h1 { font-size: 3.2rem; } }
+@media (max-width: 720px) { .masthead { grid-template-columns: 1fr auto; } .masthead span { display: none; } .status { right: 18px; bottom: 18px; max-width: none; padding: 10px 12px 40px; } .status p { display: none; } .status strong { margin: 0 0 4px; font-size: .82rem; } .status span { display: block; font-size: .65rem; } .status .mobileDisclosure { margin-top: 6px; display: block; color: #d5bd82; font-family: var(--font-mono), monospace; font-size: .5rem; line-height: 1.35; text-transform: uppercase; } .location, .ambientCaption { display: none; } .journalControl { top: 132px; } .routeCompass { top: 132px; right: 18px; left: auto; width: min(220px, calc(100vw - 112px)); transform: none; } .interactionPrompt { top: 266px; right: 18px; bottom: auto; left: 18px; justify-content: center; } .unavailable h1 { font-size: 3.2rem; } }
 @media (max-width: 360px) { .journalControl { top: 132px; } .routeCompass { top: 182px; right: 18px; left: 18px; width: auto; } .interactionPrompt { top: 304px; } }

@@ -237,16 +237,17 @@ Purpose:
 - records Louis's stated political rationale
 - complicates motive without proving every private intention
 
-### E2: Royal Travel Dossier
+### E2: Royal Travel-Preparation Dossier
 
 Provenance: historical reconstruction.
 
 Purpose:
 
-- route, disguise, passport, intended destination
-- undermines purely involuntary kidnapping explanation
+- presents independently sourced advance preparations involving Louis
+- supports the narrow planned-participation gate alongside E1
+- undermines a purely involuntary-kidnapping explanation without settling every motive
 
-Status: `VERIFIED` for the narrow intentional-participation gate using independently labeled bodyguard testimony and Fersen papers. Complete motive and unconstrained voluntariness remain outside the gate.
+Status: `VERIFIED` for the narrow intentional-participation gate using independently labeled bodyguard testimony and Fersen papers. Route, passport, disguise, and intended-destination detail are not part of active E2 fact closure; complete motive and unconstrained voluntariness remain outside the gate.
 
 ### E3: Drouet's Account
 

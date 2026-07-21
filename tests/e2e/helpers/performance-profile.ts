@@ -120,15 +120,23 @@ export function summarizeWorldRenderWindow(
   });
 }
 
-export async function installArchiveInvestigationState(page: Page): Promise<void> {
-  await page.addInitScript((savedState) => {
+export async function installArchiveInvestigationState(
+  page: Page,
+  options: Readonly<{
+    deviceMemoryGb?: number;
+    hardwareConcurrency?: number;
+    spatialSession?: string;
+    testMode?: boolean;
+  }> = {},
+): Promise<void> {
+  await page.addInitScript(({ savedState, setup }) => {
     Object.defineProperty(window.navigator, "deviceMemory", {
       configurable: true,
-      value: 4,
+      value: setup.deviceMemoryGb,
     });
     Object.defineProperty(window.navigator, "hardwareConcurrency", {
       configurable: true,
-      value: 4,
+      value: setup.hardwareConcurrency,
     });
     window.localStorage.setItem(
       "history-unbroken:varennes:state",
@@ -139,15 +147,40 @@ export async function installArchiveInvestigationState(page: Page): Promise<void
       "history-unbroken:world-performance-telemetry",
       "1",
     );
-  }, investigationState);
+    if (
+      setup.spatialSession &&
+      !window.localStorage.getItem(
+        "history-unbroken:varennes:spatial-session",
+      )
+    ) {
+      window.localStorage.setItem(
+        "history-unbroken:varennes:spatial-session",
+        setup.spatialSession,
+      );
+    }
+    if (setup.testMode) {
+      window.sessionStorage.setItem("history-unbroken:world-test-mode", "1");
+    }
+  }, {
+    savedState: investigationState,
+    setup: {
+      deviceMemoryGb: options.deviceMemoryGb ?? 4,
+      hardwareConcurrency: options.hardwareConcurrency ?? 4,
+      spatialSession: options.spatialSession,
+      testMode: options.testMode ?? false,
+    },
+  });
 }
 
 export async function applyClassroomPerformanceProfile(
   page: Page,
+  options: Readonly<{ cacheDisabled?: boolean }> = {},
 ): Promise<CDPSession> {
   const session = await page.context().newCDPSession(page);
   await session.send("Network.enable");
-  await session.send("Network.setCacheDisabled", { cacheDisabled: true });
+  await session.send("Network.setCacheDisabled", {
+    cacheDisabled: options.cacheDisabled ?? true,
+  });
   await session.send("Network.emulateNetworkConditions", {
     connectionType: "cellular4g",
     downloadThroughput:
@@ -167,6 +200,7 @@ export async function applyClassroomPerformanceProfile(
 }
 
 export function createTransferTracker(session: CDPSession, origin: string) {
+  const expectedOrigin = new URL(origin).origin;
   const requestUrls = new Map<string, string>();
   const encodedBytes = new Map<string, number>();
 
@@ -175,12 +209,22 @@ export function createTransferTracker(session: CDPSession, origin: string) {
   });
   session.on("Network.loadingFinished", (event: LoadingFinishedEvent) => {
     const url = requestUrls.get(event.requestId);
-    if (url?.startsWith(origin)) {
+    if (url && new URL(url).origin === expectedOrigin) {
       encodedBytes.set(event.requestId, event.encodedDataLength);
     }
   });
 
   return Object.freeze({
+    entries: () =>
+      Object.freeze(
+        [...encodedBytes.entries()]
+          .map(([requestId, encodedDataLength]) => ({
+            encodedDataLength,
+            requestId,
+            url: requestUrls.get(requestId) ?? "unknown",
+          }))
+          .sort((left, right) => left.requestId.localeCompare(right.requestId)),
+      ),
     totalEncodedBytes: () =>
       [...encodedBytes.values()].reduce((total, bytes) => total + bytes, 0),
   });

@@ -1,9 +1,12 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import CaseboardPage from "@/app/play/caseboard/page";
-import { CaseSessionProvider } from "@/components/case-session/case-session-provider";
+import {
+  CaseSessionProvider,
+  useCaseSession,
+} from "@/components/case-session/case-session-provider";
 import { loadVarennesCase } from "@/lib/case-engine/load-case";
 import { createInitialCaseState } from "@/lib/case-engine/state";
 import type { CaseState } from "@/schemas/case-state";
@@ -32,8 +35,24 @@ function renderCaseboard(state: CaseState = caseBriefState()) {
   return render(
     <CaseSessionProvider initialState={state} persist={false}>
       <CaseboardPage />
+      <CaseStateProbe />
     </CaseSessionProvider>,
   );
+}
+
+function CaseStateProbe() {
+  const { state } = useCaseSession();
+  return (
+    <output data-testid="caseboard-state-probe" hidden>
+      {JSON.stringify(state)}
+    </output>
+  );
+}
+
+function readRenderedCaseState(): CaseState {
+  return JSON.parse(
+    screen.getByTestId("caseboard-state-probe").textContent ?? "null",
+  ) as CaseState;
 }
 
 function submittedCaseBriefState(): CaseState {
@@ -236,6 +255,20 @@ describe("causal caseboard and Case Brief", () => {
     expect(screen.getByText("Repair ready")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /review timeline repair/i })).toBeInTheDocument();
     expect(screen.queryByText(/rubric score/i)).toBeNull();
+  });
+
+  it("advances a standalone repair-ready caseboard without a world camera transaction", () => {
+    renderCaseboard(repairReadyCaseBriefState());
+    const preventExternalNavigation = (event: MouseEvent) =>
+      event.preventDefault();
+    window.addEventListener("click", preventExternalNavigation);
+
+    fireEvent.click(
+      screen.getByRole("link", { name: /review timeline repair/i }),
+    );
+
+    window.removeEventListener("click", preventExternalNavigation);
+    expect(readRenderedCaseState().phase).toBe("repair");
   });
 
   it("becomes repair-ready only after the full supported network is constructed", async () => {

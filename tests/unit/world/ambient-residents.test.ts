@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { buildAmbientResidentPlacements } from "@/components/world/ambient/ambient-residents";
+import {
+  buildAmbientResidentPlacements,
+  resolveAmbientResidentTransform,
+} from "@/components/world/ambient/ambient-residents";
 import {
   loadVarennesAmbientLines,
   loadVarennesSceneManifest,
@@ -53,5 +56,42 @@ describe("ambient resident placements", () => {
         ) + placement.pathRadius,
       ).toBeLessThanOrEqual(6);
     }
+  });
+
+  it("freezes path motion when reduced motion is active", () => {
+    const placement = buildAmbientResidentPlacements(
+      manifest,
+      ambientLines,
+      1,
+    )[0];
+    const moving = resolveAmbientResidentTransform(placement, 12, false);
+    const reduced = resolveAmbientResidentTransform(placement, 12, true);
+
+    expect(moving.position).not.toEqual(placement.basePosition);
+    expect(reduced).toEqual({
+      position: placement.basePosition,
+      rotationY: 0,
+    });
+  });
+
+  it("mounts residents only in zones that explicitly allow generic ambient figures", () => {
+    const restrictedManifest = structuredClone(manifest);
+    const finalZone = restrictedManifest.zones.find(
+      (zone) => zone.zoneId === "bridge-approach",
+    ) as (typeof restrictedManifest.zones)[number] & {
+      dynamicContentAllowlist?: string[];
+    };
+    if (!finalZone) throw new Error("Missing final-zone fixture.");
+    finalZone.dynamicContentAllowlist = [];
+
+    const placements = buildAmbientResidentPlacements(
+      restrictedManifest,
+      ambientLines,
+      16,
+    );
+
+    expect(placements.some((placement) => placement.zoneId === "bridge-approach")).toBe(
+      false,
+    );
   });
 });

@@ -37,7 +37,7 @@ const spatialState = {
   spatialSessionVersion: "1.0.0",
   caseId: "varennes",
   caseVersion: "1.0.3",
-  sceneManifestVersion: "1.2.0",
+  sceneManifestVersion: "1.3.0",
   mode: "spatial",
   lastSafeSpawn: {
     zoneId: "post-road-square",

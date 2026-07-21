@@ -53,38 +53,6 @@ export const BRIDGE_CANDIDATES = [
 export function BridgeZone() {
   return (
     <group>
-      <mesh
-        receiveShadow
-        position={[bridgeSpawn[0], 0.05, bridgeSpawn[2]]}
-        scale={[10, 0.1, 5.8]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="#737979" roughness={1} />
-      </mesh>
-      <mesh
-        receiveShadow
-        position={[bridgeSpawn[0], 0.16, bridgeSpawn[2] + 4.4]}
-        scale={[4.4, 0.16, 6.6]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="#8c9190" roughness={0.98} />
-      </mesh>
-
-      {[-2.35, 2.35].map((xOffset) => (
-        <group key={xOffset} position={[bridgeSpawn[0] + xOffset, 0, bridgeSpawn[2] + 4.4]}>
-          <mesh castShadow position={[0, 0.82, 0]} scale={[0.12, 0.12, 6.6]}>
-            <boxGeometry />
-            <meshStandardMaterial color="#424a4e" roughness={0.96} />
-          </mesh>
-          {[-3, -1, 1, 3].map((z) => (
-            <mesh castShadow key={z} position={[0, 0.44, z]} scale={[0.16, 0.88, 0.16]}>
-              <boxGeometry />
-              <meshStandardMaterial color="#4f585b" roughness={0.96} />
-            </mesh>
-          ))}
-        </group>
-      ))}
-
       <group position={e5Position}>
         <mesh castShadow position={[0, 0.68, 0]} scale={[1.1, 1.36, 0.8]}>
           <boxGeometry />
@@ -95,7 +63,6 @@ export function BridgeZone() {
           <meshStandardMaterial color="#d8d6ce" roughness={0.9} />
         </mesh>
       </group>
-
     </group>
   );
 }

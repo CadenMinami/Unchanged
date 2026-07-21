@@ -177,8 +177,21 @@ export function CausalCaseboard({
         </div>
         {eligibility.eligible ? (
           <Link
+            data-world-phase-after-release="repair"
             href="/play/repair"
-            onClick={() => issue({ type: "advance_phase", phase: "repair" })}
+            onClick={(event) => {
+              if (
+                event.defaultPrevented ||
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.altKey ||
+                event.shiftKey
+              ) {
+                return;
+              }
+              issue({ type: "advance_phase", phase: "repair" });
+            }}
           >
             Review timeline repair
             <ArrowRight aria-hidden="true" />

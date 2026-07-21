@@ -20,6 +20,7 @@ import {
   type MediaOperationLogger,
   type TranscriptionProvider,
 } from "@/lib/audio/transcription-service";
+import { BoundedJsonError, readBoundedJson } from "@/lib/http/bounded-json";
 import { createCaseBriefFeedback } from "@/lib/openai/case-brief-feedback-service";
 import { createCharacterTurn } from "@/lib/openai/character-turn-service";
 import { createServerInputSafetyGateway } from "@/lib/openai/create-server-input-safety";
@@ -59,6 +60,9 @@ interface HandlerDependencies {
   speechAuthorizationSecret?: string | null;
   nowEpochSeconds?: () => number;
 }
+
+export const MAX_CHARACTER_TURN_BODY_BYTES = 8_192;
+export const MAX_CASE_BRIEF_FEEDBACK_BODY_BYTES = 32_768;
 
 export interface MediaHandlerDependencies {
   transcriptionProvider?: TranscriptionProvider | null;
@@ -126,6 +130,18 @@ function versionMismatch() {
       },
     },
     409,
+  );
+}
+
+function payloadTooLarge() {
+  return json(
+    {
+      error: {
+        code: "payload_too_large",
+        message: "The AI request body was too large.",
+      },
+    },
+    413,
   );
 }
 
@@ -241,27 +257,37 @@ export async function handleCharacterTurnRequest(
   request: Request,
   dependencies: HandlerDependencies = {},
 ): Promise<Response> {
+  const rateLimiter =
+    dependencies.rateLimiter === undefined ? aiRequestRateLimiter : dependencies.rateLimiter;
+  if (rateLimiter && !rateLimiter.allow(clientKey(request, "character-turn"))) {
+    return rateLimited();
+  }
+
+  let body: unknown;
+  try {
+    body = await readBoundedJson(request, MAX_CHARACTER_TURN_BODY_BYTES);
+  } catch (error) {
+    if (error instanceof BoundedJsonError && error.reason === "payload_too_large") {
+      return payloadTooLarge();
+    }
+    return invalidRequest();
+  }
+  if (hasVersionMismatch(body)) return versionMismatch();
+  const parsed = characterTurnRequestSchema.safeParse(body);
+  if (!parsed.success) return invalidRequest();
+
   const gateway =
     dependencies.gateway === undefined ? createServerModelGateway() : dependencies.gateway;
   const inputSafety =
     dependencies.inputSafety === undefined
       ? createServerInputSafetyGateway()
       : dependencies.inputSafety;
-  const rateLimiter =
-    dependencies.rateLimiter === undefined ? aiRequestRateLimiter : dependencies.rateLimiter;
   const speechAuthorizationSecret =
     dependencies.speechAuthorizationSecret === undefined
       ? process.env.SPEECH_AUTHORIZATION_SECRET
       : dependencies.speechAuthorizationSecret;
   const nowEpochSeconds =
     dependencies.nowEpochSeconds ?? (() => Math.floor(Date.now() / 1_000));
-  const body = await readBody(request);
-  if (hasVersionMismatch(body)) return versionMismatch();
-  const parsed = characterTurnRequestSchema.safeParse(body);
-  if (!parsed.success) return invalidRequest();
-  if (gateway && rateLimiter && !rateLimiter.allow(clientKey(request, "character-turn"))) {
-    return rateLimited();
-  }
 
   try {
     const result = await createCharacterTurn(parsed.data, {
@@ -293,21 +319,31 @@ export async function handleCaseBriefFeedbackRequest(
   request: Request,
   dependencies: HandlerDependencies = {},
 ): Promise<Response> {
+  const rateLimiter =
+    dependencies.rateLimiter === undefined ? aiRequestRateLimiter : dependencies.rateLimiter;
+  if (rateLimiter && !rateLimiter.allow(clientKey(request, "case-brief-feedback"))) {
+    return rateLimited();
+  }
+
+  let body: unknown;
+  try {
+    body = await readBoundedJson(request, MAX_CASE_BRIEF_FEEDBACK_BODY_BYTES);
+  } catch (error) {
+    if (error instanceof BoundedJsonError && error.reason === "payload_too_large") {
+      return payloadTooLarge();
+    }
+    return invalidRequest();
+  }
+  if (hasVersionMismatch(body)) return versionMismatch();
+  const parsed = caseBriefFeedbackRequestSchema.safeParse(body);
+  if (!parsed.success) return invalidRequest();
+
   const gateway =
     dependencies.gateway === undefined ? createServerModelGateway() : dependencies.gateway;
   const inputSafety =
     dependencies.inputSafety === undefined
       ? createServerInputSafetyGateway()
       : dependencies.inputSafety;
-  const rateLimiter =
-    dependencies.rateLimiter === undefined ? aiRequestRateLimiter : dependencies.rateLimiter;
-  const body = await readBody(request);
-  if (hasVersionMismatch(body)) return versionMismatch();
-  const parsed = caseBriefFeedbackRequestSchema.safeParse(body);
-  if (!parsed.success) return invalidRequest();
-  if (gateway && rateLimiter && !rateLimiter.allow(clientKey(request, "case-brief-feedback"))) {
-    return rateLimited();
-  }
 
   try {
     return json(

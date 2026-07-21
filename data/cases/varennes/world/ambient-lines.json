@@ -1,6 +1,6 @@
 {
   "ambientLinesVersion": "1.0.0",
-  "sceneManifestVersion": "1.2.0",
+  "sceneManifestVersion": "1.3.0",
   "caseId": "varennes",
   "caseVersion": "1.0.3",
   "lines": [
@@ -43,9 +43,9 @@
     {
       "ambientLineId": "AMBIENT-BRIDGE-01",
       "zoneId": "bridge-approach",
-      "text": "The reconstructed approach narrows toward the final zone.",
+      "text": "The marked boundary closes this schematic teaching district.",
       "epistemicClassification": "dramatization",
-      "limitations": "Authored atmosphere only; the line does not establish exact geography, timing, or obstruction.",
+      "limitations": "Authored navigation atmosphere only; the line does not establish historical geography, timing, events, or object placement.",
       "countsAsHistoricalEvidence": false,
       "affectsProgression": false,
       "evidenceIds": [],

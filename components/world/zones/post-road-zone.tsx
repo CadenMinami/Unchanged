@@ -1,9 +1,10 @@
 "use client";
 
 import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
+import type { GraphicsProfile } from "@/lib/world/graphics-profile";
 import type { SceneManifest } from "@/schemas/world-manifest";
 
-import { PeriodFigure } from "../character/period-figure";
+import { PeriodCharacter } from "../character/period-character";
 import type { ProximityCandidate } from "../interactions/proximity-registry";
 
 const manifest = loadVarennesSceneManifest();
@@ -72,28 +73,18 @@ export const POST_ROAD_CANDIDATES = [
   POST_ROAD_E4_CANDIDATE,
 ] as const satisfies readonly ProximityCandidate[];
 
-export function PostRoadZone({ reducedMotion = false }: { reducedMotion?: boolean }) {
+export function PostRoadZone({
+  profile,
+  reducedMotion = false,
+}: {
+  profile: GraphicsProfile;
+  reducedMotion?: boolean;
+}) {
   return (
     <group>
-      <mesh
-        receiveShadow
-        position={[postRoadSpawn[0], 0.035, postRoadSpawn[2]]}
-        scale={[9.5, 0.07, 6]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="#77746e" roughness={1} />
-      </mesh>
-      <mesh
-        receiveShadow
-        position={[postRoadSpawn[0], 0.08, postRoadSpawn[2]]}
-        scale={[9.5, 0.06, 2.25]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="#a4a09a" roughness={1} />
-      </mesh>
-
-      <group position={drouetPosition}>
-        <PeriodFigure
+      <group name="principal-character-drouet" position={drouetPosition}>
+        <PeriodCharacter
+          motion="idle"
           palette={{
             skin: "#ad8062",
             coat: "#684437",
@@ -104,6 +95,7 @@ export function PostRoadZone({ reducedMotion = false }: { reducedMotion?: boolea
             hair: "#433027",
             hat: "#2f2924",
           }}
+          profile={profile}
           reducedMotion={reducedMotion}
         />
       </group>
@@ -122,7 +114,6 @@ export function PostRoadZone({ reducedMotion = false }: { reducedMotion?: boolea
           <meshStandardMaterial color="#d8d5ca" roughness={0.9} />
         </mesh>
       </group>
-
     </group>
   );
 }

@@ -16,6 +16,14 @@ describe("graphics profiles", () => {
       postProcessingAllowed: true,
       ambientCount: 16,
       textureTier: "high",
+      characterDetail: "fallback",
+      environmentDensity: "high",
+      contactShadows: true,
+      effects: {
+        bloom: true,
+        bloomStrength: 0.22,
+        multisampling: 2,
+      },
     });
   });
 
@@ -28,31 +36,61 @@ describe("graphics profiles", () => {
       postProcessingAllowed: true,
       ambientCount: 8,
       textureTier: "medium",
+      characterDetail: "fallback",
+      environmentDensity: "medium",
+      contactShadows: true,
+      effects: {
+        bloom: true,
+        bloomStrength: 0.12,
+        multisampling: 0,
+      },
     });
   });
 
   it("defines the classroom presentation profile", () => {
     expect(GRAPHICS_PROFILES.classroom).toEqual({
       tier: "classroom",
-      dpr: 1,
+      dpr: 0.5,
       shadows: { enabled: false, mapSize: 0 },
       fog: { near: 24, far: 90 },
       postProcessingAllowed: false,
       ambientCount: 3,
       textureTier: "low",
+      characterDetail: "fallback",
+      environmentDensity: "low",
+      contactShadows: false,
+      effects: {
+        bloom: false,
+        bloomStrength: 0,
+        multisampling: 0,
+      },
     });
+  });
+
+  it("reserves a half-resolution raster budget for Classroom hardware", () => {
+    expect(GRAPHICS_PROFILES.classroom.dpr).toBe(0.5);
   });
 
   it("keeps profile fields limited to presentation quality", () => {
     expect(Object.keys(GRAPHICS_PROFILES.high).sort()).toEqual([
       "ambientCount",
+      "characterDetail",
+      "contactShadows",
       "dpr",
+      "effects",
+      "environmentDensity",
       "fog",
       "postProcessingAllowed",
       "shadows",
       "textureTier",
       "tier",
     ]);
+  });
+
+  it("reserves PBR facade requests for the two richer texture tiers", () => {
+    expect(GRAPHICS_PROFILES.high.textureTier).toBe("high");
+    expect(GRAPHICS_PROFILES.balanced.textureTier).toBe("medium");
+    expect(GRAPHICS_PROFILES.classroom.textureTier).toBe("low");
   });
 
   it("defaults unknown hardware to the balanced tier", () => {

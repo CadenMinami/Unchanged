@@ -1,0 +1,147 @@
+.panel {
+  position: absolute;
+  z-index: 5;
+  top: 128px;
+  right: clamp(18px, 4vw, 48px);
+  width: min(360px, calc(100vw - 36px));
+  overflow: hidden;
+  color: #f9f4e8;
+  border: 1px solid rgb(255 255 255 / 32%);
+  border-top: 3px solid #d7ac56;
+  background: #171c1a;
+  box-shadow: 0 20px 52px rgb(0 0 0 / 38%);
+}
+
+.header {
+  min-height: 72px;
+  padding: 13px 14px 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header p {
+  margin: 0 0 4px;
+  color: #bbcfbe;
+  font-family: var(--font-mono), monospace;
+  font-size: .58rem;
+  text-transform: uppercase;
+}
+
+.header h2 {
+  margin: 0;
+  font-family: var(--font-serif), serif;
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.closeButton {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: #f9f4e8;
+  border: 1px solid rgb(255 255 255 / 38%);
+  background: #252c29;
+  cursor: pointer;
+}
+
+.closeButton svg {
+  width: 17px;
+  height: 17px;
+}
+
+.field {
+  padding: 16px;
+  border-top: 1px solid rgb(255 255 255 / 18%);
+}
+
+.fieldLabel {
+  margin-bottom: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.fieldLabel label,
+.checkboxField strong {
+  font-family: var(--font-mono), monospace;
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.value {
+  min-width: 42px;
+  color: #f0d69c;
+  font-family: var(--font-mono), monospace;
+  font-size: .7rem;
+  text-align: right;
+}
+
+.field input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: #d7ac56;
+  cursor: pointer;
+}
+
+.checkboxField {
+  min-height: 68px;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-top: 1px solid rgb(255 255 255 / 18%);
+  cursor: pointer;
+}
+
+.checkboxField > span {
+  display: grid;
+  gap: 4px;
+}
+
+.checkboxField small {
+  color: #bbc3bd;
+  font-size: .72rem;
+  line-height: 1.35;
+}
+
+.checkboxField input {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  margin: 0;
+  accent-color: #d7ac56;
+  cursor: pointer;
+}
+
+.closeButton:focus-visible,
+.field input:focus-visible,
+.checkboxField input:focus-visible {
+  outline: 2px solid #d7ac56;
+  outline-offset: 4px;
+}
+
+@media (max-width: 720px) {
+  .panel {
+    top: 328px;
+    right: 18px;
+    left: 18px;
+    width: auto;
+    max-height: calc(100svh - 346px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .panel {
+    top: 366px;
+  }
+}

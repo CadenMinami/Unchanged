@@ -48,7 +48,7 @@ export async function readBoundedJson(
       const { done, value } = await reader.read();
       if (done) break;
       if (byteLength + value.byteLength > maxBodyBytes) {
-        await reader.cancel();
+        void reader.cancel().catch(() => undefined);
         throw new BoundedJsonError("payload_too_large");
       }
       chunks.push(value);

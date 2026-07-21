@@ -1,13 +1,13 @@
 {
   "assetLedgerVersion": "1.0.0",
-  "sceneManifestVersion": "1.2.0",
+  "sceneManifestVersion": "1.3.0",
   "caseId": "varennes",
   "caseVersion": "1.0.3",
   "disclosure": "The scene is an authored, schematic teaching reconstruction. Imported and procedural assets support atmosphere and navigation; none count as historical evidence or document the exact appearance, ownership, location, or scale of Varennes in June 1791.",
   "assets": [
     {
       "assetId": "ASSET-ENV-GROUNDED-DISTRICT",
-      "title": "Grounded district architecture, lighting, lanterns, and water",
+      "title": "Grounded district architecture, lighting, lanterns, and road surface",
       "category": "environment",
       "epistemicClassification": "reconstruction",
       "historicalBasis": {
@@ -25,7 +25,7 @@
           "placementStatus": "schematic_temporal_reconstruction",
           "reconstructionConfidence": "low",
           "limitations": {
-            "location": "Building, road, river, and lantern placement is authored for traversal rather than historical geography.",
+            "location": "Building, road, and lantern placement is authored for traversal rather than historical geography.",
             "ownership": "No facade, furnishing, lantern, or environmental object is assigned to a historical owner.",
             "scale": "Building dimensions, road width, spacing, and sightlines are compressed and not to scale.",
             "appearance": "Materials and silhouettes are grounded stylization, not a verified reconstruction of Varennes in June 1791."
@@ -40,10 +40,18 @@
         "rightsHolder": "Caden Minami",
         "sourcePaths": [
           "components/world/scene-runtime.tsx",
+          "components/world/environment/archive-hero-environment.tsx",
           "components/world/environment/grounded-district.tsx",
           "components/world/environment/cobblestone-surface.tsx",
+          "components/world/environment/district-layout.ts",
+          "components/world/environment/environment-dressing.tsx",
           "components/world/environment/licensed-props.tsx",
-          "components/world/environment/optional-asset-boundary.tsx"
+          "components/world/environment/modular-facade.tsx",
+          "components/world/environment/optional-asset-boundary.tsx",
+          "components/world/environment/pbr-surface-material.tsx",
+          "components/world/environment/world-lighting.tsx",
+          "components/world/environment/world-post-processing.tsx",
+          "components/world/environment/zone-readiness-registry.tsx"
         ]
       },
       "license": {
@@ -58,22 +66,30 @@
         "kind": "runtime_procedural",
         "sourcePaths": [
           "components/world/scene-runtime.tsx",
+          "components/world/environment/archive-hero-environment.tsx",
           "components/world/environment/grounded-district.tsx",
           "components/world/environment/cobblestone-surface.tsx",
+          "components/world/environment/district-layout.ts",
+          "components/world/environment/environment-dressing.tsx",
           "components/world/environment/licensed-props.tsx",
-          "components/world/environment/optional-asset-boundary.tsx"
+          "components/world/environment/modular-facade.tsx",
+          "components/world/environment/optional-asset-boundary.tsx",
+          "components/world/environment/pbr-surface-material.tsx",
+          "components/world/environment/world-lighting.tsx",
+          "components/world/environment/world-post-processing.tsx",
+          "components/world/environment/zone-readiness-registry.tsx"
         ],
         "compression": "not_applicable"
       }
     },
     {
       "assetId": "ASSET-PROP-PROCEDURAL-STATIONS",
-      "title": "Evidence stations, disclosures, and procedural cast markers",
+      "title": "Evidence stations, disclosures, and navigation props",
       "category": "prop",
       "epistemicClassification": "reconstruction",
       "historicalBasis": {
         "basisType": "none",
-        "rationale": "These forms provide interaction affordances and dramatized character silhouettes; canonical evidence remains in the DOM records they open.",
+        "rationale": "These reconstructed prop forms provide interaction affordances; canonical evidence remains in the DOM records they open.",
         "evidenceIds": [],
         "factIds": [],
         "sourceIds": []
@@ -82,14 +98,14 @@
         {
           "ownerType": "scene",
           "ownerId": "varennes-scene",
-          "purpose": "Render navigation markers, non-evidentiary source stations, ambient residents, and the unnamed investigator.",
+          "purpose": "Render navigation markers and non-evidentiary source stations separately from dramatized cast figures.",
           "placementStatus": "schematic_temporal_reconstruction",
           "reconstructionConfidence": "low",
           "limitations": {
-            "location": "Station and figure placement follows gameplay transforms, not a documented historical arrangement.",
-            "ownership": "Furniture and clothing colors do not establish ownership or identity beyond the labeled interface station.",
-            "scale": "Figure and prop dimensions are adjusted for classroom readability and collision safety.",
-            "appearance": "Procedural figures and stations are dramatized visual markers, not portraits or authentic artifacts."
+            "location": "Station placement follows gameplay transforms, not a documented historical arrangement.",
+            "ownership": "Furniture and display forms do not establish historical ownership.",
+            "scale": "Prop dimensions are adjusted for classroom readability and collision safety.",
+            "appearance": "Procedural station props are reconstructed interface markers, not authentic artifacts."
           }
         }
       ],
@@ -101,9 +117,6 @@
         "rightsHolder": "Caden Minami",
         "sourcePaths": [
           "components/world/interactions/interactable.tsx",
-          "components/world/character/investigator-model.tsx",
-          "components/world/character/period-figure.tsx",
-          "components/world/ambient/ambient-residents.tsx",
           "components/world/zones/archive-zone.tsx",
           "components/world/zones/post-road-zone.tsx",
           "components/world/zones/civic-zone.tsx",
@@ -122,13 +135,81 @@
         "kind": "runtime_procedural",
         "sourcePaths": [
           "components/world/interactions/interactable.tsx",
-          "components/world/character/investigator-model.tsx",
-          "components/world/character/period-figure.tsx",
-          "components/world/ambient/ambient-residents.tsx",
           "components/world/zones/archive-zone.tsx",
           "components/world/zones/post-road-zone.tsx",
           "components/world/zones/civic-zone.tsx",
           "components/world/zones/bridge-zone.tsx"
+        ],
+        "compression": "not_applicable"
+      }
+    },
+    {
+      "assetId": "ASSET-CHAR-PROCEDURAL-CAST",
+      "title": "Generic procedural investigator, historical-role markers, and ambient residents",
+      "category": "character",
+      "epistemicClassification": "dramatization",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "Generic procedural bodies and clothing palettes distinguish gameplay roles but do not reproduce the appearance of Drouet, Louis XVI, the investigator, or any resident.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Render dramatized, non-evidentiary cast markers with shared procedural geometry and profile-aware motion.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Figure placement and movement follow gameplay transforms, not a documented historical arrangement.",
+            "ownership": "Clothing colors and silhouettes do not establish identity, rank, or ownership beyond the interface label.",
+            "scale": "Figure dimensions and motion are adjusted for readability, collision safety, and graphics profiles.",
+            "appearance": "Every figure is a generic dramatized role marker, not a portrait, likeness, or verified reconstruction of clothing or body shape."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "repository_authored_procedural",
+      "origin": {
+        "creator": "History Unbroken project",
+        "rightsHolder": "Caden Minami",
+        "sourcePaths": [
+      "components/world/ambient/ambient-residents.tsx",
+      "components/world/character/classroom-period-figure.tsx",
+      "components/world/character/figure-motion.ts",
+          "components/world/character/investigator-controller.tsx",
+          "components/world/character/investigator-model.tsx",
+          "components/world/character/period-character.tsx",
+          "components/world/character/period-figure.tsx",
+          "components/world/character/period-figure-resources.ts",
+          "components/world/zones/post-road-zone.tsx",
+          "components/world/zones/civic-zone.tsx"
+        ]
+      },
+      "license": {
+        "rightsBasis": "repository_owned",
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "proof": "repository_history"
+      },
+      "modifications": { "status": "original", "steps": [] },
+      "delivery": {
+        "kind": "runtime_procedural",
+        "sourcePaths": [
+      "components/world/ambient/ambient-residents.tsx",
+      "components/world/character/classroom-period-figure.tsx",
+      "components/world/character/figure-motion.ts",
+          "components/world/character/investigator-controller.tsx",
+          "components/world/character/investigator-model.tsx",
+          "components/world/character/period-character.tsx",
+          "components/world/character/period-figure.tsx",
+          "components/world/character/period-figure-resources.ts",
+          "components/world/zones/post-road-zone.tsx",
+          "components/world/zones/civic-zone.tsx"
         ],
         "compression": "not_applicable"
       }
@@ -323,7 +404,7 @@
         {
           "ownerType": "scene",
           "ownerId": "varennes-scene",
-          "purpose": "Non-interactive set dressing near the post road and bridge approach.",
+          "purpose": "Non-interactive set dressing near the post road.",
           "placementStatus": "schematic_temporal_reconstruction",
           "reconstructionConfidence": "low",
           "limitations": {
@@ -398,7 +479,7 @@
         {
           "ownerType": "scene",
           "ownerId": "varennes-scene",
-          "purpose": "Surface the compressed road and bridge-approach teaching geometry.",
+          "purpose": "Surface the compressed continuous teaching road.",
           "placementStatus": "schematic_temporal_reconstruction",
           "reconstructionConfidence": "low",
           "limitations": {
@@ -446,6 +527,439 @@
           { "path": "/world/textures/cobblestone-floor-08/cobblestone-floor-08-diff-1k.jpg", "bytes": 585727, "sha256": "ec131f7a99a1e7f9df25d4725609c55a6dad1df487630685e9a66ecbf41ec33a" },
           { "path": "/world/textures/cobblestone-floor-08/cobblestone-floor-08-normal-1k.jpg", "bytes": 1002410, "sha256": "26bfff70b266a4e86983814c7e56a9b48daf93cd34dcdc16a5db13e4fabcfbb6" },
           { "path": "/world/textures/cobblestone-floor-08/cobblestone-floor-08-roughness-1k.jpg", "bytes": 408718, "sha256": "f92bcaf897cd98bc3cf11e6409b3e42145e7d0f659eaaad8807dfb0c5d16afc6" }
+        ]
+      }
+    },
+    {
+      "assetId": "ASSET-MATERIAL-PBR-PLASTER-PH",
+      "title": "Painted Plaster Wall 1K PBR Material",
+      "category": "texture",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "Poly Haven establishes the asset's creator, rights, and technical file graph, not the appearance or placement of plaster in Varennes in June 1791.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Apply a non-evidentiary generic plaster material to authored modular facade wall surfaces in High and Balanced presentation profiles.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Runtime application to authored plaster facade surfaces is a compositional choice, not documentation of a Varennes building, facade, or position.",
+            "ownership": "No surface is attributed to a historical person, household, business, or institution.",
+            "scale": "The source's 2 m texture scale and bounded 1-to-8 quarter-step runtime UV repeats are rendering choices, not measurements of a historical facade.",
+            "appearance": "Generic weathered surface only; not proof of Varennes plaster formula, paint color, age, damage, ownership, location, or facade."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "Amal Kumar",
+        "sourceUrl": "https://polyhaven.com/a/painted_plaster_wall",
+        "downloadUrl": "https://api.polyhaven.com/files/painted_plaster_wall",
+        "retrievedAt": "2026-07-19",
+        "originalFiles": [
+          { "name": "painted_plaster_wall_diff_1k.jpg", "bytes": 686726, "sha256": "440310f05af089f2c93353167573403cbc3f805948203237b5d26431eeb9e19c" },
+          { "name": "painted_plaster_wall_nor_gl_1k.jpg", "bytes": 900461, "sha256": "8eb01647d126eb5341e2c325821ad48c8ca11349dbef53447c95422c5d91cc9d" },
+          { "name": "painted_plaster_wall_rough_1k.jpg", "bytes": 354762, "sha256": "e0564c297b22ab1cf4ef02a82157b84ce3b92eb4fd49d9c64b7256a8b300af82" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/pbr-plaster-ph-runtime-intake.md", "sha256": "93d73f5521c5a399d47f19ac3d33be8a2a7a4f723dc824c704cd0de1e207c3f1" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Painted Plaster Wall by Amal Kumar via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Copied the three original 1K JPG files byte-for-byte to stable runtime paths without renaming, resizing, re-encoding, recompression, color-space conversion, channel packing, or any other content modification.",
+          "At runtime, clone the diffuse, normal, and roughness maps, use repeat wrapping, and apply bounded scale-aware UV repeats derived from authored facade dimensions.",
+          "At runtime, apply an authored facade color tint, a 0.32 normal scale, and a 0.94 roughness constant; these editorial transformations do not modify the static source files.",
+          "Treat all apparent historical fit as editorial inference; the source and license records establish rights and technical origin only."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/textures/painted-plaster-wall/painted_plaster_wall_diff_1k.jpg", "bytes": 686726, "sha256": "440310f05af089f2c93353167573403cbc3f805948203237b5d26431eeb9e19c" },
+          { "path": "/world/textures/painted-plaster-wall/painted_plaster_wall_nor_gl_1k.jpg", "bytes": 900461, "sha256": "8eb01647d126eb5341e2c325821ad48c8ca11349dbef53447c95422c5d91cc9d" },
+          { "path": "/world/textures/painted-plaster-wall/painted_plaster_wall_rough_1k.jpg", "bytes": 354762, "sha256": "e0564c297b22ab1cf4ef02a82157b84ce3b92eb4fd49d9c64b7256a8b300af82" }
+        ]
+      }
+    },
+    {
+      "assetId": "ASSET-MATERIAL-PBR-STONE-PH",
+      "title": "Stone Wall 1K PBR Material",
+      "category": "texture",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "Poly Haven establishes the asset's creators, rights, and technical file graph, not the appearance or placement of masonry in Varennes in June 1791.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Apply a non-evidentiary generic masonry material to authored modular facade wall and footing surfaces in High and Balanced presentation profiles.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Runtime use on authored masonry facade surfaces is placement for composition, not documentation of a Varennes structure or position.",
+            "ownership": "No stone, wall, quarry, building, or repair is attributed to a historical owner or institution.",
+            "scale": "The source's 2 m texture scale and bounded 1-to-8 quarter-step runtime UV repeats are rendering choices, not measurements of historical masonry.",
+            "appearance": "The material cannot establish exact stone species, quarry, mortar, coursing, construction date, facade, or condition in Varennes."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "Charlotte Baglioni (photography) and Dario Barresi (processing)",
+        "sourceUrl": "https://polyhaven.com/a/stone_wall",
+        "downloadUrl": "https://api.polyhaven.com/files/stone_wall",
+        "retrievedAt": "2026-07-19",
+        "originalFiles": [
+          { "name": "stone_wall_diff_1k.jpg", "bytes": 836975, "sha256": "390969aead48d9a10ac731a5e0af8761cc4ed89faa02ba775b913930b4398d87" },
+          { "name": "stone_wall_nor_gl_1k.jpg", "bytes": 1172420, "sha256": "801d7ff8bc472e5ad95872546c19a4c63cc776060b4ced629fece2d08591964e" },
+          { "name": "stone_wall_rough_1k.jpg", "bytes": 301003, "sha256": "8c06e7c67d0d9701966732cc90c4e356b5bd5656aa35bf82650576e78322cbdd" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/pbr-stone-ph-runtime-intake.md", "sha256": "694739c85e4f8eeae74acd2dfaf714de2b81bfcda2b2424a73f625802cbb4532" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Stone Wall by Charlotte Baglioni and Dario Barresi via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Copied the three original 1K JPG files byte-for-byte to stable runtime paths without renaming, resizing, re-encoding, recompression, color-space conversion, channel packing, or any other content modification.",
+          "At runtime, clone the diffuse, normal, and roughness maps, use repeat wrapping, and apply bounded scale-aware UV repeats derived from authored facade dimensions.",
+          "At runtime, apply an authored facade color tint, a 0.46 normal scale, and a 0.98 roughness constant; these editorial transformations do not modify the static source files.",
+          "Treat all apparent historical fit as editorial inference; the source and license records establish rights and technical origin only."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/textures/stone-wall/stone_wall_diff_1k.jpg", "bytes": 836975, "sha256": "390969aead48d9a10ac731a5e0af8761cc4ed89faa02ba775b913930b4398d87" },
+          { "path": "/world/textures/stone-wall/stone_wall_nor_gl_1k.jpg", "bytes": 1172420, "sha256": "801d7ff8bc472e5ad95872546c19a4c63cc776060b4ced629fece2d08591964e" },
+          { "path": "/world/textures/stone-wall/stone_wall_rough_1k.jpg", "bytes": 301003, "sha256": "8c06e7c67d0d9701966732cc90c4e356b5bd5656aa35bf82650576e78322cbdd" }
+        ]
+      }
+    },
+    {
+      "assetId": "ASSET-MATERIAL-PBR-TIMBER-PH",
+      "title": "Wood Planks 1K PBR Material",
+      "category": "texture",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "Poly Haven establishes the asset's creator, rights, and technical file graph, not the appearance, construction, or placement of timber in Varennes in June 1791.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Apply a non-evidentiary generic timber material to authored timber-front wall surfaces in High and Balanced presentation profiles.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Runtime orientation and placement on authored timber-front surfaces are compositional choices, not documentation of a Varennes timber element or position.",
+            "ownership": "No beam, door, shutter, board, cart, sign, or structure is attributed to a historical owner or institution.",
+            "scale": "The source's approximate 1.5 m texture scale and bounded 1-to-8 quarter-step runtime UV direction and repeats are rendering choices, not historical measurements.",
+            "appearance": "The material does not prove wood species, board width, fasteners, joinery, vertical orientation, wear, or placement."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "Amal Kumar",
+        "sourceUrl": "https://polyhaven.com/a/wood_planks",
+        "downloadUrl": "https://api.polyhaven.com/files/wood_planks",
+        "retrievedAt": "2026-07-19",
+        "originalFiles": [
+          { "name": "wood_planks_diff_1k.jpg", "bytes": 609525, "sha256": "3b0669f683e4bf10f5a55a381cfa9669a7b8dfd921901829daa3b35acc2bbdec" },
+          { "name": "wood_planks_nor_gl_1k.jpg", "bytes": 652441, "sha256": "d02abf113e17a8abe97e1be3e9d6d88add242e8c2291e2200d37aa8c68909f25" },
+          { "name": "wood_planks_rough_1k.jpg", "bytes": 299757, "sha256": "1b7f115bfa25619b0a2db554eb1ab88a6fc5ef0b74ba4890611eae04d00b9829" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/pbr-timber-ph-runtime-intake.md", "sha256": "6faa19ce5bd16c432510976dc2ad8b8187427fc381bce2995702c4855db42460" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Wood Planks by Amal Kumar via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Copied the three original 1K JPG files byte-for-byte to stable runtime paths without renaming, resizing, re-encoding, recompression, color-space conversion, channel packing, or any other content modification.",
+          "At runtime, clone the diffuse, normal, and roughness maps, use repeat wrapping, and apply bounded scale-aware UV repeats derived from authored facade dimensions.",
+          "At runtime, apply an authored facade color tint, a 0.38 normal scale, and a 0.90 roughness constant; these editorial transformations do not modify the static source files.",
+          "Treat all apparent historical fit as editorial inference; the source and license records establish rights and technical origin only."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/textures/wood-planks/wood_planks_diff_1k.jpg", "bytes": 609525, "sha256": "3b0669f683e4bf10f5a55a381cfa9669a7b8dfd921901829daa3b35acc2bbdec" },
+          { "path": "/world/textures/wood-planks/wood_planks_nor_gl_1k.jpg", "bytes": 652441, "sha256": "d02abf113e17a8abe97e1be3e9d6d88add242e8c2291e2200d37aa8c68909f25" },
+          { "path": "/world/textures/wood-planks/wood_planks_rough_1k.jpg", "bytes": 299757, "sha256": "1b7f115bfa25619b0a2db554eb1ab88a6fc5ef0b74ba4890611eae04d00b9829" }
+        ]
+      }
+    },
+    {
+      "assetId": "ASSET-MATERIAL-PBR-ROOF-PH",
+      "title": "Clay Roof Tiles 1K PBR Material",
+      "category": "texture",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "Poly Haven establishes the asset's creator, rights, and technical file graph, not the roof material or appearance of any Varennes building in June 1791.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Apply a non-evidentiary generic clay-roof material to authored modular roof panels in High and Balanced presentation profiles.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "Runtime application to authored roof panels is compositional and cannot identify a specific Varennes building or roofline.",
+            "ownership": "No tile, roof, building, household, business, or institution is assigned a historical owner.",
+            "scale": "The source's 4 m texture scale, bounded 1-to-8 quarter-step runtime UV repeats, and authored roof pitch are rendering choices, not historical measurements.",
+            "appearance": "The material does not establish that a specific Varennes building used clay tiles, or establish tile profile, color, course, age, pitch, damage, or exact roofline."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "Amal Kumar",
+        "sourceUrl": "https://polyhaven.com/a/clay_roof_tiles",
+        "downloadUrl": "https://api.polyhaven.com/files/clay_roof_tiles",
+        "retrievedAt": "2026-07-19",
+        "originalFiles": [
+          { "name": "clay_roof_tiles_diff_1k.jpg", "bytes": 878367, "sha256": "aac0f4e742a2cce21afb5dfb523b47c720c6a8e2782a312b823608fe3f80eae6" },
+          { "name": "clay_roof_tiles_nor_gl_1k.jpg", "bytes": 1101177, "sha256": "e6b364661f6c3045bf5268f684047968fc6550e5fa9b22b4b1266df47b495faa" },
+          { "name": "clay_roof_tiles_rough_1k.jpg", "bytes": 306665, "sha256": "9dbddfda928ea582e520d5e6fe7fadcfb886a169df9aa8ecaefa689363679b58" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/pbr-roof-ph-runtime-intake.md", "sha256": "df1ea19c833331ce50b08d48172b176ade3742a43aa38e277156b5ad502182a5" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Clay Roof Tiles by Amal Kumar via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Copied the three original 1K JPG files byte-for-byte to stable runtime paths without renaming, resizing, re-encoding, recompression, color-space conversion, channel packing, or any other content modification.",
+          "At runtime, clone the diffuse, normal, and roughness maps, use repeat wrapping, and apply bounded scale-aware UV repeats derived from authored roof dimensions.",
+          "At runtime, apply an authored roof color tint, a 0.42 normal scale, and a 0.92 roughness constant; these editorial transformations do not modify the static source files.",
+          "Treat all apparent historical fit as editorial inference; the source and license records establish rights and technical origin only."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/textures/clay-roof-tiles/clay_roof_tiles_diff_1k.jpg", "bytes": 878367, "sha256": "aac0f4e742a2cce21afb5dfb523b47c720c6a8e2782a312b823608fe3f80eae6" },
+          { "path": "/world/textures/clay-roof-tiles/clay_roof_tiles_nor_gl_1k.jpg", "bytes": 1101177, "sha256": "e6b364661f6c3045bf5268f684047968fc6550e5fa9b22b4b1266df47b495faa" },
+          { "path": "/world/textures/clay-roof-tiles/clay_roof_tiles_rough_1k.jpg", "bytes": 306665, "sha256": "9dbddfda928ea582e520d5e6fe7fadcfb886a169df9aa8ecaefa689363679b58" }
+        ]
+      }
+    },
+    {
+      "assetId": "ASSET-MATERIAL-PBR-METAL-PH",
+      "title": "Rust Coarse 01 1K PBR Material",
+      "category": "texture",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "Poly Haven establishes the asset's creators, rights, and technical file graph, not the composition, condition, ownership, or placement of metal in Varennes in June 1791.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "scene",
+          "ownerId": "varennes-scene",
+          "purpose": "Retain a ledgered but unused metal candidate; it is not imported or applied by the current runtime.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "No current runtime surface uses this material; any later hardware application would require a new reviewed placement.",
+            "ownership": "No fitting, tool, vehicle, building, person, business, or institution is assigned historical ownership.",
+            "scale": "The source's approximate 2.2 m texture scale is metadata only because the current runtime applies no UV repeat or metallic constant from this family.",
+            "appearance": "The material cannot establish alloy, forging, hardware form, paint, corrosion age, owner, or exact location, and must not imply that every visible fitting was heavily rusted."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "Dimitrios Savva (photography) and Rico Cilliers (processing)",
+        "sourceUrl": "https://polyhaven.com/a/rust_coarse_01",
+        "downloadUrl": "https://api.polyhaven.com/files/rust_coarse_01",
+        "retrievedAt": "2026-07-19",
+        "originalFiles": [
+          { "name": "rust_coarse_01_diff_1k.jpg", "bytes": 845196, "sha256": "369f69eb86a7dcc4e5b6e30b1f3a4da5ce6ba50cf417de937efb4f09101f88d4" },
+          { "name": "rust_coarse_01_nor_gl_1k.jpg", "bytes": 763053, "sha256": "08ae69576b453b0970f5982d359897f09aae41c7cb18c19c02de37324160625c" },
+          { "name": "rust_coarse_01_rough_1k.jpg", "bytes": 712003, "sha256": "f5b4a23044af1b49284e6adb082f49e6ea1a33c3753d5641e36f72de1ebf323e" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/pbr-metal-ph-runtime-intake.md", "sha256": "92157f5d9087441bfa2a30d4555d3d1dc809c45b1439cc7509c5c67e9ef6e87d" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Rust Coarse 01 by Dimitrios Savva and Rico Cilliers via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Copied the three original 1K JPG files byte-for-byte to stable runtime paths without renaming, resizing, re-encoding, recompression, color-space conversion, channel packing, or any other content modification.",
+          "Not imported or applied by the current runtime; no tint, repeat, normal-scale, roughness, or metallic editorial transform is active."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/textures/rust-coarse-01/rust_coarse_01_diff_1k.jpg", "bytes": 845196, "sha256": "369f69eb86a7dcc4e5b6e30b1f3a4da5ce6ba50cf417de937efb4f09101f88d4" },
+          { "path": "/world/textures/rust-coarse-01/rust_coarse_01_nor_gl_1k.jpg", "bytes": 763053, "sha256": "08ae69576b453b0970f5982d359897f09aae41c7cb18c19c02de37324160625c" },
+          { "path": "/world/textures/rust-coarse-01/rust_coarse_01_rough_1k.jpg", "bytes": 712003, "sha256": "f5b4a23044af1b49284e6adb082f49e6ea1a33c3753d5641e36f72de1ebf323e" }
+        ]
+      }
+    },
+    {
+      "assetId": "ASSET-LIGHTING-QWANTANI-DUSK-2-PURESKY-PH",
+      "title": "Qwantani Dusk 2 Pure Sky 1K HDRI",
+      "category": "lighting",
+      "epistemicClassification": "reconstruction",
+      "historicalBasis": {
+        "basisType": "none",
+        "rationale": "Poly Haven establishes the HDRI's creators, rights, and technical origin, not weather, sky color, visibility, or atmospheric conditions at Varennes in June 1791.",
+        "evidenceIds": [],
+        "factIds": [],
+        "sourceIds": []
+      },
+      "uses": [
+        {
+          "ownerType": "zone",
+          "ownerId": "archive-antechamber",
+          "purpose": "Provide High and Balanced environmental lighting and a dusk background without loading in Classroom.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "The panoramic sky is not a photograph or observation from the archive or Varennes.",
+            "ownership": "No sky, horizon, weather condition, or illumination is attributed to a historical observer or institution.",
+            "scale": "The panorama has no evidentiary spatial or distance scale in the teaching district.",
+            "appearance": "Dusk color, cloud cover, exposure, rotation, and intensity are editorial presentation choices, not historical evidence."
+          }
+        },
+        {
+          "ownerType": "zone",
+          "ownerId": "post-road-square",
+          "purpose": "Provide High and Balanced environmental lighting and a dusk background without loading in Classroom.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "The panoramic sky is not a photograph or observation from the post road or Varennes.",
+            "ownership": "No sky, horizon, weather condition, or illumination is attributed to a historical observer or institution.",
+            "scale": "The panorama has no evidentiary spatial or distance scale in the teaching district.",
+            "appearance": "Dusk color, cloud cover, exposure, rotation, and intensity are editorial presentation choices, not historical evidence."
+          }
+        },
+        {
+          "ownerType": "zone",
+          "ownerId": "royal-lodging-civic-area",
+          "purpose": "Provide High and Balanced environmental lighting and a dusk background without loading in Classroom.",
+          "placementStatus": "schematic_temporal_reconstruction",
+          "reconstructionConfidence": "low",
+          "limitations": {
+            "location": "The panoramic sky is not a photograph or observation from the civic area or Varennes.",
+            "ownership": "No sky, horizon, weather condition, or illumination is attributed to a historical observer or institution.",
+            "scale": "The panorama has no evidentiary spatial or distance scale in the teaching district.",
+            "appearance": "Dusk color, cloud cover, exposure, rotation, and intensity are editorial presentation choices, not historical evidence."
+          }
+        }
+      ],
+      "evidenceAccess": { "opensCountableEvidence": false, "evidenceIds": [] },
+      "countsAsHistoricalEvidence": false,
+      "originKind": "downloaded_cc0",
+      "origin": {
+        "creator": "Greg Zaal (photography) and Jarod Guest (processing)",
+        "sourceUrl": "https://polyhaven.com/a/qwantani_dusk_2_puresky",
+        "downloadUrl": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/qwantani_dusk_2_puresky_1k.hdr",
+        "retrievedAt": "2026-07-19",
+        "originalFiles": [
+          { "name": "qwantani_dusk_2_puresky_1k.hdr", "bytes": 1166018, "sha256": "56dc9cb681f2641c08377e20e83fa5e4865fd900bcce26a15a1883580139b5e2" }
+        ]
+      },
+      "license": {
+        "spdxId": "CC0-1.0",
+        "proofUrl": "https://polyhaven.com/license",
+        "localProof": { "path": "docs/licenses/world/qwantani-dusk-2-puresky-ph-runtime-intake.md", "sha256": "a57486cfa7cd5263bb8ccd3fe5d26552c6181d6e6e092e4a4c53a5f0bd6388b8" },
+        "commercialUseAllowed": true,
+        "modificationAllowed": true,
+        "redistributionAllowed": true,
+        "attributionRequired": false,
+        "optionalCredit": "Qwantani Dusk 2 Pure Sky by Greg Zaal and Jarod Guest via Poly Haven."
+      },
+      "modifications": {
+        "status": "modified",
+        "steps": [
+          "Copied the original 1K HDR file byte-for-byte to a stable runtime path without re-encoding or recompression.",
+          "High and Balanced use the panorama for environmental lighting and background presentation; Classroom does not load it.",
+          "Treat all apparent historical fit as editorial inference; rotation, intensity, exposure, sky color, and cloud cover are not historical claims."
+        ]
+      },
+      "delivery": {
+        "kind": "static_outputs",
+        "outputs": [
+          { "path": "/world/hdris/qwantani-dusk-2-puresky/qwantani_dusk_2_puresky_1k.hdr", "bytes": 1166018, "sha256": "56dc9cb681f2641c08377e20e83fa5e4865fd900bcce26a15a1883580139b5e2" }
         ]
       }
     }

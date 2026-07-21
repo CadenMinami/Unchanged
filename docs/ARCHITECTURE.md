@@ -15,11 +15,11 @@ Build a deterministic historical game system that uses GPT-5.6 for flexible lang
 - structured model outputs
 - authored case data in JSON
 - local browser persistence
-- Node.js 22.x and npm 10.5.1 or newer
+- Node.js 22.18 or newer below Node.js 23, and npm 10.5.1 or newer
 - Vercel deployment target
 - React Three Fiber and Three.js for the client-only spatial presentation
 
-No live Vercel deployment, production environment/API credential validation, or live-provider smoke test has been completed. Deployment readiness remains unverified.
+No live Vercel deployment, production environment/API credential validation, or live-provider smoke test has been completed. Deployment readiness remains unverified. The public no-provider `/api/health` route reports only the active case versions and a validated Vercel commit identifier when one exists; it never checks provider availability or exposes configuration.
 
 ## System Flow
 
@@ -28,7 +28,8 @@ Browser UI
   -> typed reducer commands -> deterministic client state -> local persistence
   -> reviewed scene manifest -> fail-closed interaction adapter -> existing DOM focus overlays
   -> versioned formative request snapshot -> Next.js API route
-  -> schema, version, station, evidence, moderation, and rate-limit checks
+  -> pre-consumption rate limit -> bounded JSON read -> schema and version checks
+  -> station, evidence, moderation, and policy checks
   -> source-bounded policy catalog -> OpenAI Responses API
   -> strict ID-only plan -> server authorization and coherence checks
   -> server-rendered authored response -> optional exact-caption speech authorization
@@ -54,7 +55,7 @@ The deterministic command path, spatial path, model path, and teacher-alignment 
 | Case state | `1.2.0` |
 | Persistence envelope | `1.2.0` |
 | Reconstruction companion | `1.1.0` |
-| Scene manifest | `1.2.0` |
+| Scene manifest | `1.3.0` |
 | World asset ledger | `1.0.0` |
 | Spatial session | `1.0.0` |
 | Model policy | `1.0.1` |
@@ -70,14 +71,17 @@ Course alignment `1.1.0` is a separate `alignment_only` contract. It cannot carr
 
 ### World asset boundary
 
-- Scene manifest `1.2.0` identifies interactable presentation as `grounded_reconstruction` while retaining low-confidence schematic placement and non-evidentiary status.
+- Scene manifest `1.3.0` identifies interactable presentation as `grounded_reconstruction` while retaining low-confidence schematic placement and non-evidentiary status.
 - Asset ledger `1.0.0` records imported CC0 files and repository-authored procedural presentation systems through a strict discriminated schema.
 - Every shipped file below `public/world/` must close exactly over one ledger output with matching byte count and SHA-256. Raw acquisition files are excluded from `public/`.
 - Downloaded assets require creator, source, retrieval date, original-file hashes, SPDX license ID, a locally preserved license proof, modification steps, and exact runtime outputs.
 - Procedural assets use tracked repository source paths and repository-owned rights metadata. Tests require exact equality with an explicit reviewed inventory of 17 environment, figure, station, fallback, repair, styling, and audio source files; those assets cannot be mislabeled CC0.
+- Drouet, Louis, the investigator, civic figures, and ambient residents currently use the shared repository-authored procedural figure path in every profile. No accepted rigged character asset is mounted, and the figures make no exact portrait or historical-likeness claim.
+- The accepted 1K Poly Haven PBR plaster, stone, timber, and roof families and the Qwantani dusk HDRI are ledgered CC0 runtime assets. Their rights and technical provenance do not establish a historical facade, material, lighting condition, location, owner, or appearance in Varennes.
 - Asset uses repeat the approved placement status, confidence, and location/ownership/scale/appearance limitations. All assets are permanently `countsAsHistoricalEvidence: false`.
 - Visual GLBs and textures never own colliders, proximity IDs, evidence access, score, or progression. Authored primitive colliders and the reducer remain authoritative.
 - Each optional downloaded model or texture is isolated behind a local error boundary with a repository-authored procedural fallback. An asset fetch failure cannot remove the world or require a retry of the historical session.
+- Rich facade textures are requested only by High and Balanced profiles. Classroom chooses its low-texture procedural material before the texture-loading branch; it also omits the HDRI, point lights, contact shadows, and bloom pass.
 - The optional Web Audio dusk soundscape starts muted, requires an explicit player action, and is a dramatization with no historical claim or game-state authority. Runtime failure destroys the current soundscape, and async completion is accepted only from that same live instance.
 
 ### Current world reasoning handoff
@@ -107,7 +111,7 @@ Course alignment `1.1.0` is a separate `alignment_only` contract. It cannot carr
 - Speech authorization uses an exact UTF-8 caption SHA-256 and HMAC-SHA256 over byte-length-prefixed fields. Speech request parsing and verification perform no trim or Unicode normalization.
 - The optional browser `SpeechSynthesis` fallback is used when provider speech is unavailable and does not consume provider audio.
 - `/api/ai/transcribe` rate-limits before consuming the bounded multipart body, validates independently inspected MIME/duration/channel metadata, and uses `gpt-4o-transcribe`.
-- `/api/ai/speech` rate-limits before consuming JSON, verifies the exact caption ticket, uses `gpt-4o-mini-tts` by default, and caps the binary WAV response at 3 MB, below the 4.5 MB function payload limit.
+- `/api/ai/speech` rate-limits before consuming JSON, verifies the exact caption ticket, uses `gpt-4o-mini-tts` by default, and caps the binary WAV response at decimal `3,000,000` bytes (3 MB), below the 4.5 MB function payload limit.
 - App-owned mutable audio buffers are cleared on success and failure. Immutable platform `File` objects are not retained and follow the platform lifecycle.
 
 ## MVP State Authority
@@ -197,7 +201,9 @@ The repair shell loads the standard-motion pursuit through a client-only `next/d
 
 The world shell performs one cached browser WebGL capability check before mounting the renderer and rechecks only when the player explicitly retries. It contains runtime failures in a local React error boundary. Capability failure, render failure, or active WebGL context loss always leaves a retry action and a direct link to the complete non-spatial route. The context-loss listener is removed before an intentional renderer replacement, so safe-spawn travel is not misclassified as a graphics failure. Case progress is outside the canvas boundary and is never cleared by a graphics retry. Invalid persisted spatial data is replaced with the recovered authored-safe session on mount instead of being discarded again on every reload.
 
-The renderer has `high`, `balanced`, and `classroom` presentation profiles. Profiles may change DPR, shadows, fog distance, post-processing permission, ambient population limits, and texture tier only. They may not change canonical IDs, interaction distance, readable content, evidence availability, repair gates, or assessment behavior.
+The renderer has `high`, `balanced`, and `classroom` presentation profiles. Profiles may change DPR, shadow-map budget, fog distance, post-processing permission, ambient-population limit, texture tier, character-detail policy, environment density, contact shadows, and restrained bloom/multisampling only. High and Balanced own the optional PBR/HDRI, lantern, shadow, contact-shadow, and bloom budgets; Classroom uses the procedural low-texture/no-HDRI/no-effects branch. Profiles may not change canonical IDs, interaction distance, readable content, evidence availability, repair gates, or assessment behavior.
+
+`ZoneReadinessRegistry` separately aggregates each of the four zones' resolved asset state (`loaded` or `fallback`) and canonical-interaction readiness. `WorldShell` exposes the aggregate only as stable runtime diagnostics for performance and fallback verification; it cannot advance case state or make a visual asset authoritative.
 
 A pure rolling monitor receives timestamped FPS samples outside React render. Sustained averages below 28 FPS for three seconds step down one tier. At `classroom`, a sustained average below 24 FPS for five seconds displays a voluntary non-spatial-route offer. The runtime supports `NEXT_PUBLIC_WORLD_TEST_MODE=1`; the frozen canvas E2E path opts in through a session-scoped test flag so movement tests can exercise the normal frame loop from the same production build.
 
@@ -205,7 +211,7 @@ All Playwright routes use a dedicated `127.0.0.1:3100` production server, never 
 
 The automated proxy is a regression gate, not evidence of physical-device performance. A current ChromeOS browser on a 4 GB integrated-graphics Chromebook in the N4500 class or a documented equivalent must still pass before the spatial route can become the default classroom mode.
 
-An earlier pre-grounded checkpoint reported 1,525,007 compressed bytes, 3,759 ms to the first canonical interaction, 52 median FPS, and 50 10th-percentile FPS. After the grounded assets and release-closure fixes, baseline `9f71cb0` passed with 4,171,778 compressed bytes, 3,980.5 ms to interaction, 36 median FPS, 35 10th-percentile FPS, a 43.2 ms maximum renderer stall, a nonblank canvas, and 1.485 world units of measured movement. A later isolated post-capture rerun also passed, but at 31 median FPS and 30 10th-percentile FPS. The variation and narrow median margin reinforce that the physical Chromebook check remains mandatory. Portrait browser coverage separately requires a nonblank 390 x 844 canvas and non-overlapping top controls.
+Earlier failed and passing proxy runs remain chronological records in the build log. The latest 2026-07-20 single-worker Chromium Classroom-proxy rerun passes the archive and warm-traversal transfer, interaction, nonblank-canvas, movement, median-FPS, p10-FPS, and renderer-stall thresholds. This is an automated browser-proxy result, not a Chromebook measurement, and cannot close the physical-device gate. Portrait browser coverage separately requires a nonblank 390 x 844 canvas and non-overlapping top controls.
 
 ### Movement And Focus Authority
 
@@ -213,7 +219,15 @@ The spatial client uses a pure finite state machine with `exploring`, `focused`,
 
 Ecctrl owns only the investigator capsule and movement physics. Drei keyboard state is explicitly bridged into `EcctrlHandle.setMovement`; every movement boolean is set false and horizontal velocity is cleared when exploration stops. Rapier fixed colliders represent only schematic navigation boundaries. The controller starts from the manifest's validated safe spawn, never an arbitrary persisted physics transform.
 
-The first follow camera is a damped, medium-distance presentation camera. It carries no historical or educational state. Browser verification waits for initial physics/camera settling before proving that keyboard input changes the rendered frame.
+`CameraInputBoundary` is the sole owner of browser pointer lock. It detects support, requests capture only while the world is eligible, derives acknowledged state from `document.pointerLockElement` and `pointerlockchange`, clears look input on loss, and exits an owned lock on blur, document hiding, canvas replacement, route teardown, or unmount. `ThirdPersonCameraRig` owns yaw, pitch, zoom, shoulder composition, collision distance, and damping, but never reads or changes pointer-lock state. Unsupported or denied pointer lock leaves keyboard traversal available and uses hold-right-mouse drag for look; context-menu suppression lasts only for an active drag that began on the world canvas.
+
+Accepted overlays and route transitions use a release-before-commit handshake. `WorldShell` first records the pending action, disables locomotion, clears held movement, and stops horizontal velocity. It then asks `CameraInputBoundary` to release the cursor. Only an acknowledged release may commit an evidence interaction, change `WorldMode`, advance the case phase declared by `data-world-phase-after-release`, navigate, mount an overlay, or move DOM focus. The boundary waits up to 1,000 ms to observe unlock; `WorldShell` waits up to 1,500 ms for that acknowledgement. A still-active lock fails the action and leaves a retry surface. Closing an overlay returns to exploration with the cursor free and focus on its invoker. Blur or document hiding suspends the prior mode, and restoration requires both visible document state and window focus; cleared movement and pointer capture never resume without fresh input.
+
+Ecctrl 2.0 consumes the active React Three Fiber camera as its native horizontal movement basis. The controller sends raw W/S/A/D flags with `useCustomForward={false}`; no world-space pre-rotation or second locomotion transform is applied. Camera pitch is projected out by Ecctrl, preserving horizontal speed and diagonal normalization. Standard motion damps follow-camera movement and collision recovery, while reduced motion uses immediate camera updates.
+
+Camera settings are progression-neutral browser preferences stored in the strict versioned envelope `history-unbroken:world-camera-preferences` version `1.0.0`. The envelope owns bounded sensitivity, invert-Y, and `pointerLockIntroduced`; the onboarding flag is persisted only after acknowledged capture. It is separate from case and spatial-session authority.
+
+Automated camera, collision, fallback, focus, performance, provenance, and fixed-position historical-integrity coverage does not close external release gates. Physical verification on the specified Chromebook class and human historical-expert review remain required before calling the spatial route classroom-ready; schematic world placement must not be represented as verified historical geography.
 
 ### Physical Evidence Entry Points
 
@@ -322,6 +336,8 @@ Responsibilities:
 - `omni-moderation-latest` checks with a 10-second timeout before generation when a provider key is configured
 - authored no-fact safety refusals and no-score safety feedback
 - bounded request schemas: 600-character character questions and 2,400-character Case Briefs
+- pre-consumption JSON body limits: 8,192 bytes for character turns and 32,768 bytes for Case Brief feedback
+- HTTP 413 plus `Cache-Control: no-store` for declared or streamed oversize requests before provider or moderation work
 - per-endpoint in-memory rate limiting at 20 requests per 60 seconds per forwarded client key
 - browser-to-provider cancellation with `AbortSignal`
 - one explicit retry for transient provider failures; OpenAI SDK retries disabled
@@ -494,7 +510,7 @@ Failure handling:
 - show an explicit authored-fallback or unavailable state
 - never strand player on a blank screen
 
-The current limiter is process-local and intended for the hackathon MVP, not a distributed production abuse-control system. Production still requires durable edge/WAF/BotID protection or an equivalent distributed control. The complete no-key browser path has been exercised. A live GPT-5.6 API-key smoke test remains outstanding.
+The current limiter is process-local and intended for the hackathon MVP, not a distributed production abuse-control system. Production still requires durable edge/WAF/BotID protection or an equivalent distributed control before provider credentials are enabled. The complete no-key browser path has been exercised. A dedicated opt-in live Playwright configuration covers transcription, an E3-bounded Drouet turn, and exact-caption WAV generation with parsed audio metadata. Ordinary and screenshot Playwright build and runtime environments explicitly blank `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENAI_SPEECH_MODEL`, and `SPEECH_AUTHORIZATION_SECRET`. The live launcher validates the opt-in/key without logging them, runs the production build with those four values explicitly blanked so Next.js cannot reload them from local environment files, then starts the runtime with the live key, pinned `gpt-5.6` and `gpt-4o-mini-tts`, and a fresh ephemeral secret of at least 32 bytes. The smoke has not been executed because no live key is configured. A separate deployed-origin Playwright configuration requires an immutable HTTPS URL, starts no local server, blocks every `/api/ai/*` request, checks `/api/health`, and exercises the deterministic fallback path plus spatial E3 evidence.
 
 ## Testing Strategy
 
@@ -534,6 +550,8 @@ Model eval tests:
 
 Safety and operational tests additionally cover moderation mapping, bounded schemas, cancellation propagation, retry counts, provider-error classification, rate limiting, stale-response coordination, and authored fallbacks.
 
+Release-boundary tests additionally cover the 8,192-byte character-turn and 32,768-byte Case Brief JSON limits, rate-limit-before-read ordering, no-store 413 responses, and credential isolation between ordinary, screenshot, and opt-in live Playwright configurations. The isolated live provider flow remains an unexecuted release gate until a local key is explicitly supplied.
+
 End-to-end tests:
 
 - clean path
@@ -545,4 +563,4 @@ End-to-end tests:
 - refresh/resume
 - keyboard-only path
 
-Current evidence includes focused unit, integration, and historical-integrity coverage for schema closure, exact segment/term authorization, sample and no-key processing, instruction-like text, unsupported types and body limits, teacher approval, separate persistence, authored hint selection, deterministic reporting, controller readiness, response security policy, and deployment boundaries. The final local release-closure gate passes lint, typecheck, 84 Vitest files with 554 tests, the production build, and all 33 Playwright tests, including automatic axe-core audits, cross-route state/keyboard equivalence, CSP texture loading, and malicious/oversize teacher-packet cases. The 4x-CPU classroom proxy also passes at 36 FPS median and 35 FPS p10. Formal screen-reader review, live-provider testing, physical-Chromebook verification, and deployment remain outstanding.
+Current evidence includes focused unit, integration, and historical-integrity coverage for schema closure, exact segment/term authorization, sample and no-key processing, instruction-like text, unsupported types and body limits, teacher approval, separate persistence, authored hint selection, deterministic reporting, controller readiness, response security policy, and deployment boundaries. The latest verified local baseline passes 111 Vitest files with 910 tests, typecheck, warning-free lint, the production build, all 53 ordinary production Playwright tests, the constrained Classroom proxy, and high/balanced/classroom capture coverage. Automated axe-core, cross-route state and keyboard equivalence, complete keyboard-only case, valid TXT/Markdown upload, aligned-hint, CSP texture-loading, and malicious/oversize teacher-packet gates pass. Formal screen-reader testing, live-provider execution, physical Chromebook verification, deployment, and unfamiliar-user testing remain outstanding.

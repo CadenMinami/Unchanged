@@ -43,4 +43,10 @@ describe("investigator figure motion", () => {
     expect(shouldStopHorizontalVelocity(true, true)).toBe(false);
     expect(shouldStopHorizontalVelocity(true, false)).toBe(true);
   });
+
+  it("cancels residual horizontal velocity whenever locomotion is disabled", () => {
+    expect(shouldStopHorizontalVelocity(false, false, false)).toBe(true);
+    expect(shouldStopHorizontalVelocity(false, true, false)).toBe(true);
+    expect(shouldStopHorizontalVelocity(true, true, false)).toBe(true);
+  });
 });

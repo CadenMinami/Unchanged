@@ -1,8 +1,10 @@
 "use client";
 
 import { loadVarennesSceneManifest } from "@/lib/world/scene-manifest";
+import type { GraphicsProfile } from "@/lib/world/graphics-profile";
 import type { SceneManifest } from "@/schemas/world-manifest";
 
+import { PeriodCharacter } from "../character/period-character";
 import { PeriodFigure } from "../character/period-figure";
 import type { ProximityCandidate } from "../interactions/proximity-registry";
 
@@ -85,18 +87,15 @@ export const CIVIC_CANDIDATES = [
   CIVIC_STATION_CANDIDATE,
 ] as const satisfies readonly ProximityCandidate[];
 
-export function CivicZone({ reducedMotion = false }: { reducedMotion?: boolean }) {
+export function CivicZone({
+  profile,
+  reducedMotion = false,
+}: {
+  profile: GraphicsProfile;
+  reducedMotion?: boolean;
+}) {
   return (
     <group>
-      <mesh
-        receiveShadow
-        position={[civicSpawn[0], 0.035, civicSpawn[2]]}
-        scale={[10, 0.07, 6.5]}
-      >
-        <boxGeometry />
-        <meshStandardMaterial color="#767b7a" roughness={1} />
-      </mesh>
-
       <group position={[civicSpawn[0], 0, civicSpawn[2] - 3.6]}>
         <mesh castShadow receiveShadow position={[0, 1.45, 0]} scale={[5.2, 2.9, 1.35]}>
           <boxGeometry />
@@ -127,8 +126,9 @@ export function CivicZone({ reducedMotion = false }: { reducedMotion?: boolean }
         </mesh>
       </group>
 
-      <group position={louisPosition}>
-        <PeriodFigure
+      <group name="principal-character-louis" position={louisPosition}>
+        <PeriodCharacter
+          motion="idle"
           palette={{
             skin: "#c0a087",
             coat: "#3c4c5a",
@@ -139,6 +139,7 @@ export function CivicZone({ reducedMotion = false }: { reducedMotion?: boolean }
             hair: "#665347",
             hat: "#5c4b32",
           }}
+          profile={profile}
           reducedMotion={reducedMotion}
         />
       </group>

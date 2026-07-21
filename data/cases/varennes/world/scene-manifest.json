@@ -1,5 +1,5 @@
 {
-  "sceneManifestVersion": "1.2.0",
+  "sceneManifestVersion": "1.3.0",
   "caseId": "varennes",
   "caseVersion": "1.0.3",
   "modelPolicyVersion": "1.0.1",
@@ -63,6 +63,19 @@
         "scale": "The zone is compressed for classroom traversal and is not to scale.",
         "appearance": "Grounded stylized forms do not claim documented period appearance."
       },
+      "assetReferences": [
+        { "assetId": "ASSET-ENV-GROUNDED-DISTRICT", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-LIGHTING-QWANTANI-DUSK-2-PURESKY-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-CHAR-PROCEDURAL-CAST", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-WOODEN-TABLE-01", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-COBBLESTONE-FLOOR-08", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-PLASTER-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-STONE-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-TIMBER-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-ROOF-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
+      "dynamicContentAllowlist": ["generic_ambient_resident"],
       "safeSpawns": [
         {
           "spawnId": "SPAWN-ARCHIVE-ENTRY",
@@ -86,6 +99,19 @@
         "scale": "Distances and routes are compressed and not to scale.",
         "appearance": "Grounded stylized buildings and props do not claim exact 1791 appearance."
       },
+      "assetReferences": [
+        { "assetId": "ASSET-ENV-GROUNDED-DISTRICT", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-LIGHTING-QWANTANI-DUSK-2-PURESKY-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-CHAR-PROCEDURAL-CAST", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-WOODEN-BARRELS-01", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-COBBLESTONE-FLOOR-08", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-PLASTER-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-STONE-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-TIMBER-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-ROOF-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
+      "dynamicContentAllowlist": ["generic_ambient_resident"],
       "safeSpawns": [
         {
           "spawnId": "SPAWN-POST-ROAD-ENTRY",
@@ -109,6 +135,18 @@
         "scale": "The area is compressed for traversal and is not to scale.",
         "appearance": "Grounded stylized architecture and clothing markers do not claim exact appearance."
       },
+      "assetReferences": [
+        { "assetId": "ASSET-ENV-GROUNDED-DISTRICT", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-LIGHTING-QWANTANI-DUSK-2-PURESKY-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-CHAR-PROCEDURAL-CAST", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-COBBLESTONE-FLOOR-08", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-PLASTER-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-STONE-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-TIMBER-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-PBR-ROOF-PH", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
+      "dynamicContentAllowlist": ["generic_ambient_resident"],
       "safeSpawns": [
         {
           "spawnId": "SPAWN-CIVIC-ENTRY",
@@ -122,20 +160,27 @@
     },
     {
       "zoneId": "bridge-approach",
-      "label": "Bridge approach",
+      "label": "Final reconstruction boundary",
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
       "limitations": {
-        "location": "The approach is a not to scale teaching diagram, not an exact street or bridge survey.",
-        "ownership": "The reconstruction leaves the exact actor who moved each obstruction contested.",
-        "scale": "Distances, widths, and vehicle positions are schematic and not to scale.",
-        "appearance": "The zone does not depict the bridge as physically arresting the carriage or claim exact barrier appearance."
+        "location": "This marked boundary closes the schematic teaching district and is not an exact site plan.",
+        "ownership": "The reconstruction does not resolve contested attribution for the reported obstruction.",
+        "scale": "Distances and widths are schematic and not to scale.",
+        "appearance": "No span, deck, rail, arch, water, barrier form, vehicle position, or physical-arrest tableau is depicted."
       },
+      "assetReferences": [
+        { "assetId": "ASSET-ENV-GROUNDED-DISTRICT", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-CHAR-PROCEDURAL-CAST", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-MATERIAL-COBBLESTONE-FLOOR-08", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
+      "dynamicContentAllowlist": ["generic_ambient_resident"],
       "safeSpawns": [
         {
           "spawnId": "SPAWN-BRIDGE-ENTRY",
-          "label": "Bridge-approach entry",
+          "label": "Final-zone entry",
           "position": [72, 0, 0],
           "yaw": 0
         }
@@ -159,6 +204,10 @@
       "sourceIds": ["S2"],
       "provenance": "reconstruction",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-WOODEN-TABLE-01", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -183,6 +232,10 @@
       "sourceIds": ["S8", "S9"],
       "provenance": "reconstruction",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-WOODEN-TABLE-01", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -207,6 +260,10 @@
       "sourceIds": ["S5-PROCLAMATION", "S5-SHORT", "S5-CORDELIERS", "S5-CONSTITUTION"],
       "provenance": "reconstruction",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-PROP-WOODEN-TABLE-01", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -231,6 +288,9 @@
       "sourceIds": [],
       "provenance": "dramatization",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -255,6 +315,9 @@
       "sourceIds": [],
       "provenance": "dramatization",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -279,6 +342,9 @@
       "sourceIds": [],
       "provenance": "dramatization",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -303,6 +369,9 @@
       "sourceIds": [],
       "provenance": "dramatization",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -327,6 +396,9 @@
       "sourceIds": ["S2", "S3", "S4"],
       "provenance": "dramatization",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-CHAR-PROCEDURAL-CAST", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -351,6 +423,9 @@
       "sourceIds": ["S2", "S4"],
       "provenance": "reconstruction",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -375,6 +450,9 @@
       "sourceIds": ["S1"],
       "provenance": "dramatization",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-CHAR-PROCEDURAL-CAST", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -399,6 +477,9 @@
       "sourceIds": ["S1"],
       "provenance": "reconstruction",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -423,6 +504,10 @@
       "sourceIds": ["S2", "S3"],
       "provenance": "reconstruction",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" },
+        { "assetId": "ASSET-CHAR-PROCEDURAL-CAST", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -447,6 +532,9 @@
       "sourceIds": ["S2", "S3", "S4"],
       "provenance": "reconstruction",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-PROP-PROCEDURAL-STATIONS", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",
@@ -471,6 +559,9 @@
       "sourceIds": ["S2", "S4"],
       "provenance": "reconstruction",
       "countsAsHistoricalEvidence": false,
+      "assetReferences": [
+        { "assetId": "ASSET-ENV-SCHEMATIC-REPAIR", "assetLedgerVersion": "1.0.0", "licenseReference": "asset_ledger" }
+      ],
       "placementLabel": "SCHEMATIC RECONSTRUCTION - NOT TO SCALE",
       "placementStatus": "schematic_temporal_reconstruction",
       "reconstructionConfidence": "low",

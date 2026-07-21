@@ -26,7 +26,7 @@ History Unbroken is not a historical chatbot. It is a playable evidence system w
 | 1:38-1:58 | Student revises; deterministic requirements pass; repair restores the intended link | "Authored logic controls facts and progression. The model cannot rewrite the case." |
 | 1:58-2:17 | Journey and political-meaning tracks reconstruct | "The repair restores supported history while the alternate future remains explicitly unknowable." |
 | 2:17-2:30 | Teacher alignment and reasoning report | "A reviewed sample, pasted text, or bounded UTF-8 TXT or Markdown packet can change vocabulary and support, never historical truth." |
-| 2:30-2:38 | Architecture and test proof | Show release-closure baseline `9f71cb0`, 554 Vitest tests, 33 Playwright tests, and the passing 4x-CPU classroom proxy. "Codex helped build and test the case engine, model contracts, evidence interactions, and release guards." |
+| 2:30-2:38 | Architecture and test proof | Show the current verified local baseline: 111 Vitest files with 910 tests, 53 ordinary production Playwright tests, reproducible high-profile captures, and the passing constrained Classroom proxy. Do not represent the proxy as physical Chromebook testing. "Codex helped build and test the case engine, model contracts, evidence interactions, and release guards." |
 | 2:38-2:42 | Title screen | "History is an argument built from evidence." |
 
 ## Required On-Screen Moments
@@ -87,4 +87,4 @@ Regenerate all eight from a fresh production build with `npm run capture:screens
 - [x] Repair sequence: `docs/assets/screenshots/07-repair-sequence.png`
 - [x] Teacher report: `docs/assets/screenshots/08-teacher-report.png`
 
-The default capture intentionally runs without a provider key and visibly preserves authored fallback labels. After a successful live-provider smoke, recapture screenshots 03 and 06 with `HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE=1`; do not represent the no-key fallback as a live GPT-5.6 result.
+The capture command intentionally always runs no-key and visibly preserves authored fallback labels. Screenshots 03 and 06 therefore show provider-dependent fallback states and must not be represented as live GPT-5.6 results. `HISTORY_UNBROKEN_LIVE_OPENAI_SMOKE` does not make `npm run capture:screenshots` live. If live images are later required, they need a separate credential-isolated capture launcher that has been designed and reviewed; none exists now.

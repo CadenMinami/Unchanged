@@ -28,3 +28,4 @@
 .dialog footer { padding: 13px 22px; color: #f3eee2; background: #4f5960; }
 .dialog footer p { margin: 0; font-size: .76rem; line-height: 1.45; }
 @media (max-width: 760px) { .scrim { padding: 58px 0 0; place-items: stretch; } .dialog { max-height: calc(100svh - 58px); } .body { grid-template-columns: 1fr; } .record { padding: 28px 22px 34px; border-right: 0; } .record h2 { font-size: 2.1rem; } .record blockquote { font-size: 1.2rem; } .sources { padding: 28px 22px; } }
+@media (forced-colors: active) { .dialog { border-color: CanvasText; box-shadow: none; } .header, .dialog footer { color: CanvasText; background: Canvas; } .header p, .header span, .dialog footer p { color: CanvasText; } .header button { border-color: ButtonText; } }

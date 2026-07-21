@@ -4,17 +4,20 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import type { Group } from "three";
 
-export type FigureMotion = "idle" | "walk" | "run" | "talk" | "interact";
+import {
+  shouldAnimateFigureMotion,
+  type FigureMotion,
+} from "./figure-motion";
+import { PERIOD_FIGURE_GEOMETRIES, type FigurePalette } from "./period-figure-resources";
 
-type FigurePalette = Readonly<{
-  skin: string;
-  coat: string;
-  waistcoat: string;
-  breeches: string;
-  stockings: string;
-  shoes: string;
-  hair: string;
-  hat: string;
+export type { FigureMotion } from "./figure-motion";
+export type { FigurePalette } from "./period-figure-resources";
+
+export type PeriodFigureProps = Readonly<{
+  motion?: FigureMotion;
+  palette?: FigurePalette;
+  reducedMotion?: boolean;
+  scale?: number;
 }>;
 
 const DEFAULT_PALETTE: FigurePalette = {
@@ -33,12 +36,7 @@ export function PeriodFigure({
   palette = DEFAULT_PALETTE,
   reducedMotion = false,
   scale = 1,
-}: {
-  motion?: FigureMotion;
-  palette?: FigurePalette;
-  reducedMotion?: boolean;
-  scale?: number;
-}) {
+}: PeriodFigureProps) {
   const rootRef = useRef<Group>(null);
   const leftArmRef = useRef<Group>(null);
   const rightArmRef = useRef<Group>(null);
@@ -53,10 +51,21 @@ export function PeriodFigure({
     const rightLeg = rightLegRef.current;
     if (!root || !leftArm || !rightArm || !leftLeg || !rightLeg) return;
 
-    const time = clock.elapsedTime;
     const locomotion = motion === "walk" || motion === "run";
+    if (!shouldAnimateFigureMotion(motion, reducedMotion)) {
+      leftArm.rotation.x = 0;
+      rightArm.rotation.x = 0;
+      rightArm.rotation.z = 0;
+      leftLeg.rotation.x = 0;
+      rightLeg.rotation.x = 0;
+      root.position.y = 0;
+      root.rotation.z = 0;
+      return;
+    }
+
+    const time = clock.elapsedTime;
     const speed = motion === "run" ? 10 : motion === "walk" ? 6.5 : 1.8;
-    const amplitude = reducedMotion ? 0 : motion === "run" ? 0.7 : locomotion ? 0.42 : 0.025;
+    const amplitude = motion === "run" ? 0.7 : locomotion ? 0.42 : 0.025;
     const stride = Math.sin(time * speed) * amplitude;
 
     leftArm.rotation.x = locomotion ? -stride * 0.8 : 0;
@@ -81,94 +90,75 @@ export function PeriodFigure({
   });
 
   return (
-    <group ref={rootRef} scale={scale}>
-      <group ref={leftLegRef} position={[-0.16, 0.72, 0]}>
-        <mesh castShadow position={[0, -0.35, 0]}>
-          <cylinderGeometry args={[0.085, 0.105, 0.66, 12]} />
+    <group dispose={null} ref={rootRef} scale={scale}>
+      <group ref={leftLegRef} position={[-0.14, 0.72, 0]}>
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.upperLeg} position={[0, -0.35, 0]}>
           <meshStandardMaterial color={palette.breeches} roughness={0.92} />
         </mesh>
-        <mesh castShadow position={[0, -0.77, 0]}>
-          <cylinderGeometry args={[0.06, 0.075, 0.48, 12]} />
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.lowerLeg} position={[0, -0.77, 0]}>
           <meshStandardMaterial color={palette.stockings} roughness={0.9} />
         </mesh>
-        <mesh castShadow position={[0, -1.01, 0.06]}>
-          <boxGeometry args={[0.16, 0.1, 0.3]} />
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.shoe} position={[0, -1.01, 0.06]}>
           <meshStandardMaterial color={palette.shoes} roughness={0.86} />
         </mesh>
       </group>
-      <group ref={rightLegRef} position={[0.16, 0.72, 0]}>
-        <mesh castShadow position={[0, -0.35, 0]}>
-          <cylinderGeometry args={[0.085, 0.105, 0.66, 12]} />
+      <group ref={rightLegRef} position={[0.14, 0.72, 0]}>
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.upperLeg} position={[0, -0.35, 0]}>
           <meshStandardMaterial color={palette.breeches} roughness={0.92} />
         </mesh>
-        <mesh castShadow position={[0, -0.77, 0]}>
-          <cylinderGeometry args={[0.06, 0.075, 0.48, 12]} />
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.lowerLeg} position={[0, -0.77, 0]}>
           <meshStandardMaterial color={palette.stockings} roughness={0.9} />
         </mesh>
-        <mesh castShadow position={[0, -1.01, 0.06]}>
-          <boxGeometry args={[0.16, 0.1, 0.3]} />
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.shoe} position={[0, -1.01, 0.06]}>
           <meshStandardMaterial color={palette.shoes} roughness={0.86} />
         </mesh>
       </group>
 
-      <mesh castShadow position={[0, 1.05, 0]}>
-        <cylinderGeometry args={[0.245, 0.32, 0.82, 12]} />
+      <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.torso} position={[0, 1.05, 0]}>
         <meshStandardMaterial color={palette.coat} roughness={0.94} />
       </mesh>
-      <mesh castShadow position={[0, 1.06, 0.25]}>
-        <boxGeometry args={[0.25, 0.56, 0.045]} />
+      <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.waistcoat} position={[0, 1.06, 0.25]}>
         <meshStandardMaterial color={palette.waistcoat} roughness={0.88} />
       </mesh>
       {[-0.22, 0.22].map((x) => (
-        <mesh castShadow key={x} position={[x * 0.58, 0.58, -0.12]} rotation={[0, 0, x > 0 ? -0.09 : 0.09]}>
-          <coneGeometry args={[0.2, 0.58, 5]} />
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.coatTail} key={x} position={[x * 0.58, 0.58, -0.12]} rotation={[0, 0, x > 0 ? -0.09 : 0.09]}>
           <meshStandardMaterial color={palette.coat} roughness={0.95} />
         </mesh>
       ))}
-      <mesh castShadow position={[0, 1.42, 0.01]} scale={[1.05, 0.42, 0.9]}>
-        <sphereGeometry args={[0.29, 16, 10]} />
+      <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.shoulders} position={[0, 1.42, 0.01]} scale={[1.05, 0.42, 0.9]}>
         <meshStandardMaterial color={palette.coat} roughness={0.94} />
       </mesh>
-      <mesh castShadow position={[0, 1.48, 0.22]} scale={[1, 0.55, 0.5]}>
-        <boxGeometry args={[0.31, 0.14, 0.07]} />
+      <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.cravat} position={[0, 1.48, 0.22]} scale={[1, 0.55, 0.5]}>
         <meshStandardMaterial color="#ded5c2" roughness={0.9} />
       </mesh>
 
-      <group ref={leftArmRef} position={[-0.34, 1.33, 0]}>
-        <mesh castShadow position={[0, -0.34, 0]}>
-          <cylinderGeometry args={[0.075, 0.1, 0.7, 12]} />
+      <group ref={leftArmRef} position={[-0.31, 1.33, 0]}>
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.arm} position={[0, -0.34, 0]}>
           <meshStandardMaterial color={palette.coat} roughness={0.94} />
         </mesh>
-        <mesh castShadow position={[0, -0.72, 0]}>
-          <sphereGeometry args={[0.078, 14, 12]} />
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hand} position={[0, -0.72, 0]}>
           <meshStandardMaterial color={palette.skin} roughness={0.9} />
         </mesh>
       </group>
-      <group ref={rightArmRef} position={[0.34, 1.33, 0]}>
-        <mesh castShadow position={[0, -0.34, 0]}>
-          <cylinderGeometry args={[0.075, 0.1, 0.7, 12]} />
+      <group ref={rightArmRef} position={[0.31, 1.33, 0]}>
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.arm} position={[0, -0.34, 0]}>
           <meshStandardMaterial color={palette.coat} roughness={0.94} />
         </mesh>
-        <mesh castShadow position={[0, -0.72, 0]}>
-          <sphereGeometry args={[0.078, 14, 12]} />
+        <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hand} position={[0, -0.72, 0]}>
           <meshStandardMaterial color={palette.skin} roughness={0.9} />
         </mesh>
       </group>
 
-      <mesh castShadow position={[0, 1.69, 0.01]} scale={[0.86, 1.12, 0.9]}>
-        <sphereGeometry args={[0.18, 20, 18]} />
+      <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.head} position={[0, 1.69, 0.01]} scale={[0.86, 1.12, 0.9]}>
         <meshStandardMaterial color={palette.skin} roughness={0.92} />
       </mesh>
-      <mesh castShadow position={[0, 1.73, -0.12]} scale={[0.88, 1.08, 0.78]}>
-        <sphereGeometry args={[0.18, 18, 16, 0, Math.PI * 2, 0, Math.PI * 0.58]} />
+      <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hair} position={[0, 1.73, -0.12]} scale={[0.88, 1.08, 0.78]}>
         <meshStandardMaterial color={palette.hair} roughness={0.96} />
       </mesh>
-      <mesh castShadow position={[0, 1.91, 0]} scale={[1, 1, 0.72]}>
-        <cylinderGeometry args={[0.235, 0.255, 0.045, 16]} />
+      <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hatBrim} position={[0, 1.91, 0]} scale={[1, 1, 0.72]}>
         <meshStandardMaterial color={palette.hat} roughness={0.93} />
       </mesh>
-      <mesh castShadow position={[0, 1.975, 0]} scale={[1, 1, 0.86]}>
-        <cylinderGeometry args={[0.135, 0.17, 0.13, 14]} />
+      <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hatCrown} position={[0, 1.975, 0]} scale={[1, 1, 0.86]}>
         <meshStandardMaterial color={palette.hat} roughness={0.93} />
       </mesh>
     </group>

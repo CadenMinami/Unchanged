@@ -71,4 +71,3 @@ export function ProceduralBarrelSet({
 }
 
 useGLTF.preload(TABLE_MODEL_URL);
-useGLTF.preload(BARREL_MODEL_URL);

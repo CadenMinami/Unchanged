@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -34,5 +34,26 @@ describe("world focus overlay", () => {
     expect(onClose).toHaveBeenCalledOnce();
     rerender(<button ref={invokerRef}>Inspect table</button>);
     expect(invokerRef.current).toHaveFocus();
+  });
+
+  it("labels reconstructed evidence as an evidence item rather than an archive record", () => {
+    const invokerRef = createRef<HTMLButtonElement>();
+
+    render(
+      <>
+        <button ref={invokerRef}>Inspect dossier</button>
+        <FocusOverlayHost evidenceId="E2" invokerRef={invokerRef} onClose={vi.fn()} />
+      </>,
+    );
+
+    const dialog = screen.getByRole("dialog", {
+      name: /royal travel-preparation dossier/i,
+    });
+    const dialogQueries = within(dialog);
+    expect(
+      dialogQueries.getByText("Cited historical reconstruction"),
+    ).toBeInTheDocument();
+    expect(dialogQueries.getByText("Evidence item")).toBeInTheDocument();
+    expect(dialogQueries.queryByText("Archive record")).not.toBeInTheDocument();
   });
 });

@@ -32,7 +32,7 @@ describe("scene manifest", () => {
     const manifest = loadVarennesSceneManifest();
 
     expect(manifest).toMatchObject({
-      sceneManifestVersion: "1.2.0",
+      sceneManifestVersion: "1.3.0",
       caseId: casePackage.caseId,
       caseVersion: casePackage.caseVersion,
       modelPolicyVersion: modelPolicy.policyVersion,
@@ -78,6 +78,34 @@ describe("scene manifest", () => {
     const limitations = limitInteractables[0]!.limitations as Record<string, unknown>;
     delete limitations.location;
     expect(sceneManifestSchema.safeParse(missingLimit).success).toBe(false);
+  });
+
+  it("requires versioned asset references and an explicit dynamic-content allowlist", () => {
+    const missingZoneAssets = structuredClone(loadVarennesSceneManifest()) as unknown as {
+      zones: Array<Record<string, unknown>>;
+    };
+    delete missingZoneAssets.zones[0]!.assetReferences;
+    expect(sceneManifestSchema.safeParse(missingZoneAssets).success).toBe(false);
+
+    const missingInteractableAssets = structuredClone(
+      loadVarennesSceneManifest(),
+    ) as unknown as {
+      interactables: Array<Record<string, unknown>>;
+    };
+    delete missingInteractableAssets.interactables[0]!.assetReferences;
+    expect(sceneManifestSchema.safeParse(missingInteractableAssets).success).toBe(
+      false,
+    );
+
+    const missingDynamicAllowlist = structuredClone(
+      loadVarennesSceneManifest(),
+    ) as unknown as {
+      zones: Array<Record<string, unknown>>;
+    };
+    delete missingDynamicAllowlist.zones[0]!.dynamicContentAllowlist;
+    expect(sceneManifestSchema.safeParse(missingDynamicAllowlist).success).toBe(
+      false,
+    );
   });
 
   it.each([

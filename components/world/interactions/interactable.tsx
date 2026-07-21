@@ -6,6 +6,7 @@ import { LicensedWoodenTable } from "../environment/licensed-props";
 import { OptionalAssetBoundary } from "../environment/optional-asset-boundary";
 
 interface InteractableProps {
+  assetId: string;
   position: [number, number, number];
 }
 
@@ -28,10 +29,10 @@ function TableFallback() {
   );
 }
 
-export function Interactable({ position }: InteractableProps) {
+export function Interactable({ assetId, position }: InteractableProps) {
   return (
     <group position={position}>
-      <OptionalAssetBoundary fallback={<TableFallback />}>
+      <OptionalAssetBoundary assetId={assetId} fallback={<TableFallback />}>
         <Suspense fallback={<TableFallback />}>
           <LicensedWoodenTable position={[0, 0.02, 0]} rotation={[0, Math.PI / 2, 0]} />
         </Suspense>

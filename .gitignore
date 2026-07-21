@@ -3,6 +3,7 @@
 node_modules/
 .npm-cache/
 .next/
+.next.stale-*/
 .vercel/
 .env
 .env.local

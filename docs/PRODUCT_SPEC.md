@@ -55,11 +55,11 @@ By the end of the case, students should be able to:
 
 The game centers on the Flight to Varennes, June 1791.
 
-The case targets the historical sequence in which Louis XVI and the royal family secretly left Paris and were stopped at Varennes after a chain of recognition, information, pursuit, and local action. Exact operational claims remain unavailable to implementation until they pass the Phase 0 source ledger.
+The case targets the historical sequence in which Louis XVI and the royal family secretly left Paris and were stopped at Varennes after a bounded, source-linked chain of recognition, information, pursuit, and local action. Exact coordinates, minute-level timing, and a site-accurate map remain excluded from scoring and spatial presentation.
 
 The player knows only that the timeline fractured somewhere inside the recognition-to-detention chain. A diagnostic layer surfaces three equally labeled fictional temporal anomalies: one involving recognition, one involving route information, and one involving local authorization. Fixed fictional observations show what occurred in the altered branch, while reviewed historical evidence shows what must be restored. The player must compare those two layers to eliminate two candidates and identify the active fracture.
 
-The intended repair, pending historical verification of the surrounding chain, is the route-information handoff:
+The source-bounded repair is the route-information handoff:
 
 > accurate route information -> redirected pursuit -> warning at Varennes -> local mobilization -> (blocked onward passage and passport inspection as parallel local actions) -> guarded collective detention
 
@@ -126,15 +126,15 @@ Labels must not rely on color alone.
 
 ## 10. Core Gameplay Loop
 
-Claim -> evidence confrontation -> changed testimony -> recorded claim -> caseboard update -> stronger hypothesis.
+Claim -> evidence confrontation -> changed testimony -> inspected-record comparison -> authored finding -> caseboard update -> stronger hypothesis.
 
 The most important demo sequence:
 
 1. Character makes a plausible but biased or incomplete claim.
 2. Player presents contradictory evidence.
 3. GPT-5.6 responds dynamically within the character's knowledge boundary.
-4. Player records or qualifies the claim.
-5. Deterministic system unlocks a caseboard relationship.
+4. Player compares the dialogue with inspected records and records an authored finding.
+5. Deterministic system updates the caseboard from inspected records and authored actions only.
 6. Assessment later refers to that reasoning move.
 
 ## 11. Key Screens
@@ -334,7 +334,7 @@ Implemented Phase 4 behavior:
 - keyboard-operable teacher controls, semantic review/report sections, live progress status, and explicit labels for investigation actions
 - glossary support, color-independent state, no timed decision gate, visible dialogue captions, optional audio, and responsive text sizing remain available
 
-Reading and motion preferences do not change evidence, scoring, solution requirements, or repair eligibility. Focused Phase 4 Playwright coverage passes the teacher approval/aligned-investigation path, 320 x 700 world-HUD fit, and distinct accessible names for all six historical-record controls. Manual browser QA also passed `/teacher` at desktop and 390 x 844, `/teacher/report`, and the 320 x 700 world top controls without overflow or overlap. The fresh integrated no-key gate passes warning-free lint, typecheck, 75 Vitest files with 509 tests, the production build, and all 19 Playwright tests. Do not claim formal accessibility compliance or final project readiness: screen-reader-oriented/cross-route equivalence, live-provider, physical Chromebook, deployment, and submission checks remain separate gates.
+Reading and motion preferences do not change evidence, scoring, solution requirements, or repair eligibility. The latest local gate passes 111 Vitest files with 910 tests, typecheck, warning-free lint, the production build, all 53 ordinary production Playwright tests, the constrained Classroom performance proxy, and high/balanced/classroom capture coverage. Automated axe-core, cross-route equivalence, a complete keyboard-only novice case, valid TXT/Markdown upload, aligned hints, mobile layout, and reducer-owned repair paths pass. Do not claim formal accessibility compliance or final project readiness: formal screen-reader testing, live-provider execution, physical Chromebook verification, deployment, unfamiliar-user testing, and submission checks remain separate gates.
 
 ## 18. Teacher Packet Alignment
 
@@ -415,4 +415,4 @@ Done means:
 - historical claims sourced
 - fictional and reconstructed elements labeled
 
-The Phase 4 feature scope above is implemented with focused unit, integration, historical-authority, Playwright, manual browser-layout, and full integrated no-key suite evidence. The overall product is not finally done: screen-reader-oriented/cross-route accessibility checks, live-provider smoke testing, physical Chromebook verification, deployment, and submission checks remain separate gates.
+The Phase 4 feature scope above is implemented with focused unit, integration, historical-authority, Playwright, manual browser-layout, automated axe-core, cross-route equivalence, and full integrated no-key suite evidence. The overall product is not finally done: formal screen-reader testing, live-provider smoke execution, physical Chromebook verification, deployment, unfamiliar-user testing, and submission checks remain separate gates.
