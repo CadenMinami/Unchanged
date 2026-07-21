@@ -1,8 +1,8 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
-import { useLayoutEffect, useRef } from "react";
-import { Mesh, type Group, type Material } from "three";
+import { useRef } from "react";
+import type { Group } from "three";
 
 import {
   shouldAnimateFigureMotion,
@@ -44,47 +44,9 @@ export function PeriodFigure({
   const rightArmRef = useRef<Group>(null);
   const leftLegRef = useRef<Group>(null);
   const rightLegRef = useRef<Group>(null);
-
-  useLayoutEffect(() => {
-    if (!foreground || !rootRef.current) return;
-
-    const materialStates: Array<{
-      depthTest: boolean;
-      depthWrite: boolean;
-      material: Material;
-      mesh: Mesh;
-      renderOrder: number;
-    }> = [];
-
-    rootRef.current.traverse((object) => {
-      if (!(object instanceof Mesh)) return;
-      const materials = Array.isArray(object.material)
-        ? object.material
-        : [object.material];
-      for (const material of materials) {
-        materialStates.push({
-          depthTest: material.depthTest,
-          depthWrite: material.depthWrite,
-          material,
-          mesh: object,
-          renderOrder: object.renderOrder,
-        });
-        material.depthTest = false;
-        material.depthWrite = false;
-        material.needsUpdate = true;
-      }
-      object.renderOrder = 100;
-    });
-
-    return () => {
-      for (const state of materialStates) {
-        state.material.depthTest = state.depthTest;
-        state.material.depthWrite = state.depthWrite;
-        state.material.needsUpdate = true;
-        state.mesh.renderOrder = state.renderOrder;
-      }
-    };
-  }, [foreground]);
+  const foregroundMaterialProps = foreground
+    ? { depthTest: false, depthWrite: false }
+    : undefined;
 
   useFrame(({ clock }) => {
     const root = rootRef.current;
@@ -145,73 +107,73 @@ export function PeriodFigure({
     >
       <group ref={leftLegRef} position={[-0.14, 0.72, 0]}>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.upperLeg} position={[0, -0.35, 0]}>
-          <meshStandardMaterial color={palette.breeches} roughness={0.92} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.breeches} roughness={0.92} />
         </mesh>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.lowerLeg} position={[0, -0.77, 0]}>
-          <meshStandardMaterial color={palette.stockings} roughness={0.9} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.stockings} roughness={0.9} />
         </mesh>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.shoe} position={[0, -1.01, 0.06]}>
-          <meshStandardMaterial color={palette.shoes} roughness={0.86} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.shoes} roughness={0.86} />
         </mesh>
       </group>
       <group ref={rightLegRef} position={[0.14, 0.72, 0]}>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.upperLeg} position={[0, -0.35, 0]}>
-          <meshStandardMaterial color={palette.breeches} roughness={0.92} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.breeches} roughness={0.92} />
         </mesh>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.lowerLeg} position={[0, -0.77, 0]}>
-          <meshStandardMaterial color={palette.stockings} roughness={0.9} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.stockings} roughness={0.9} />
         </mesh>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.shoe} position={[0, -1.01, 0.06]}>
-          <meshStandardMaterial color={palette.shoes} roughness={0.86} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.shoes} roughness={0.86} />
         </mesh>
       </group>
 
       <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.torso} position={[0, 1.05, 0]}>
-        <meshStandardMaterial color={palette.coat} roughness={0.94} />
+        <meshStandardMaterial {...foregroundMaterialProps} color={palette.coat} roughness={0.94} />
       </mesh>
       <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.waistcoat} position={[0, 1.06, 0.25]}>
-        <meshStandardMaterial color={palette.waistcoat} roughness={0.88} />
+        <meshStandardMaterial {...foregroundMaterialProps} color={palette.waistcoat} roughness={0.88} />
       </mesh>
       {[-0.22, 0.22].map((x) => (
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.coatTail} key={x} position={[x * 0.58, 0.58, -0.12]} rotation={[0, 0, x > 0 ? -0.09 : 0.09]}>
-          <meshStandardMaterial color={palette.coat} roughness={0.95} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.coat} roughness={0.95} />
         </mesh>
       ))}
       <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.shoulders} position={[0, 1.42, 0.01]} scale={[1.05, 0.42, 0.9]}>
-        <meshStandardMaterial color={palette.coat} roughness={0.94} />
+        <meshStandardMaterial {...foregroundMaterialProps} color={palette.coat} roughness={0.94} />
       </mesh>
       <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.cravat} position={[0, 1.48, 0.22]} scale={[1, 0.55, 0.5]}>
-        <meshStandardMaterial color="#ded5c2" roughness={0.9} />
+        <meshStandardMaterial {...foregroundMaterialProps} color="#ded5c2" roughness={0.9} />
       </mesh>
 
       <group ref={leftArmRef} position={[-0.31, 1.33, 0]}>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.arm} position={[0, -0.34, 0]}>
-          <meshStandardMaterial color={palette.coat} roughness={0.94} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.coat} roughness={0.94} />
         </mesh>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hand} position={[0, -0.72, 0]}>
-          <meshStandardMaterial color={palette.skin} roughness={0.9} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.skin} roughness={0.9} />
         </mesh>
       </group>
       <group ref={rightArmRef} position={[0.31, 1.33, 0]}>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.arm} position={[0, -0.34, 0]}>
-          <meshStandardMaterial color={palette.coat} roughness={0.94} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.coat} roughness={0.94} />
         </mesh>
         <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hand} position={[0, -0.72, 0]}>
-          <meshStandardMaterial color={palette.skin} roughness={0.9} />
+          <meshStandardMaterial {...foregroundMaterialProps} color={palette.skin} roughness={0.9} />
         </mesh>
       </group>
 
       <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.head} position={[0, 1.69, 0.01]} scale={[0.86, 1.12, 0.9]}>
-        <meshStandardMaterial color={palette.skin} roughness={0.92} />
+        <meshStandardMaterial {...foregroundMaterialProps} color={palette.skin} roughness={0.92} />
       </mesh>
       <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hair} position={[0, 1.73, -0.12]} scale={[0.88, 1.08, 0.78]}>
-        <meshStandardMaterial color={palette.hair} roughness={0.96} />
+        <meshStandardMaterial {...foregroundMaterialProps} color={palette.hair} roughness={0.96} />
       </mesh>
       <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hatBrim} position={[0, 1.91, 0]} scale={[1, 1, 0.72]}>
-        <meshStandardMaterial color={palette.hat} roughness={0.93} />
+        <meshStandardMaterial {...foregroundMaterialProps} color={palette.hat} roughness={0.93} />
       </mesh>
       <mesh castShadow dispose={null} geometry={PERIOD_FIGURE_GEOMETRIES.hatCrown} position={[0, 1.975, 0]} scale={[1, 1, 0.86]}>
-        <meshStandardMaterial color={palette.hat} roughness={0.93} />
+        <meshStandardMaterial {...foregroundMaterialProps} color={palette.hat} roughness={0.93} />
       </mesh>
     </group>
   );

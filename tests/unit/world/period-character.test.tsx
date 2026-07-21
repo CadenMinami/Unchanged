@@ -152,6 +152,7 @@ describe("world character role integration", () => {
       view.container.querySelector(`group[name="${DETAIL_BOUNDARY_NAME}"]`),
     ).toBeNull();
     expect(characterBoundaryMocks.periodFigure).toHaveBeenCalledWith({
+      foreground: true,
       motion: "run",
       reducedMotion: true,
       scale: 0.96,
