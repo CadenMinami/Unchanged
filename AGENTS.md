@@ -9,23 +9,19 @@ Build a polished, historically responsible educational mystery in which evidence
 Read the files relevant to your work before editing. The controlling order is:
 
 1. `AGENTS.md`
-2. `CODEX_MASTER_BRIEF.md`
-3. `docs/superpowers/specs/2026-07-15-diegetic-3d-investigation-design.md`
-4. `docs/CASE_CANON.md`
-5. `docs/HISTORICAL_SOURCES.md`
-6. `docs/ANSWERABILITY_MATRIX.md`
-7. `docs/REPAIR_GATE_TRACEABILITY.md`
-8. `docs/CONTEXT_AND_CURRICULUM_CANON.md`
-9. `docs/PRODUCT_SPEC.md`
-10. `docs/DESIGN_SYSTEM.md` and `docs/WIREFRAMES.md` for interface work
-11. `docs/ARCHITECTURE.md` and `docs/AI_CONTRACTS.md`
-12. `.Codex/plans/diegetic-3d-investigation-implementation.md` for the active task order
+2. `docs/PRODUCT_SPEC.md`
+3. `docs/CASE_CANON.md`
+4. `docs/HISTORICAL_SOURCES.md`
+5. `docs/ANSWERABILITY_MATRIX.md`
+6. `docs/CONTEXT_AND_CURRICULUM_CANON.md`
+7. `docs/ARCHITECTURE.md` and `docs/AI_CONTRACTS.md`
+8. `docs/WORLD_ASSET_SELECTION.md` when changing the spatial world
 
 When documents disagree, stop at the conflict and report it. Do not silently choose the convenient version.
 
 ## Current Gate
 
-Phase 0, the deterministic primer-to-debrief vertical slice, the source-bounded GPT-5.6 layer, the four-zone 3D investigation through the Louis station, push-to-talk transcription, authorized speech playback, bounded teacher alignment, the reducer-owned guided pursuit repair, the grounded historical-realism pass, automated cross-route accessibility, and submission screenshot capture are implemented in the working tree. AI contract `1.1.0`, media contract `1.0.0`, course-alignment contract `1.1.0`, scene manifest `1.3.0`, and world asset ledger `1.0.0` are active. Principal and ambient figures remain repository-authored procedural renderings in every graphics profile; they make no historical portrait or likeness claim. The current gate is Phase 5 external release closure: preserve the provenance-labeled experience while resolving the current Classroom proxy performance failure, finishing formal screen-reader and physical-device verification, executing the isolated live-provider smoke, validating deployment and production credentials, conducting unfamiliar-user playtesting, and completing demo-production and submission gates.
+Phase 0, the deterministic primer-to-debrief vertical slice, the source-bounded GPT-5.6 layer, the four-zone 3D investigation through the Louis station, push-to-talk transcription, authorized speech playback, bounded teacher alignment, the reducer-owned guided pursuit repair, the grounded historical-realism pass, automated cross-route accessibility, and submission screenshot capture are implemented in the working tree. AI contract `1.1.0`, media contract `1.0.0`, course-alignment contract `1.1.0`, scene manifest `1.3.0`, and world asset ledger `1.0.0` are active. Principal and ambient figures remain repository-authored procedural renderings in every graphics profile; they make no historical portrait or likeness claim. The current gate is external release closure: preserve the provenance-labeled experience while completing formal screen-reader and physical-device verification, the isolated live-provider smoke, deployment and production-credential validation, unfamiliar-user playtesting, demo production, and submission gates.
 
 The current 2D route is frozen as the complete, directly selectable non-spatial experience and as the DOM focus-overlay system used by the 3D route. Do not delete or weaken it while adding spatial presentation or media. Teacher alignment now uses a separately persisted, teacher-approved profile composed only of repository-owned concept IDs, exact server-authorized packet segments, and authored definitions. It may affect vocabulary, hints, reading support, selected objectives, and report emphasis; it may never alter case state, evidence, character knowledge, scoring, repair, or the solution. The secure first ingestion path supports the reviewed sample, pasted text, TXT, and Markdown; PDF and DOCX remain unsupported until their extraction can preserve the same exact-segment authorization boundary.
 

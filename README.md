@@ -109,8 +109,8 @@ reproducible screenshots:
 npm run verify:release
 ```
 
-For the remaining credential, deployment, device, human-review, video, and
-submission work, use the [submission checklist](docs/SUBMISSION_CHECKLIST.md).
+The remaining credential, deployment, device, human-review, video, and
+submission work is summarized in [Project Status](#project-status).
 
 After Vercel creates an immutable HTTPS deployment URL, run the credential-free
 fallback regression against that exact URL:
@@ -121,8 +121,8 @@ HISTORY_UNBROKEN_DEPLOYED_URL="https://your-deployment.vercel.app" npm run test:
 
 This runner never starts a local server and blocks any `/api/ai/*` request. It
 checks `/api/health`, completes the deterministic non-spatial case, and opens
-spatial E3 evidence. Use [the release-evidence template](docs/RELEASE_EVIDENCE_TEMPLATE.md)
-to record its result and every human-owned release check.
+spatial E3 evidence. Record its result alongside the human-owned release checks
+required for your deployment.
 
 ## Architecture
 
@@ -162,8 +162,6 @@ The current API rate limiter is process-local. A multi-instance deployment requi
 - [Historical source ledger](docs/HISTORICAL_SOURCES.md)
 - [AI contracts](docs/AI_CONTRACTS.md)
 - [Build log](docs/BUILD_LOG.md)
-- [Submission checklist](docs/SUBMISSION_CHECKLIST.md)
-- [Release evidence template](docs/RELEASE_EVIDENCE_TEMPLATE.md)
 
 ## License
 

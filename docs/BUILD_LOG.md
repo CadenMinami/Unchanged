@@ -79,7 +79,7 @@ Phase 0: historical verification and wireframe approval.
 
 - Created:
   - `README.md`
-  - `CODEX_MASTER_BRIEF.md`
+  - an initial Codex handoff brief (removed during later public-repository cleanup)
   - `docs/PRODUCT_SPEC.md`
   - `docs/CASE_CANON.md`
   - `docs/CONTEXT_AND_CURRICULUM_CANON.md`
@@ -108,7 +108,7 @@ Phase 0: historical verification and wireframe approval.
 
 ### Next checkpoint
 
-Run Phase 0 using `CODEX_MASTER_BRIEF.md` as the controlling instruction.
+Run Phase 0 using the initial Codex handoff brief as the controlling instruction.
 
 ## 2026-07-14 / Repository And Guardrails Established
 
@@ -721,7 +721,7 @@ Review the interactive wireframe and implementation-plan artifacts, then begin a
 
 ### Artifacts created
 
-- Added `docs/superpowers/specs/2026-07-15-diegetic-3d-investigation-design.md` as the controlling design specification for the proposed pivot.
+- Added an internal 3D investigation design specification for the proposed pivot; its durable decisions were later consolidated into the public product, architecture, design-system, wireframe, and asset-selection documents.
 - Added temporary interactive brainstorming comparisons under ignored `.superpowers/` state.
 - Installed the official OpenAI developer-docs MCP server configuration for future Codex sessions; this session used official web documentation because a restart is required before the new MCP tools are exposed.
 
@@ -1849,3 +1849,32 @@ The final production run reported:
   tests, TypeScript, ESLint, the production build, all 53 ordinary production
   Playwright flows, both constrained Classroom proxy checks, and all four
   screenshot-capture flows.
+
+## 2026-07-21 / Public Repository Cleanup
+
+### What Codex implemented
+
+- Removed the obsolete initial Codex handoff brief and internal `superpowers`
+  planning/specification artifacts from version control.
+- Kept the maintained product, historical, architecture, licensing, test,
+  screenshot, and build-log documentation in the repository.
+- Added an ignore rule to prevent internal `docs/superpowers/` plans from
+  returning and removed a duplicate fracture-opening screenshot.
+- Updated the public agent guide to point directly to maintained repository
+  documentation and corrected its release gate to match the passing local
+  performance proxy.
+
+### Why this matters
+
+- The public repository remains focused on the runnable project and the
+  material a judge, collaborator, or maintainer needs to evaluate it.
+- Internal planning history stays local without weakening the durable product
+  and engineering record in the build log.
+
+### Follow-up public-scope reduction
+
+- Moved implementation roadmaps, wireframes, design-system notes, repair-gate
+  traceability, asset-spike notes, demo scripting, and release-operation
+  templates to ignored local storage.
+- The public README now links only to maintained product, architecture,
+  historical-source, AI-boundary, and build-log documentation.

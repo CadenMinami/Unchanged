@@ -139,7 +139,7 @@ The most important demo sequence:
 
 ## 11. Key Screens
 
-The controlling visual and interaction specifications are `docs/DESIGN_SYSTEM.md` and `docs/WIREFRAMES.md`. The locked direction is an archival control room with the route and evidence as the visual center; conversation remains a subordinate investigation surface.
+The locked direction is an archival control room with the route and evidence as the visual center; conversation remains a subordinate investigation surface.
 
 ### Context Primer and Fracture Opening
 

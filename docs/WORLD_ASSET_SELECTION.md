@@ -152,7 +152,7 @@ The accepted PBR plus barrel and crate source graphs total **13,581,434 local by
 
 All inspection binaries were placed under temporary `/tmp/history-unbroken-asset-spike*` directories, outside tracked runtime paths. They were not copied into `public`, imported, ledgered, or committed.
 
-The exact accepted-candidate download, license, API hash, texture, static-server, Playwright, and GLTFLoader steps are retained in [`WORLD_ASSET_SPIKE.md`](WORLD_ASSET_SPIKE.md), together with the observed 2026-07-19 output. That rerun verified all 25 accepted-candidate files against official API bytes and MD5, all 21 JPGs as 1024x1024 baseline JPEGs, both external glTF graphs in Chromium, and zero browser warnings/errors.
+The runtime asset ledger and local license records are the maintained source of truth for shipped files, provenance, hashes, and usage. Development-only acquisition and browser-validation notes are retained outside the public repository.
 
 The rejected-character evidence remains in its matrix rows: archive filenames, bytes and SHA-256; license files; skeleton/joint and clip observations; root translation; compatibility binding; texture dimensions; draw-call estimates; and the two broken superhero texture references. The Quaternius animation, barrel, crate, and peasant outfit parsed without browser diagnostics; the superhero base did not.
 
